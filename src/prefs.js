@@ -950,13 +950,19 @@ export default class LibraryPreferences extends ExtensionPreferences {
         const {sections, generated} = readSections();
         const counts = {generated};
         for (const s of SECTIONS)
-            counts[s.key] = Array.isArray(sections[s.key]) ? sections[s.key].length : null;
+            counts[s.key] = Array.isArray(sections[s.key]) ? sections[s.key].map(item => item.provider) : null;
         return counts;
     }
 
+    // "14 shows · 12 from TMDB, 2 not found online"
     _countText(counts, section) {
-        const n = counts[section.key];
-        return n === null || n === undefined ? 'Not scanned yet' : `${n} ${section.noun}`;
+        const providers = counts[section.key];
+        if (!providers)
+            return 'Not scanned yet';
+        const from = Object.entries(Object.groupBy(providers, id => id ?? ''))
+            .sort(([, a], [, b]) => b.length - a.length)
+            .map(([id, items]) => `${items.length} ${id ? `from ${SOURCES[id]?.title ?? id}` : 'not found online'}`);
+        return [`${providers.length} ${section.noun}`, from.join(', ')].filter(Boolean).join(' · ');
     }
 
     _lastScanText() {
@@ -985,7 +991,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
             }
             // One with no folder still runs if it has items left to clear.
             const ready = enabled.filter(s => s.launchers ||
-                state.settings.get_strv(`${s.prefix}-folders`).length || state.counts[s.key]);
+                state.settings.get_strv(`${s.prefix}-folders`).length || state.counts[s.key]?.length);
             if (!ready.length) {
                 content.label = 'No folder set';
                 return;

@@ -359,7 +359,7 @@ def main():
                 })
         tv.append({
             "id": key, "kind": "tv", "title": title, "year": year, "rating": rating,
-            "genres": genres, "summary": summary, "provider": "demo",
+            "genres": genres, "summary": summary, "provider": "tvmaze",
             "poster_path": poster_path, "backdrop_path": backdrop_path,
             "folder_path": f"/demo/TV Shows/{title}",
             "episodes": episodes, "episode_count": len(episodes), "seasons": seasons,
@@ -377,7 +377,7 @@ def main():
         path = f"/demo/Films/{stem}/{stem}.mkv"
         films.append({
             "id": key, "kind": "film", "title": title, "year": year, "rating": rating,
-            "genres": genres, "summary": summary, "tagline": tagline, "provider": "demo",
+            "genres": genres, "summary": summary, "tagline": tagline, "provider": "tmdb",
             "poster_path": poster_path, "backdrop_path": backdrop_path,
             "folder_path": f"/demo/Films/{stem}", "runtime": runtime,
             "files": [{"title": stem, "filename": f"{stem}.mkv", "path": path, "group": None,
@@ -398,7 +398,7 @@ def main():
             "launch": ["true"], "poster_path": poster_path, "backdrop_path": backdrop_path,
             "summary": summary, "genres": genres, "rating": rating,
             "playtime_minutes": played, "last_played": None, "app_id": str(appid),
-            "steam_root": "/demo/Steam", "size_mb": size, "provider": "demo",
+            "steam_root": "/demo/Steam", "size_mb": size, "provider": "steam",
         })
     ps2 = []
     for n, (title, year, rating, genres, palette, kind, serial, fmt, size, summary) in enumerate(PS2):
@@ -411,7 +411,7 @@ def main():
             "poster_path": poster_path, "backdrop_path": None,
             "summary": summary, "genres": genres, "rating": rating,
             "playtime_minutes": None, "serial": serial, "disc_path": f"/demo/PS2/{title} ({serial}).{fmt}",
-            "disc_format": fmt, "size_mb": size, "provider": "demo",
+            "disc_format": fmt, "size_mb": size, "provider": "igdb",
         })
     # Steam first, then PS2, each by title, as the scanner orders them.
     games = sorted(steam, key=lambda g: g["title"].lower()) + sorted(ps2, key=lambda g: g["title"].lower())
