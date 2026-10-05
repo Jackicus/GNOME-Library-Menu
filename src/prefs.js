@@ -51,6 +51,7 @@ const SOURCES = {
     },
 };
 const FIELD_SEP = '\t';
+const CHECK_HINT = 'Asks the service once with the saved key';
 
 const OPENER_HINT = 'The default plays in VLC full screen and closes it at the end. For example ' +
     '"mpv --fullscreen" instead; watched marks and resuming need a player that shows up ' +
@@ -787,6 +788,9 @@ export default class LibraryPreferences extends ExtensionPreferences {
             source.add_row(value);
             return value;
         });
+        const check = this._checkRow(spec, slot);
+        check.sensitive = this._fields(settings, slot, fields.length).every(value => value.trim() !== '');
+        source.add_row(check);
 
         return {
             row: source,
@@ -799,8 +803,29 @@ export default class LibraryPreferences extends ExtensionPreferences {
                         value.set_text(current[i]);
                 });
                 source.subtitle = subtitle();
+                check.subtitle = CHECK_HINT;
+                check.sensitive = current.every(value => value.trim() !== '');
             },
         };
+    }
+
+    // The scanner asks, reading the key from the settings, so it is never on a command line.
+    _checkRow(spec, slot) {
+        const button = new Gtk.Button({label: 'Check', valign: Gtk.Align.CENTER, css_classes: ['flat']});
+        const check = row('Check the key', CHECK_HINT, button);
+        const done = answer => {
+            button.sensitive = true;
+            check.subtitle = {
+                ok: `${spec.title} accepted the saved key`,
+                refused: `${spec.title} refused the saved key`,
+            }[answer] ?? `Could not reach ${spec.title}`;
+        };
+        button.connect('clicked', () => {
+            button.sensitive = false;
+            check.subtitle = `Asking ${spec.title}…`;
+            this._runScanner(['--check', slot], out => done(out?.trim()));
+        });
+        return check;
     }
 
     // A keyed source takes the lowest free slot; a keyless one is listed once.
@@ -965,32 +990,34 @@ export default class LibraryPreferences extends ExtensionPreferences {
                 content.label = 'No folder set';
                 return;
             }
-            const argv = [gjsPath(), '-m', GLib.build_filenamev([this.path, 'backend', 'scanLibrary.js']),
-                ...ready.flatMap(s => ['--only', s.key])];
             button.sensitive = false;
             content.label = 'Scanning…';
             content.icon_name = 'content-loading-symbolic';
-            let proc;
-            try {
-                proc = Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDOUT_SILENCE | Gio.SubprocessFlags.STDERR_PIPE);
-            } catch (e) {
-                console.error(`[Library Menu] Could not launch scanner: ${e.message}`);
-                done(true);
-                return;
-            }
-            proc.communicate_utf8_async(null, null, (p, result) => {
-                try {
-                    const [, , stderr] = p.communicate_utf8_finish(result);
-                    if (!p.get_successful())
-                        console.error(`[Library Menu] Scan failed: ${stderr}`);
-                    done(!p.get_successful());
-                } catch (e) {
-                    console.error(`[Library Menu] Scan failed: ${e.message}`);
-                    done(true);
-                }
-            });
+            this._runScanner(ready.flatMap(s => ['--only', s.key]), out => done(out === null));
         });
         return button;
+    }
+
+    // `done` gets the scanner's output, or null when it failed.
+    _runScanner(args, done) {
+        const argv = [gjsPath(), '-m', GLib.build_filenamev([this.path, 'backend', 'scanLibrary.js']), ...args];
+        try {
+            Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
+                .communicate_utf8_async(null, null, (proc, result) => {
+                    try {
+                        const [, stdout, stderr] = proc.communicate_utf8_finish(result);
+                        if (!proc.get_successful())
+                            console.error(`[Library Menu] Scanner failed: ${stderr}`);
+                        done(proc.get_successful() ? stdout : null);
+                    } catch (e) {
+                        console.error(`[Library Menu] Scanner failed: ${e.message}`);
+                        done(null);
+                    }
+                });
+        } catch (e) {
+            console.error(`[Library Menu] Could not launch scanner: ${e.message}`);
+            done(null);
+        }
     }
 }
 

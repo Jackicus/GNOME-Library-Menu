@@ -1,6 +1,6 @@
 # Backend
 
-The scanner: `scanLibrary.js` (the settings, `--only` and `--force`, the lock, the
+The scanner: `scanLibrary.js` (the settings, `--only`, `--force` and `--check`, the lock, the
 merge and the write), `mediaScanner.js` (the folders), `gamesScanner.js` (Steam's
 and PCSX2's files), `metadata.js` (the sources and the artwork cache), `files.js`
 (the file helpers they use) and `html.js` (TVmaze's markup). `gjs -m src/backend/scanLibrary.js --help` lists
