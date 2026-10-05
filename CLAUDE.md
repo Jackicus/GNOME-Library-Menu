@@ -57,7 +57,8 @@ lists the two artwork folders once per load rather than stat a poster each.
    synchronous, and a share that has idled out takes seconds to answer. It needs
    only Gio, Soup 3 and GdkPixbuf, and imports only `SECTIONS` and `libraryPath`
    from `lib/library.js`. It reads the preferences itself, its only input
-   (`--only <section>` narrows it, `--force` re-reads every folder), so the prefs'
+   (`--only <section>` narrows it, `--force` re-reads every folder, `--check <slot>`
+   asks a key's service once), so the prefs'
    Rescan buttons and `make scan` both just run it. Each section has an ordered list of folders
    (`<prefix>-folders`) and of sources (`<prefix>-sources`: TV tries TVmaze, TMDB,
    Wikipedia; films TMDB, Wikipedia), and its own `<prefix>-online` switch.
@@ -72,7 +73,8 @@ lists the two artwork folders once per load rather than stat a poster each.
    out of GSettings, falling back to `$LIBRARY_TMDB_KEY` for an
    empty slot 1 (never under `start --stand-in`, whose `EXT_STAND_IN_UNSET` drops it).
    Each key row's Import button reads `~/Documents/keys/<SERVICE>/`, the
-   user's key drop shared with other projects.
+   user's key drop shared with other projects, and its Check runs the scanner's
+   `--check`, so the key is read from the settings and never on a command line.
 3. `extension.js` builds a `LibraryApp` (`lib/app.js`) and enables it. The app
    reads `library.json` and builds whichever places the two "opens in" settings name.
 4. **Watched marks and playback** (`lib/tracking.js`, `lib/playback.js`): the

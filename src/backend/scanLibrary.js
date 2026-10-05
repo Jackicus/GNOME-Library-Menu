@@ -25,7 +25,7 @@ const LIBRARY_PATH = libraryPath();
 const SECTION_KINDS = {tv: 'tv', films: 'film', games: 'game'};
 const SCANNERS = {tv: scanTv, films: scanFilms};
 
-const USAGE = `usage: gjs -m scanLibrary.js [-h] [--only SECTION] [--force]
+const USAGE = `usage: gjs -m scanLibrary.js [-h] [--only SECTION] [--force] [--check SLOT]
 
 Scan the folders the preferences list and the games Steam and PCSX2 know of,
 cache their metadata and artwork, and write library.json.
@@ -34,12 +34,14 @@ options:
   -h, --help          show this help message and exit
   --only SECTION      Scan just this section (repeatable)
   --force             Re-read every folder instead of reusing the entries of
-                      unchanged ones`;
+                      unchanged ones
+  --check SLOT        Ask the service once with the key saved in SLOT
+                      (tmdb@1, igdb@1) and print ok, refused or unreachable`;
 
 class UsageError extends Error {}
 
 function parseArgs(argv) {
-    const args = {only: null, force: false};
+    const args = {only: null, force: false, check: null};
     for (let i = 0; i < argv.length; i++) {
         const arg = argv[i];
         if (arg === '-h' || arg === '--help') {
@@ -47,6 +49,8 @@ function parseArgs(argv) {
             System.exit(0);
         } else if (arg === '--force') {
             args.force = true;
+        } else if (arg === '--check' && /^(tmdb|igdb)@\d+$/.test(argv[i + 1])) {
+            args.check = argv[++i];
         } else if (arg === '--only' && i + 1 < argv.length) {
             const value = argv[++i];
             if (!SECTIONS.some(s => s.key === value)) {
@@ -222,6 +226,11 @@ async function main(argv) {
     const settings = openSettings();
     if (!settings)
         throw new UsageError(`could not read the Library settings. Compile the schemas (${SCHEMA_DIR}).`);
+    if (args.check) {
+        const meta = new MetadataService({sources: {}, credentials: settings.get_value('credentials').deep_unpack()});
+        print(await meta.check(args.check));
+        return 0;
+    }
 
     // null leaves a section as it is, [] clears it.
     const only = new Set(args.only ?? SECTIONS.map(s => s.key));

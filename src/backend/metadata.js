@@ -505,6 +505,18 @@ export class MetadataService {
         return false;
     }
 
+    // The preferences' Check: one request that needs the key and nothing more.
+    async check(entry) {
+        try {
+            if (sourceId(entry) === 'igdb')
+                return (await this._igdbAuth(entry)).access_token ? 'ok' : 'refused';
+            await getJson(`${TMDB_API}/configuration?${query({api_key: this.credential(entry)[0]})}`);
+            return 'ok';
+        } catch (e) {
+            return e instanceof HttpError ? 'refused' : 'unreachable';
+        }
+    }
+
     // Sources are tried in order until one has the artwork; each fills in the facts it knows.
     async enrich(item) {
         const kind = item.kind;
@@ -699,12 +711,16 @@ export class MetadataService {
         return data || Object.keys(art).length ? art : null;
     }
 
+    _igdbAuth(entry) {
+        const [id, secret] = this.credential(entry);
+        return getJson(`${IGDB_TOKEN_URL}?${query({client_id: id, client_secret: secret, grant_type: 'client_credentials'})}`,
+            10, {body: ''});
+    }
+
     // One token per slot per run, minted once however many discs ask at once.
     _igdbToken(entry) {
         if (!this._igdbTokens.has(entry)) {
-            const [id, secret] = this.credential(entry);
-            const url = `${IGDB_TOKEN_URL}?${query({client_id: id, client_secret: secret, grant_type: 'client_credentials'})}`;
-            this._igdbTokens.set(entry, getJson(url, 10, {body: ''}).then(answer => answer.access_token ?? null, e => {
+            this._igdbTokens.set(entry, this._igdbAuth(entry).then(answer => answer.access_token ?? null, e => {
                 print(`IGDB authentication failed: ${describe(e)}`);
                 return null;
             }));
