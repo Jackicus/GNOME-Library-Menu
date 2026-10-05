@@ -452,7 +452,7 @@ export class MetadataService {
         return true;
     }
 
-    // With no artwork, the time and the sources that answered go in, for _missed.
+    // The sources that answered go in, for enrich's order; with no artwork the time too, for _missed.
     _save(item, provider, key, asked, previous) {
         let record = {};
         if (provider) {
@@ -466,10 +466,9 @@ export class MetadataService {
                     record[k] = v;
             }
         }
-        if (!provider || !item.poster_path) {
+        if (!provider || !item.poster_path)
             record.tried = now();
-            record.sources = [...asked].sort();
-        }
+        record.sources = [...asked].sort();
         this._index[key] = record;
         this._unflushed++;
         if (this._unflushed >= INDEX_FLUSH_EVERY)
@@ -494,6 +493,18 @@ export class MetadataService {
         }
     }
 
+    // A cached answer stands once every source above it that can be asked has been.
+    // Usable or not: a key blanked in the preferences keeps what it fetched.
+    _cached(item, listed, record, online, posterFile, backdropFile) {
+        for (const entry of listed) {
+            if (this._applyCached(item, sourceId(entry), record, posterFile, backdropFile))
+                return true;
+            if (online && this._usable(entry) && !record?.sources?.includes(sourceId(entry)))
+                return false;
+        }
+        return false;
+    }
+
     // Sources are tried in order until one has the artwork; each fills in the facts it knows.
     async enrich(item) {
         const kind = item.kind;
@@ -505,12 +516,8 @@ export class MetadataService {
             return;
         const [key, posterFile, backdropFile] = this._paths(item);
         const record = this._index[key] ?? null;
-        // Usable or not: a key blanked in the preferences keeps what it fetched.
-        for (const entry of listed) {
-            if (this._applyCached(item, sourceId(entry), record, posterFile, backdropFile))
-                return;
-        }
-        if (!this.onlineFor(kind))
+        const online = this.onlineFor(kind);
+        if (this._cached(item, listed, record, online, posterFile, backdropFile) || !online)
             return;
         const entries = listed.filter(e => this._usable(e));
         if (!entries.length || this._missed(record, entries.map(sourceId)))
@@ -520,13 +527,15 @@ export class MetadataService {
         const asked = [];
         for (const entry of entries) {
             const name = sourceId(entry);
-            const lookup = LOOKUPS[`${kind}:${name}`];
-            if (!lookup)
-                continue;
+            // Nothing above last time's answer has artwork, so it is not fetched again.
+            if (name === record?.provider && this._applyCached(item, name, record, posterFile, backdropFile)) {
+                answered = name;
+                break;
+            }
             let art;
             try {
                 // eslint-disable-next-line no-await-in-loop -- a source is only asked if the one before had no artwork
-                art = await lookup(this, item, entry);
+                art = await LOOKUPS[`${kind}:${name}`](this, item, entry);
             } catch (e) {
                 print(`${name} lookup failed for '${item.title}': ${describe(e)}`);
                 continue;

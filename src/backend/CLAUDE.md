@@ -17,8 +17,11 @@ settings and credentials come from.
   on the one main loop, with artwork scaled on GdkPixbuf's worker threads.
 - **Sources are tried in order** until one comes back with the artwork; TMDB also
   yields a backdrop, tagline, runtime and rating. Each cache entry records the
-  source that wrote it, so a title one of a section's sources already answered is
-  not fetched again, and dropping that source refetches on the next scan.
+  source that wrote it and the sources asked for it (`sources`). A cached answer
+  stands while every source listed above it that can be asked has been, so a title
+  is not fetched again, but moving a source up or giving one its key asks it on the
+  next scan. A source above that has nothing, or cannot be asked this time, leaves
+  the cached answer in place without refetching it.
 - **Folders.** Every folder of a section is walked into one list (a name found in
   two folders gets a `~2` id). A section switched on and named in the run but with no folder
   is written out empty, so removing its last folder clears it. A folder out of
@@ -58,7 +61,7 @@ settings and credentials come from.
   checked against it on the same Steam and PCSX2 fixtures: the same items, field
   for field. Its id rules (`steam_<appid>`, `ps2_<path hash>`) are the cache's keys.
 - **A title no source had artwork for is not asked about again for a week.**
-  `_save` stamps the record with `tried` and the sources that *answered* (a
+  `_save` stamps the record with `tried`, beside the sources that *answered* (a
   source that could not be asked — the network down, a key TMDB refused — is
   left out, and asked next time); `_missed` skips the online loop while the
   same sources are listed and the week has not passed. A source added since
@@ -71,7 +74,7 @@ settings and credentials come from.
   of an hour to fail otherwise, at a timeout per request.
 - **The cached record is read for every listed source, usable or not.** A
   TMDB key blanked in the preferences must not throw away what TMDB fetched
-  while it was set; only the online loop is filtered by `_usable`.
+  while it was set; only a source that can be asked holds a cached answer back.
 - **An id is the cache's key, so how one is made does not change.** `slug`
   keeps letters and numbers of every script — JavaScript's `\w` and `\b` are
   ASCII-only, which is why it spells out `\p{L}\p{N}_` — and a scan reuses a
