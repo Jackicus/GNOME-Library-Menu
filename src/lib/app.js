@@ -197,8 +197,10 @@ export class LibraryApp {
         // A claimed workspace or a pick means something else in another place.
         for (const key of ['library-opens-in', 'detail-opens-in']) {
             this._settings.connectObject(`changed::${key}`, () => {
-                this._libraryWorkspace = this._detailWorkspace = null;
-                this._picked = this._origin = null;
+                this._libraryWorkspace = null;
+                this._detailWorkspace = null;
+                this._picked = null;
+                this._origin = null;
                 this._scheduleRebuild();
             }, this);
         }
@@ -239,15 +241,18 @@ export class LibraryApp {
             if (id)
                 GLib.source_remove(id);
         }
-        this._rebuildTimer = this._closeTimer = 0;
+        this._rebuildTimer = 0;
+        this._closeTimer = 0;
         this._scanCancel?.cancel();
         this._scanCancel = null;
         this._leaving.clear();
         this._teardown();
         settle('slide hook', () => removeSlideHook());
         settle('button', () => this._button.detach());
-        this._libraryWorkspace = this._detailWorkspace = null;
-        this._picked = this._origin = null;
+        this._libraryWorkspace = null;
+        this._detailWorkspace = null;
+        this._picked = null;
+        this._origin = null;
         settle('held workspaces', () => this._keepOnly(new Set()));
         this._sections = {};
         // Playback saves its position before the tracker stops.
@@ -268,8 +273,11 @@ export class LibraryApp {
         this._dialog?.destroy();
         const container = this._container;
         const stack = this._stack;
-        this._detail = this._dialog = null;
-        this._container = this._stack = this._overlay = null;
+        this._detail = null;
+        this._dialog = null;
+        this._container = null;
+        this._stack = null;
+        this._overlay = null;
         if (stack)
             global.focus_manager.remove_group(stack);
         container?.destroy();
@@ -529,7 +537,8 @@ export class LibraryApp {
             ? this._libraryWorkspace : this._origin;
 
         this._picked = null;
-        this._libraryWorkspace = this._detailWorkspace = null;
+        this._libraryWorkspace = null;
+        this._detailWorkspace = null;
         this._shown = null;
 
         if (given.has(active)) {
@@ -785,13 +794,15 @@ export class LibraryApp {
         setCornerRadius(this._settings.get_int('corner-radius'));
         setGridAlign(this._settings.get_string('grid-align'));
 
-        const bounds = this._builtBounds = this._bounds();
+        const bounds = this._bounds();
+        this._builtBounds = bounds;
 
         const sections = this._enabledSections();
         this._holdWorkspaces();
         if (!sections.length) {
             this._button.detach();
-            this._libraryWorkspace = this._detailWorkspace = null;
+            this._libraryWorkspace = null;
+            this._detailWorkspace = null;
             this._picked = null;
             this._holdWorkspaces();
             return;
@@ -1009,43 +1020,48 @@ export class LibraryApp {
         this._busy = false;
     }
 
-    async _goBack() {
-        if (!this._detailInPlace()) {
-            if (this._busy)
-                return;
-            const wm = global.workspace_manager;
-            const key = this._picked?.key ?? this._sectionKey;
-            const detailWorkspace = workspaceIsLive(this._detailWorkspace) ? this._detailWorkspace : null;
-            this._picked = null;
-            this._detailWorkspace = null;
-            this._sectionKey = key;
+    // Grid and pane in different places: Back changes place rather than flying the artwork.
+    _goBackAcross() {
+        if (this._busy)
+            return;
+        const wm = global.workspace_manager;
+        const key = this._picked?.key ?? this._sectionKey;
+        const detailWorkspace = workspaceIsLive(this._detailWorkspace) ? this._detailWorkspace : null;
+        this._picked = null;
+        this._detailWorkspace = null;
+        this._sectionKey = key;
 
-            let to = this._libraryOnSurface() ? this._libraryWorkspace : this._origin;
-            if (!workspaceIsLive(to) || to === detailWorkspace)
-                to = workspaceIsLive(this._origin) && this._origin !== detailWorkspace ? this._origin : null;
-            if (!to && detailWorkspace)
-                to = this._landing([detailWorkspace]);
-            to ??= wm.get_active_workspace();
+        let to = this._libraryOnSurface() ? this._libraryWorkspace : this._origin;
+        if (!workspaceIsLive(to) || to === detailWorkspace)
+            to = workspaceIsLive(this._origin) && this._origin !== detailWorkspace ? this._origin : null;
+        if (!to && detailWorkspace)
+            to = this._landing([detailWorkspace]);
+        to ??= wm.get_active_workspace();
 
-            if (!this._libraryOnSurface()) {
-                this._browser?.open(key);
-            } else if (this._libraryClaimsWorkspace() && !workspaceIsLive(this._libraryWorkspace)) {
-                to.activate(global.get_current_time());
-                this._openLibrary();
-                if (detailWorkspace)
-                    this._releaseWorkspaces(new Map([[detailWorkspace, DETAIL]]));
-                return;
-            } else {
-                this._libraryWorkspace = to;
-                this._showLibraryNow({reveal: to === wm.get_active_workspace()});
-            }
+        if (!this._libraryOnSurface()) {
+            this._browser?.open(key);
+        } else if (this._libraryClaimsWorkspace() && !workspaceIsLive(this._libraryWorkspace)) {
             to.activate(global.get_current_time());
-            this._syncVisibility(true);
+            this._openLibrary();
             if (detailWorkspace)
                 this._releaseWorkspaces(new Map([[detailWorkspace, DETAIL]]));
-            else
-                this._previews?.invalidate();
-            this._holdWorkspaces();
+            return;
+        } else {
+            this._libraryWorkspace = to;
+            this._showLibraryNow({reveal: to === wm.get_active_workspace()});
+        }
+        to.activate(global.get_current_time());
+        this._syncVisibility(true);
+        if (detailWorkspace)
+            this._releaseWorkspaces(new Map([[detailWorkspace, DETAIL]]));
+        else
+            this._previews?.invalidate();
+        this._holdWorkspaces();
+    }
+
+    async _goBack() {
+        if (!this._detailInPlace()) {
+            this._goBackAcross();
             return;
         }
         if (this._busy || this._mode !== 'detail')

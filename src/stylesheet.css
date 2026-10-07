@@ -1,26 +1,5 @@
-/* Library — St stylesheet.
- *
- * Paint only: layout lives in lib/. St CSS is a strict subset of web CSS
- * (no flexbox, grid, calc() or variables) but it does know the system accent
- * colour: -st-accent-color / -st-accent-fg-color, plus st-lighten(),
- * st-darken(), st-mix() and st-transparentize(), exactly as the shell's own
- * theme uses them. Every coloured surface below derives from those, so the
- * extension follows Settings → Appearance → Accent Color automatically.
- *
- * Surfaces echo the shell's dark theme (#222226 / #36363a panels, #fafafb
- * text) but stay translucent so the wallpaper reads through.
- *
- * Type is in em throughout: 1em is the stage's 11pt UI font, so every size
- * below follows Settings -> Accessibility -> Large Text, and the values land
- * on the shell's own steps (%title_1 and friends in _common.scss).
- *
- * Corner radii here are fallbacks only. They follow the "corner-radius"
- * setting, which St CSS cannot express, so lib/shape.js sets the real value
- * inline on every rounded surface as it is built. The numbers below match its
- * default; change shape.js, not these.
- */
-
-/* ---- Surface & header ------------------------------------------------- */
+/* Paint only: layout is in lib/. Radii are fallbacks matching the default
+ * corner-radius, which lib/shape.js sets inline on every rounded surface. */
 
 .ml-header {
     height: 52px;
@@ -53,8 +32,6 @@
 .ml-header-end {
     spacing: 8px;
 }
-
-/* ---- Tabs -------------------------------------------------------------- */
 
 /* The switch between the libraries in the header, and between a show's
  * seasons in the detail pane — one pill, one set of rules: the shape of the
@@ -102,9 +79,6 @@
     background-color: st-lighten(-st-accent-color, 5%);
 }
 
-/* ---- Library grid ------------------------------------------------------ */
-
-
 /* No box-shadow on artwork, here or on the hero: St shadows an image-backed
  * widget as a square box, ignoring its radius, which reads as a dark container
  * behind the poster (and merges into one band along a row of them). */
@@ -135,8 +109,6 @@
     color: st-transparentize(-st-accent-fg-color, 0.15);
     text-align: center;
 }
-
-/* ---- Detail pane ------------------------------------------------------- */
 
 .ml-pane {
     background-color: rgba(34, 34, 38, 0.72);
@@ -353,8 +325,6 @@
 .ml-row-icon {
     color: rgba(250, 250, 251, 0.3);
 }
-
-/* ---- Empty state ------------------------------------------------------- */
 
 .ml-empty {
     spacing: 10px;
