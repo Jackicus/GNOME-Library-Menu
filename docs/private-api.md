@@ -54,7 +54,9 @@ the chain-up; `_canRemoveApp()` returns false so the button is no unpin target.
 Apps" on failure, at enable and on each re-attach.
 
 In the plain dash it goes into `_dashContainer` and `_hookUpLabel` gives it
-the dash's label. Dash to Panel is reached only while the `dash-to-panel`
+the dash's label. The dash cancels a pending show-label timeout only when the
+item's hover goes, so the button's hover is cleared before it is destroyed.
+Dash to Panel is reached only while the `dash-to-panel`
 setting ("Work with Dash to Panel", off by default) is on. Off, none of what
 follows runs, nothing of Dash to Panel is read or watched, and the button
 stays in the overview's dash, which Dash to Panel hides. On,
