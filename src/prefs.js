@@ -10,7 +10,8 @@ import {SECTIONS as LIBRARY_SECTIONS, openCommandKey, readSections} from './lib/
 import {ACTIONS, NATIVE_KEYS, padLabel} from './lib/actions.js';
 
 // A credential's `fields` are tab-joined in one slot of the `credentials` setting;
-// a field's Import reads ~/Documents/keys/<service>/<field.file>.
+// a field's Import reads the file the user picks, offering <field.file> from the
+// key drop, ~/Documents/keys/<service>/.
 const SOURCES = {
     tvmaze: {
         title: 'TVmaze',
@@ -770,21 +771,15 @@ export default class LibraryPreferences extends ExtensionPreferences {
                 show_apply_button: true,
             });
             value.connect('apply', () => this._setField(settings, slot, i, value.get_text().trim(), fields.length));
-            const drop = this._keyDropFile(spec.service, field.file);
-            if (drop) {
-                const importButton = new Gtk.Button({
-                    label: 'Import',
-                    valign: Gtk.Align.CENTER,
-                    tooltip_text: `Read it from ${drop}`,
-                    css_classes: ['flat'],
-                });
-                importButton.connect('clicked', () => {
-                    const imported = this._readKeyDrop(drop);
-                    if (imported)
-                        this._setField(settings, slot, i, imported, fields.length);
-                });
-                value.add_suffix(importButton);
-            }
+            const importButton = new Gtk.Button({
+                label: 'Import',
+                valign: Gtk.Align.CENTER,
+                tooltip_text: 'Read it from a file',
+                css_classes: ['flat'],
+            });
+            importButton.connect('clicked', () => this._importKey(window, spec, field, imported =>
+                this._setField(settings, slot, i, imported, fields.length)));
+            value.add_suffix(importButton);
             source.add_row(value);
             return value;
         });
@@ -845,20 +840,33 @@ export default class LibraryPreferences extends ExtensionPreferences {
         settings.set_strv(key, [...list, entry]);
     }
 
-    // The value in the key drop, or '' if it cannot be read. Never logged.
-    _readKeyDrop(path) {
-        try {
-            return new TextDecoder().decode(GLib.file_get_contents(path)[1]).trim();
-        } catch (e) {
-            console.warn(`[Library Menu] Could not read ${path}: ${e.message}`);
-            return '';
-        }
-    }
-
-    _keyDropFile(service, field) {
+    // Only the file the user picks is read. The dialog opens on the key drop's
+    // file for this field, ~/Documents/keys/<service>/<field.file>, if there is one.
+    _importKey(window, spec, field, onRead) {
         const docs = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DOCUMENTS) ?? GLib.get_home_dir();
-        const path = GLib.build_filenamev([docs, 'keys', service, field]);
-        return GLib.file_test(path, GLib.FileTest.IS_REGULAR) ? path : null;
+        const drop = Gio.File.new_for_path(GLib.build_filenamev([docs, 'keys', spec.service, field.file]));
+        const dialog = new Gtk.FileDialog({title: `Import the ${spec.title} ${field.title}`, modal: true});
+        if (drop.query_exists(null))
+            dialog.initial_file = drop;
+        else
+            dialog.initial_folder = Gio.File.new_for_path(docs);
+        dialog.open(window, null, (source, result) => {
+            let file;
+            try {
+                file = source.open_finish(result);
+            } catch {
+                return;   // Cancelled.
+            }
+            file.load_contents_async(null, (_file, loaded) => {
+                try {
+                    const key = new TextDecoder().decode(file.load_contents_finish(loaded)[1]).trim();
+                    if (key)
+                        onRead(key);
+                } catch (e) {
+                    console.warn(`[Library Menu] Could not read ${file.get_parse_name()}: ${e.message}`);
+                }
+            });
+        });
     }
 
     // One folder that overrides auto-detection; empty is auto-detected.
