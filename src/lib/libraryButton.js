@@ -153,7 +153,8 @@ export class LibraryButton {
     }
 
     _attachToDash(dash) {
-        const container = this._button = this._newButton();
+        const container = this._newButton();
+        this._button = container;
         container.icon.setIconSize(dash.iconSize);
         dash._hookUpLabel?.(container);
         dash._dashContainer.add_child(container);
@@ -177,7 +178,8 @@ export class LibraryButton {
             orientation: panel.geom?.vertical
                 ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL,
         });
-        const container = this._button = this._newButton();
+        const container = this._newButton();
+        this._button = container;
         container.icon.setIconSize(showApps.icon.iconSize);
         const style = showApps.toggleButton.get_style();
         if (style)

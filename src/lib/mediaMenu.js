@@ -85,7 +85,8 @@ export class MediaMenu {
             else
                 delete layout._getAppDisplayBoxForState;
         }
-        this._foldedBox = this._stockBox = null;
+        this._foldedBox = null;
+        this._stockBox = null;
         this._controls.queue_relayout();
         this._showAppsButton?.disconnectObject(this);
         this._showAppsButton = null;
@@ -96,7 +97,9 @@ export class MediaMenu {
         this._adjustment = null;
         this._dropView();
         this._slot = null;
-        this._controls = this._appDisplay = this._appsBox = null;
+        this._controls = null;
+        this._appDisplay = null;
+        this._appsBox = null;
     }
 
     // While the view is up the grid's box grows over the workspaces row; the
@@ -122,7 +125,8 @@ export class MediaMenu {
             slot.set_size(width, height + extra);
             return slot;
         };
-        this._foldedBox = layout._getAppDisplayBoxForState = folded;
+        layout._getAppDisplayBoxForState = folded;
+        this._foldedBox = folded;
     }
 
     // The fold follows the overview's state adjustment; only a change of view

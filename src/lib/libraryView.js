@@ -121,7 +121,7 @@ export class LibraryView {
         let view = null;
         let actor;
         if (items.length) {
-            actor = view = createMediaView({
+            view = createMediaView({
                 section,
                 items,
                 width: this._width,
@@ -130,6 +130,7 @@ export class LibraryView {
                 rows: this._rows,
                 onActivate: this._onActivate,
             });
+            actor = view;
         } else {
             // A launchers' section needs no setting first, so it offers the scan itself.
             actor = createEmptyState({

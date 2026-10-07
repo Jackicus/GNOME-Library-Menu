@@ -371,7 +371,8 @@ export class DetailView {
 
         const entries = group.entries;
         const tracker = this._tracker.enabled && Tracker.tracks(this._section) ? this._tracker : null;
-        const watchRows = this._watchRows = new Map();
+        const watchRows = new Map();
+        this._watchRows = watchRows;
         let next = 0;
         let first = true;
         fillOnScroll(scroll, () => {

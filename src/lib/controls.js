@@ -155,7 +155,8 @@ export class Controls {
     async _startPads() {
         if (this._monitor || this._starting)
             return;
-        const starting = this._starting = {};
+        const starting = {};
+        this._starting = starting;
         let Manette;
         try {
             ({default: Manette} = await import('gi://Manette'));
