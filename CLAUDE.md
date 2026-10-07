@@ -72,8 +72,9 @@ lists the two artwork folders once per load rather than stat a poster each.
    An empty slot makes its source skip itself. The scanner reads them
    out of GSettings, falling back to `$LIBRARY_TMDB_KEY` for an
    empty slot 1 (never under `start --stand-in`, whose `EXT_STAND_IN_UNSET` drops it).
-   Each key row's Import button reads `~/Documents/keys/<SERVICE>/`, the
-   user's key drop shared with other projects, and its Check runs the scanner's
+   Each key row's Import button reads only the file the user picks in a file dialog,
+   which opens on the field's file in `~/Documents/keys/<SERVICE>/` (the user's key
+   drop shared with other projects) when there is one, and its Check runs the scanner's
    `--check`, so the key is read from the settings and never on a command line.
 3. `extension.js` builds a `LibraryApp` (`lib/app.js`) and enables it. The app
    reads `library.json` and builds whichever places the two "opens in" settings name.
