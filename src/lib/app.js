@@ -137,7 +137,7 @@ export class LibraryApp {
         this._builtBounds = null;
         this._rebuildTimer = 0;
         this._closeTimer = 0;
-        this._scanCancel = null;
+        this._scanProc = null;
         this._keptAlive = [];
         this._libraryWorkspace = null;
         this._detailWorkspace = null;
@@ -243,8 +243,8 @@ export class LibraryApp {
         }
         this._rebuildTimer = 0;
         this._closeTimer = 0;
-        this._scanCancel?.cancel();
-        this._scanCancel = null;
+        this._scanProc?.force_exit();
+        this._scanProc = null;
         this._leaving.clear();
         this._teardown();
         settle('slide hook', () => removeSlideHook());
@@ -604,24 +604,23 @@ export class LibraryApp {
 
     // In a process of its own, as the preferences' Rescan runs it (backend/CLAUDE.md).
     _scan(key) {
-        if (this._scanCancel)
+        if (this._scanProc)
             return;
-        const cancel = new Gio.Cancellable();
-        this._scanCancel = cancel;
         const scanner = GLib.build_filenamev([this._extension.path, 'backend', 'scanLibrary.js']);
         let proc;
         try {
             proc = Gio.Subprocess.new(['gjs', '-m', scanner, '--only', key],
                 Gio.SubprocessFlags.STDOUT_SILENCE | Gio.SubprocessFlags.STDERR_PIPE);
         } catch (e) {
-            this._scanCancel = null;
             this._scanFailed(e.message);
             return;
         }
-        proc.communicate_utf8_async(null, cancel, (_proc, result) => {
-            if (cancel.is_cancelled())
+        this._scanProc = proc;
+        // A scan that disable() stopped still lands here, and is not ours any more.
+        proc.communicate_utf8_async(null, null, (_proc, result) => {
+            if (this._scanProc !== proc)
                 return;
-            this._scanCancel = null;
+            this._scanProc = null;
             try {
                 const [, , stderr] = proc.communicate_utf8_finish(result);
                 if (!proc.get_successful())
