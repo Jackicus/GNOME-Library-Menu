@@ -162,6 +162,9 @@ export class LibraryButton {
         this._buttonHost = {
             release: () => {
                 dash.disconnectObject(this);
+                // The dash cancels a show-label timeout it armed for the item only
+                // when its hover goes; one left to fire after the destroy throws.
+                container.toggleButton.hover = false;
                 container.destroy();
             },
         };
