@@ -87,11 +87,11 @@ export class Tracker extends Signals.EventEmitter {
     }
 
     isWatched(path) {
-        return this.enabled && typeof path === 'string' && !!this._entries[path]?.watched;
+        return this.enabled && !!this._entries[path]?.watched;
     }
 
     setWatched(path, watched) {
-        if (!this.enabled || typeof path !== 'string')
+        if (!this.enabled)
             return;
         this._entries[path] = {watched, at: now()};
         this._commit(path);
@@ -99,7 +99,7 @@ export class Tracker extends Signals.EventEmitter {
     }
 
     covers(path) {
-        return this.enabled && typeof path === 'string' && !!this._folderOf(path);
+        return this.enabled && !!this._folderOf(path);
     }
 
     positionOf(path) {
@@ -108,7 +108,7 @@ export class Tracker extends Signals.EventEmitter {
 
     // Leaves `watched` alone: a second look stopped halfway does not unmark.
     setPosition(path, position) {
-        if (!this.enabled || typeof path !== 'string')
+        if (!this.enabled)
             return;
         const previous = this._entries[path];
         position = Math.max(0, Math.floor(position));
