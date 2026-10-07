@@ -48,13 +48,13 @@ development install back.
 | `description` | Several paragraphs | Says a Rescan is needed, where titles are looked up, that it plays nothing, where watched marks are written (the library folders included), and carries the TMDB notice |
 | `settings-schema` | `org.gnome.shell.extensions.library-menu` | `getSettings()` takes no argument in `lib/app.js` and `prefs.js` |
 | `shell-version` | `["50"]` | [compatibility.md](compatibility.md) |
-| `version-name` | `1.0` | |
+| `version-name` | `1.1` | |
 | `url` | `https://github.com/Jackicus/GNOME-Library-Menu` | |
 | `version`, `session-modes`, `donations`, `gettext-domain` | absent | EGO sets `version`; `user` mode only, so no `session-modes` |
 
 ## The review guidelines
 
-Checked against both pages as read on 2026-10-02, before the 1.0 release.
+Checked against both pages as read on 2026-10-02, before the 1.0 release, and again on 2026-10-07 (unchanged) before 1.1.
 
 - **Initialisation holds only static resources.** Module scope under `lib/` is
   imports, constants, classes and plain values: `let` module state in
@@ -127,6 +127,9 @@ Checked against both pages as read on 2026-10-02, before the 1.0 release.
    is CC BY-SA; the README and the description credit both, and the pane shows a
    synopsis without a source line, to keep it simple for now.
 2. **GNOME 48 and 49** are unclaimed until booted ([compatibility.md](compatibility.md)).
+3. **The button's icon: open.** `icons/library-symbolic.svg` appears to share its path data with
+   Material Design's "tv" icon (Apache-2.0), uncredited. Credit it, or use Adwaita's
+   `tv-symbolic`, before an upload.
 
 ## Uploading
 
