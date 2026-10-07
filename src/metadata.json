@@ -5,5 +5,5 @@
   "settings-schema": "org.gnome.shell.extensions.library-menu",
   "shell-version": [ "50" ],
   "url": "https://github.com/Jackicus/GNOME-Library-Menu",
-  "version-name": "1.0"
+  "version-name": "1.1"
 }
