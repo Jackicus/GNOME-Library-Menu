@@ -45,7 +45,7 @@ development install back.
 |---|---|---|
 | `uuid` | `library-menu@jackicus` | Fixed after the first upload |
 | `name` | `Library Menu` | |
-| `description` | Several paragraphs | Says a Rescan is needed, where titles are looked up, that it plays nothing, and carries the TMDB notice |
+| `description` | Several paragraphs | Says a Rescan is needed, where titles are looked up, that it plays nothing, where watched marks are written (the library folders included), and carries the TMDB notice |
 | `settings-schema` | `org.gnome.shell.extensions.library-menu` | `getSettings()` takes no argument in `lib/app.js` and `prefs.js` |
 | `shell-version` | `["50"]` | [compatibility.md](compatibility.md) |
 | `version-name` | `1.0` | |
