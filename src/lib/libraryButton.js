@@ -40,11 +40,8 @@ class LibraryButtonIcon extends Dash.ShowAppsIcon {
 });
 
 export class LibraryButton {
-    // The icon is read from the extension directory: lib/ runs from a staged copy.
-    constructor({path, settings, onActivate}) {
-        this._gicon = new Gio.FileIcon({
-            file: Gio.File.new_for_path(GLib.build_filenamev([path, LIBRARY.icon])),
-        });
+    constructor({settings, onActivate}) {
+        this._gicon = new Gio.ThemedIcon({name: LIBRARY.icon});
         this._settings = settings;
         this._onActivate = onActivate;
         this._button = null;

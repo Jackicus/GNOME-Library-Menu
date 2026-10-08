@@ -15,7 +15,7 @@ GObject class names and `ml-` style classes.
 ## Layout
 
 - `src/` ships as far as `./scripts/ext.conf`'s `EXT_SHIP` says: the entry points,
-  stylesheet and schema, `lib/` and `backend/`'s JS and `icons/`' SVG, never the
+  stylesheet and schema, `lib/` and `backend/`'s JS, never the
   `CLAUDE.md` notes under it (`src/backend/CLAUDE.md`, the scanner's).
 - `src/lib/library.js`: `SECTIONS` (TV Shows, Films and Games, in that order) is a
   section's whole identity, its key, `<prefix>-` settings, title and icon. Nothing
