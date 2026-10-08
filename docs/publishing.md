@@ -49,7 +49,7 @@ development install back.
 | `description` | Several paragraphs | Says a Rescan is needed, where titles are looked up, that it plays nothing, where watched marks are written (the library folders included), and carries the TMDB notice |
 | `settings-schema` | `org.gnome.shell.extensions.library-menu` | `getSettings()` takes no argument in `lib/app.js` and `prefs.js` |
 | `shell-version` | `["50"]` | [compatibility.md](compatibility.md) |
-| `version-name` | `1.1` | |
+| `version-name` | `1.1.1` | |
 | `url` | `https://github.com/Jackicus/GNOME-Library-Menu` | |
 | `version`, `session-modes`, `donations`, `gettext-domain` | absent | EGO sets `version`; `user` mode only, so no `session-modes` |
 
