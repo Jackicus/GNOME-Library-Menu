@@ -19,10 +19,11 @@ an `if`, and then the only sign is the symptom, with nothing logged.
 | `workspace._keepAliveId` (read and set) | app.js | A workspace the library or pane is on is folded away under it; a workspace the shell holds mid drag-and-drop can be claimed | No, and silent |
 | `Main.wm._workspaceTracker._queueCheckWorkspaces()` | app.js | A released workspace folds away on the shell's next check, not at once | Yes, `?.` |
 | `Dash.ShowAppsIcon`, its `_createIcon`, `_iconActor` | libraryButton.js | The subclass throws building; no button, a warning | Yes, try/catch |
+| `ShowAppsIcon._canRemoveApp()` (overridden) | libraryButton.js | The button becomes an unpin target again, silently | No |
 | `Main.overview.dash._dashContainer`, `dash._hookUpLabel` | libraryButton.js | No button in the dash; no hover label | Yes, `?.` |
 | `global.dashToPanel.panels[0]`, `panels-created`, `.showAppsIconWrapper.realShowAppsIcon`, `.panel`, `._updateGroupedElements` (wrapped), `.geom`, `.updateElementPositions` | libraryButton.js | The button goes in the dash instead | Yes, each checked first; read only with `dash-to-panel` on |
 | `panel._elementGroups`, a group's `.elements` and `.expandableIndex`, an element's `.actor` and `.position` | libraryButton.js | `_elementGroups` gone: the button is in the panel with no place in its layout. Another shape: the wrap throws inside `_attach()`'s try/catch, so no button and a warning | Partly |
-| `Main.overview._overview.controls`, `.appDisplay`, `._box` | mediaMenu.js | No `menu` library; one warning, if a section is enabled | Yes |
+| `Main.overview._overview.controls`, `.appDisplay`, `._box` | mediaMenu.js; `_overview.controls` also panel.js, overviewPreview.js | No `menu` library; one warning, if a section is enabled | Yes |
 | `Main.overview.dash.showAppsButton` (`.checked`) | mediaMenu.js | The menu can no longer tell the app grid is up (the kit's "Is the app grid up?" rule) | No |
 | `controls._searchController.searchActive` | mediaMenu.js | Workspaces do not come back for a search while the view is up | Yes, `?.` |
 | `controls._stateAdjustment` | mediaMenu.js | The workspace row is not folded in step with the overview | Yes, `?.` |
@@ -125,7 +126,7 @@ one point of failure with no fallback.
 ## The folder's panel (panel.js, detailDialog.js, libraryWindow.js)
 
 `MediaPanel` is a copy of `AppFolderDialog`'s shape, not a subclass: the
-folder's name entry and grid are built into its `_init`. To look like a folder
+folder's name entry and grid are built into `AppFolderDialog`'s own `_init`. To look like a folder
 under Blur my Shell, which drops the shade, blurs behind and adds a class to
 the folder's box, `folderLook()` asks a real folder's `_dialog` once per open
 and copies its `Shell.BlurEffect` and extra `_viewBox` classes. A folder

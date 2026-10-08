@@ -17,7 +17,7 @@ CLAUDE.md's list, and why, unless the task asks for exactly that:
   by default) on the user's real media, and the tracker then writes their real
   watched marks and positions. A game's **Play** launches the real game through Steam
   or PCSX2 (under `--stand-in` it runs `true`).
-- **Rescan**, or `make scan` (`/scan`, which runs only when the user types it), is an
+- **Rescan** (and an empty Games tab's **Find Games**), or `make scan` (`/scan`, which runs only when the user types it), is an
   online scan with the user's real keys, writing `~/.cache/library-menu@jackicus/` (unless
   under `--stand-in`).
 - **A watched disc**, or Mark watched from a key or the pad, outside `--stand-in`, writes
@@ -32,16 +32,12 @@ CLAUDE.md's list, and why, unless the task asks for exactly that:
   cache (`XDG_CACHE_HOME`), with fresh settings and watched marks of its own. Use it
   for anything that shows library content, and always for `docs/screenshots/`. A
   plain `start` (or `--clean`) has settings of its own too, but the user's real cache
-  and watched marks. A shell already running is reused as it is, so `stop` first;
-  `status` says which it is (`data:` stand-in or your own).
+  and watched marks. `status` says which a running one is (`data:` stand-in or your own).
 - **The idle stop** is `NESTED_IDLE=<seconds>` at `start` (default 600, `0` never).
-  The nested Wayland display is `library-dev`; the prefs process to kill before
-  reopening is the one whose environment names it.
-- **`overview on` is a flag, not only a command**: it marks the overview as wanted in
-  the run directory and sets `OverviewActive` only if it is not already set, so
+  The nested Wayland display is `library-menu-dev`.
+- **`overview on` sets `OverviewActive` only if it is not already set**, so
   `do "overview on" "shot $S/x.png"` photographs an overview the extension opened (the
-  button pressed from the desktop) where a bare `shot` would dismiss it. `run python3
-  scripts/nested_driver.py …` carries the same environment as `do`.
+  button pressed from the desktop).
 - **Remote keys**: `key XF86OK`, `XF86Back`, `XF86HomePage`, `XF86ChannelUp` and the
   rest a remote sends work as `key` steps, against the `keys-*` defaults.
 - **A game controller is `scripts/vpad.py`**, a virtual Xbox 360 pad on uinput driven
@@ -50,21 +46,19 @@ CLAUDE.md's list, and why, unless the task asks for exactly that:
   (`"$PWD/scripts/vpad.py" FIFO &` from the repository): that is the name
   `nested.sh stop` sweeps it by (`NESTED_STRAYS` in `./scripts/ext.conf`). Controller input is acted
   on only while a library is up and no window has the focus, so close the prefs first.
-- **Places are settings**: `library-opens-in` and `detail-opens-in`, changed with
-  `./scripts/nested.sh run timeout 5 gsettings --schemadir src/schemas set
-  org.gnome.shell.extensions.library-menu …` (the nested session's own settings) to
-  watch a live switch.
+- **Places are settings**: `library-opens-in` and `detail-opens-in`; a change switches
+  live.
 - **The "Allow inhibiting shortcuts" prompt** (capturing `library-shortcut` in the
-  prefs) writes the real permission store. If a test answers it, delete the entry
+  prefs): if a test answers it, delete the entry
   afterwards (`PermissionStore.DeletePermission gnome shortcuts-inhibitor
   org.gnome.Shell.Extensions.desktop`) so the real session still asks.
 
 ## Reading the screen (1600×900)
 
 Measure from a fresh screenshot if the columns, the sections, the accent or the
-geometry changed. The nested shell enables Library alone, so the button is in
-the overview's dash at about (960, 838); the rest are the defaults' positions with
-**Dash to Panel on** (below, "Its own traps"). There is one button, beside Show Apps,
+geometry changed. The nested shell enables Library alone (and `--stand-in` always
+does), so the button is in the overview's dash at about (960, 838); the rest are the
+defaults' positions with **Dash to Panel on** (below, "Its own traps"). There is one button, beside Show Apps,
 tooltip "Library", and it is the only way in.
 
 - **The button** with Dash to Panel: Show Apps ≈ (30, 875), the library button
@@ -82,18 +76,16 @@ tooltip "Library", and it is the only way in.
 - **`modal`**: a panel out of the button, about `210,78` to `1390,800`, tabs at y ≈ 104.
 - **A pop-up detail** (`detail-opens-in` `menu` or `modal`): the shade's edge is 48 px in
   from the work area, so `click 20 450` closes it, as `key Escape` does.
-- **An empty section** shows a centred placeholder with Open Settings: normal until it
-  has a folder and a scan.
+- **An empty section** shows a centred placeholder with Open Settings (Find Games for
+  Games): normal until it has a folder and a scan.
 
 A workspace slide is over in 250 ms and a `shot` takes longer to fire, so a frame
-caught mid-slide is luck; `wait 1` after anything that changes workspace, `wait 0.6`
-after opening or closing an item.
+caught mid-slide is luck: `wait 1` after anything that changes workspace.
 
 ## Its own traps
 
-- **A keyboard walk is one unbroken run of `key` steps.** A `say` or `shot` between
-  presses takes the keyboard away, and the focus watcher hands it back to the surface,
-  not the tile or row that had it.
+- **No `say` or `shot` inside a keyboard walk**: either takes the keyboard away, and the
+  focus watcher hands it back to the surface, not the tile or row that had it.
 - **With the library on the surface, a window on its workspace gets no keys** (the
   prefs included). Test typing into a window with `library-opens-in` `menu` or `modal`.
 - **The look beside Dash to Panel, Blur my Shell and app folders** (`panel.js`
@@ -105,11 +97,7 @@ after opening or closing an item.
 
 ## Screenshots for the README
 
-`docs/screenshots/` are taken under `start --stand-in`, never of the user's
-library. Full-screen shots go in as JPEG; windows (`window FILE`, the preferences) as
-PNG.
-
-Full-screen shots lose the top 32 px, the top bar with the screencast indicator and the
-clock: `jpegtran -crop 1600x868+0+32 -copy none -perfect` on the JPEG, lossless because
-32 is a whole number of JPEG blocks. They are 1600×868. PNGs go through
-`oxipng --opt 4 --strip safe`, which drops the `tEXt` chunks the screenshot carries.
+The `gnome-ext:screenshots` skill, plus: full-screen shots lose the top 32 px, the top
+bar with the screencast indicator and the clock: `jpegtran -crop 1600x868+0+32 -copy
+none -perfect` on the JPEG, lossless because 32 is a whole number of JPEG blocks. They
+are 1600×868.

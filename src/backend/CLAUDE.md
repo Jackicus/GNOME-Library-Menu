@@ -35,8 +35,8 @@ settings and credentials come from.
 - **Games are the launchers' bookkeeping, not a folder walk.** `gamesScanner.js`
   reads `steamapps/libraryfolders.vdf` for every library root, one
   `appmanifest_<appid>.acf` per title, `userdata/*/config/localconfig.vdf` for
-  playtime, and `PCSX2.ini` for the disc folders and the covers folder. Both roots
-  are auto-detected from `~`; a machine without Steam, or with PCSX2 never launched,
+  playtime, and `PCSX2.ini` for the disc folders and the covers folder. Each root is
+  `games-steam-path` or `games-pcsx2-path`, auto-detected from `~` when empty (the default); a machine without Steam, or with PCSX2 never launched,
   yields an empty list. Proton, the runtimes and the redistributables are skipped.
   Every scan reads them all again: a manifest is one small file. A game carries its
   own `launch` argv; a disc with no PCSX2 found has none, and no Play button.
@@ -48,7 +48,7 @@ settings and credentials come from.
 - **A credential is one slotted value.** `credential()` returns a slot's fields
   (`tmdb@1` has one, `igdb@1` two: Twitch's client id and secret, tab-separated);
   TMDB and IGDB are the sources that need one. Where they come
-  from is the root `CLAUDE.md`'s. Never print one.
+  from is the root `CLAUDE.md`'s.
 
 ## Gotchas
 
@@ -102,6 +102,6 @@ settings and credentials come from.
   waits for the first; a scan with no session bus at all goes ahead
   unlocked.
 - **A name that is not UTF-8 is skipped, not fatal.** GJS cannot turn one
-  into a string, so it cannot be opened either; `list` drops just that entry
+  into a string, so it cannot be opened either; `mediaScanner.js` `list` drops just that entry
   and says so. Letting the error through would lose the whole folder — at a
   section's root, the whole section and its artwork.

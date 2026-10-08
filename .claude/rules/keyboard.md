@@ -47,7 +47,7 @@ paths:
   outside a library. The arrows, Enter and Escape are never offered for binding.
 - Controllers are read with libmanette, loaded on demand (it runs without it), and
   acted on only while `_controlsActive()`, except Home, which opens the library when
-  no window has the focus.
+  no window has the focus and nothing is modal (`_controlsOpen()`).
 
 ## The shortcut
 

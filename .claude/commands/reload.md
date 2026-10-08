@@ -28,12 +28,5 @@ How to see it: the mirror window on the desktop shows the nested shell live
 (`./scripts/nested.sh mirror on` if `status` says it is closed); the library
 opens from its button beside Show Apps, so `/preview` (or the `drive-extension`
 skill) opens it and screenshots it. Leave the nested shell running for that, and
-stop it (`./scripts/nested.sh stop`) when the work is done. Never press Play,
-Continue, an episode or film row, a watched disc or Rescan there: they reach the
-user's real player, media, watched marks and keys.
-
-A reload re-imports `lib/` only. An edit to `scripts/dev-extension.js`,
-`metadata.json` or the schema's keys needs `./scripts/nested.sh stop` then
-`start` (`glib-compile-schemas src/schemas` first, for the schema), not a
-reload, and no logout: only the real session needs one, and that is the user's
-to do.
+stop it (`./scripts/nested.sh stop`) when the work is done. Never press what the
+`drive-extension` skill's "Never press" lists.

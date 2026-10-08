@@ -4,6 +4,7 @@ paths:
   - "src/lib/playback.js"
   - "src/lib/detailView.js"
   - "src/lib/widgets.js"
+  - "src/lib/library.js"
 ---
 
 # Watched marks, playback and Continue
@@ -17,7 +18,7 @@ paths:
 - `local` uses the first alone. `source` also folds each folder's file in (later `at`
   wins; an unmark is kept as `watched: false` so it beats an older mark) and writes each
   folder its share back: on enable, on a folder change, when a rescan lands and on
-  every tick. `none` touches neither. `source` to `local` deletes the folder files;
+  every mark. `none` writes neither. `source` to `local` deletes the folder files;
   going back rewrites them.
 - The local file is never trimmed. A folder file is written only after it has been
   read, so another machine's marks are never overwritten unseen. The scanner skips
@@ -33,18 +34,19 @@ paths:
   marked; short of it, where it stopped is kept in the same entry as `position`, so it
   travels in the folder file too.
 - A Play from the library seeks there less `resume-rewind` once the player has the file
-  (`resumeNext`, `SetPosition` over MPRIS), which is why the default VLC command turns
+  (`resumeNext`: MPRIS `SetPosition`, or `Seek` when the player gives no track id), which is why the default VLC command turns
   VLC's own `--qt-continue` off.
 - MPRIS never announces the position and a closed player cannot be asked, so the
   watcher keeps the last reading and its monotonic time and reckons forward while
   playing: the 30 s poll only corrects drift and catches the threshold; a pause, seek,
-  file change, the player going, or a disable each settle the position. Nothing is
-  written while a file plays.
+  file change, the player going, or a disable each settle the position. No position is
+  written while a file plays; the mark is written as the threshold is crossed.
 - Player controls are a separate extension (Media Controls), not this one.
 
 ## Continue (`detailView.js` `_syncPlay`, `Tracker.continueFrom`)
 
 The pane's primary button is the file touched last if it was left partway or unticked,
 else the first unwatched episode after it in the numbered seasons (Extras are not part
-of the run). With nothing touched, or everything after it watched, it is the scan's own
-`playLabel` ("Play S01E01"). It follows `changed`, which a kept position emits too.
+of the run). With nothing touched, or everything after it watched, it is the item's
+`playLabel` ("Play S01E01", from `library.js` `normalizeShow`). It follows `changed`,
+which a kept position emits too.

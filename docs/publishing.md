@@ -12,12 +12,13 @@ Private API is [private-api.md](private-api.md)'s; versions are
 
 1. checks the schema with `glib-compile-schemas --strict --dry-run` and stops
    on a warning;
-2. copies `src/` to a stage, drops every `CLAUDE.md` and
-   `schemas/gschemas.compiled`, and adds the root `LICENSE`;
+2. copies what ships (the entry points, stylesheet, schema XML and
+   `./scripts/ext.conf`'s `EXT_SHIP` patterns) to a stage, and adds the root
+   `LICENSE`;
 3. runs `gnome-extensions pack` there with `--extra-source` for `lib`,
    `backend`, `icons` and `LICENSE` (it adds `extension.js`, `metadata.json`,
    `prefs.js`, `stylesheet.css` and the schema XML itself);
-4. `check_pack` diffs the zip against the files that should ship (those, plus
+4. diffs the zip against the files that should ship (those, plus
    every `lib/*.js`, `backend/*.js` and `icons/*.svg`) and fails on anything
    missing or extra;
 5. writes `dist/library-menu@jackicus.shell-extension.zip`.
@@ -117,7 +118,7 @@ Checked against both pages as read on 2026-10-02, before the 1.0 release, and ag
 - **Schemas**: ID and path under `org.gnome.shell.extensions`, file named
   after the ID, XML only.
 - **Licence**: GPL-2.0-or-later, packed from the root `LICENSE`.
-- **No unnecessary files**: `check_pack` enforces it.
+- **No unnecessary files**: `make pack` diffs the zip against what ships and fails on a stray file.
 - **A linter**: `make lint`, gjs.guide's ESLint rules, run by `make check` and
   CI.
 
