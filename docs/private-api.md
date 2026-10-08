@@ -17,17 +17,17 @@ an `if`, and then the only sign is the symptom, with nothing logged.
 |---|---|---|---|
 | `Main.layoutManager._backgroundGroup` | app.js | Building the surface throws; no `desktop` or `workspaces` place | No |
 | `workspace._keepAliveId` (read and set) | app.js | A workspace the library or pane is on is folded away under it; a workspace the shell holds mid drag-and-drop can be claimed | No, and silent |
-| `Main.wm._workspaceTracker._queueCheckWorkspaces()` | app.js | A released workspace folds away on the shell's next check, not at once | Yes, `?.` |
+| `Main.wm._workspaceTracker._queueCheckWorkspaces()` | app.js | Opening the library on a workspace of its own, or closing it, throws | No |
 | `Dash.ShowAppsIcon`, its `_createIcon`, `_iconActor` | libraryButton.js | The subclass throws building; no button, a warning | Yes, try/catch |
 | `ShowAppsIcon._canRemoveApp()` (overridden) | libraryButton.js | The button becomes an unpin target again, silently | No |
-| `Main.overview.dash._dashContainer`, `dash._hookUpLabel` | libraryButton.js | No button in the dash; no hover label | Yes, `?.` |
-| `global.dashToPanel.panels[0]`, `panels-created`, `.showAppsIconWrapper.realShowAppsIcon`, `.panel`, `._updateGroupedElements` (wrapped), `.geom`, `.updateElementPositions` | libraryButton.js | The button goes in the dash instead | Yes, each checked first; read only with `dash-to-panel` on |
+| `Main.overview.dash._dashContainer`, `dash._hookUpLabel` | libraryButton.js | No button in the dash, a warning | Yes, try/catch |
+| `global.dashToPanel.panels[0]`, `panels-created`, `.showAppsIconWrapper.realShowAppsIcon`, `.panel`, `._updateGroupedElements` (wrapped), `.geom`, `.updateElementPositions` | libraryButton.js | The button goes in the dash instead; `updateElementPositions` gone: no button, a warning | Yes, each checked first or inside `_attach()`'s try/catch; read only with `dash-to-panel` on |
 | `panel._elementGroups`, a group's `.elements` and `.expandableIndex`, an element's `.actor` and `.position` | libraryButton.js | `_elementGroups` gone: the button is in the panel with no place in its layout. Another shape: the wrap throws inside `_attach()`'s try/catch, so no button and a warning | Partly |
 | `Main.overview._overview.controls`, `.appDisplay`, `._box` | mediaMenu.js; `_overview.controls` also panel.js, overviewPreview.js | No `menu` library; one warning, if a section is enabled | Yes |
 | `Main.overview.dash.showAppsButton` (`.checked`) | mediaMenu.js | The menu can no longer tell the app grid is up (the kit's "Is the app grid up?" rule) | No |
 | `controls._searchController.searchActive` | mediaMenu.js | Workspaces do not come back for a search while the view is up | Yes, `?.` |
 | `controls._stateAdjustment` | mediaMenu.js | The workspace row is not folded in step with the overview | Yes, `?.` |
-| `controls._workspacesDisplay` (`.opacity`, `.reactive`, `setPrimaryWorkspaceVisible`) | mediaMenu.js, overviewPreview.js | The row is never faded, so it stays over the posters and takes their clicks; no clones in the previews | Yes, `?.` |
+| `controls._workspacesDisplay` (`.opacity`, `.reactive`, `setPrimaryWorkspaceVisible`) | mediaMenu.js, overviewPreview.js | The row is never faded, so it stays over the posters and takes their clicks; no clones in the previews. `setPrimaryWorkspaceVisible` gone: folding the row throws | `_workspacesDisplay` `?.`; its method no |
 | `controls.layout_manager._getAppDisplayBoxForState` (wrapped) | mediaMenu.js | The slot never grows over the workspace row | Yes, `typeof` check |
 | Restated `DASH_MAX_HEIGHT_RATIO`, `VERTICAL_SPACING_RATIO`, and `_slotSize()` restating `ControlsManagerLayout.vfunc_allocate` | mediaMenu.js | A view built before the overview ever laid out is a little off until next built | No |
 | `Object.getPrototypeOf(AppDisplay.AppDisplay)` (`BaseAppView`) | mediaGrid.js | `mediaGrid.js` throws as it loads; the extension does not load | No |

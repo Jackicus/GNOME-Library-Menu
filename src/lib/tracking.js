@@ -37,6 +37,10 @@ function isNotFound(e) {
     return e instanceof GLib.Error && e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.NOT_FOUND);
 }
 
+export function isCancelled(e) {
+    return e instanceof GLib.Error && e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED);
+}
+
 export class Tracker extends Signals.EventEmitter {
     constructor(settings) {
         super();
@@ -255,7 +259,7 @@ export class Tracker extends Signals.EventEmitter {
                 const [, bytes] = file.load_contents_finish(result);
                 theirs = parse(bytes);
             } catch (e) {
-                if (e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+                if (isCancelled(e))
                     return;
                 // Missing is usual and written below; unreadable is left alone.
                 if (!isNotFound(e)) {
@@ -332,7 +336,7 @@ export class Tracker extends Signals.EventEmitter {
                 try {
                     file.delete_finish(result);
                 } catch (e) {
-                    if (!isNotFound(e) && !e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+                    if (!isNotFound(e) && !isCancelled(e))
                         console.warn(`[Library Menu] Could not remove ${file.get_path()}: ${e.message}`);
                 }
             });
