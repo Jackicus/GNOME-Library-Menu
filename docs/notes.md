@@ -45,8 +45,8 @@ Design reasoning that the code keeps to one line or none.
   wallpaper menu rather than the item.
 - The previews are attached on the overview's `showing`, not `shown`: the shell
   builds them before it animates in, so the clones are there from the first frame.
-- `icons/library-symbolic.svg` is the television the TV Shows group has in Slider
-  Overlay. Its `-symbolic` name makes St recolour it to the theme's foreground.
+- The button's icon is the theme's `tv-symbolic`, the TV Shows section's too, so it
+  follows the icon theme and St recolours it.
 
 ## Scanner
 

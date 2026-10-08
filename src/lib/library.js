@@ -35,10 +35,10 @@ export const SECTIONS = [
     },
 ];
 
-// The button's title and icon; -symbolic, so St recolours it.
+// The button's title and icon, the theme's own.
 export const LIBRARY = {
     title: 'Library',
-    icon: 'icons/library-symbolic.svg',
+    icon: 'tv-symbolic',
 };
 
 export function sectionByKey(key) {

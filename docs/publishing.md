@@ -16,10 +16,10 @@ Private API is [private-api.md](private-api.md)'s; versions are
    `./scripts/ext.conf`'s `EXT_SHIP` patterns) to a stage, and adds the root
    `LICENSE`;
 3. runs `gnome-extensions pack` there with `--extra-source` for `lib`,
-   `backend`, `icons` and `LICENSE` (it adds `extension.js`, `metadata.json`,
+   `backend` and `LICENSE` (it adds `extension.js`, `metadata.json`,
    `prefs.js`, `stylesheet.css` and the schema XML itself);
 4. diffs the zip against the files that should ship (those, plus
-   every `lib/*.js`, `backend/*.js` and `icons/*.svg`) and fails on anything
+   every `lib/*.js` and `backend/*.js`) and fails on anything
    missing or extra;
 5. writes `dist/library-menu@jackicus.shell-extension.zip`.
 
@@ -30,7 +30,7 @@ download's `schemas/`, which is why the pack checks `--strict` first.
 
 What ships: the entry points and stylesheet; `lib/`, the shell side, all of it
 in the compositor; `backend/`, the scanner, run as its own process (below);
-`icons/library-symbolic.svg`, the button's icon; `LICENSE`.
+`LICENSE`. The button's icon is the theme's `tv-symbolic`, so no icon file ships.
 
 ### Testing the zip
 
@@ -133,9 +133,9 @@ Checked against both pages as read on 2026-10-02, before the 1.0 release, again 
    is CC BY-SA; the README and the description credit both, and the pane shows a
    synopsis without a source line, to keep it simple for now.
 2. **GNOME 48 and 49** are unclaimed until booted ([compatibility.md](compatibility.md)).
-3. **The button's icon: open.** `icons/library-symbolic.svg` appears to share its path data with
-   Material Design's "tv" icon (Apache-2.0), uncredited. Credit it, or use Adwaita's
-   `tv-symbolic`, before an upload.
+3. **The button's icon: settled.** It is the theme's own `tv-symbolic`; the earlier
+   `icons/library-symbolic.svg`, whose path data matched Material Design's "tv"
+   (Apache-2.0), is gone.
 
 ## Uploading
 

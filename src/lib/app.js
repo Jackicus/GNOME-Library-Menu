@@ -127,7 +127,6 @@ export class LibraryApp {
         this._monitor = null;
         this._previews = null;
         this._button = new LibraryButton({
-            path: extension.path,
             settings: this._settings,
             onActivate: () => this._toggleLibrary(),
         });
