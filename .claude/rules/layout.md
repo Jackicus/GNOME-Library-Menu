@@ -31,7 +31,9 @@ paths:
   shell does. Wrong, and the first tab's grid is built against a taller box than every
   later one. The box each view was built for is kept, and every view is rebuilt when it
   moves.
-- Only the tabs and the detail rows track hover; tiles hover by crossing events.
+- What tracks hover is what paints its own `:hover`: the section and season tabs, the
+  detail rows and their watched disc, and the icon and action buttons (`widgets.js`,
+  `detailView.js`). Tiles do not.
 - **A measurement of something just built**: the detail pop-up's height is asked of the
   side column after `anim.js` `ensureStyleDeep()`; without it `get_preferred_height`
   answers as if there were no spacing or margins, the panel comes out shorter than the

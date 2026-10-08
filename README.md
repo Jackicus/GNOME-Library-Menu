@@ -111,8 +111,9 @@ whose **Fetch artwork and descriptions online** switch is on (on by default).
 - **Keys are yours.** TVmaze and Wikipedia need none. TMDB is skipped until you give it
   a free key of your own from your [TMDB account](https://www.themoviedb.org/settings/api).
   It is stored in your GNOME settings (dconf) in **plain text**, like any other
-  setting, and goes only to TMDB. If a file `keys/TMDB/API KEY.txt` exists in your
-  Documents folder, the key row offers **Import**, which reads it when pressed.
+  setting, and goes only to TMDB. The key row's **Import** reads a key from a file you
+  pick; the file dialog opens on `keys/TMDB/API KEY.txt` in your Documents folder if
+  there is one.
 - **What is stored:** the library index, artwork and fetched descriptions in
   `~/.cache/library-menu@jackicus/`; watched marks and where playback stopped in
   `~/.local/share/library-menu@jackicus/watched.json`. With **Keep marks in** set to
@@ -203,7 +204,7 @@ journalctl -f -o cat SYSLOG_IDENTIFIER=org.gnome.Shell.Extensions
 ```
 
 From a clone, `make status` says whether it is installed and running, and `make logs`
-follows the first of those.
+follows both.
 
 - **A tab says "Nothing in Films yet".** The section has no folder, or has not been
   scanned: its Open Settings button opens the preferences, where you add a folder on its
@@ -214,7 +215,7 @@ follows the first of those.
 - **A PS2 game has no Play button.** PCSX2 itself was not found (its binary, an
   AppImage in `~/Applications`, or the Flatpak).
 - **Rescan says "Failed — see logs".** The reason is in the preferences' journal above,
-  after `Scan failed`.
+  after `Scanner failed`.
 - **No posters.** Check the section's online switch and its sources. TMDB is skipped
   without a key, and a key TMDB rejects is skipped for the rest of the scan. A title no
   source had artwork for is not looked up again for a week, unless you add a source.
