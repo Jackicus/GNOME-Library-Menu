@@ -33,8 +33,7 @@ CLAUDE.md's list, and why, unless the task asks for exactly that:
   for anything that shows library content, and always for `docs/screenshots/`. A
   plain `start` (or `--clean`) has settings of its own too, but the user's real cache
   and watched marks. `status` says which a running one is (`data:` stand-in or your own).
-- **The idle stop** is `NESTED_IDLE=<seconds>` at `start` (default 600, `0` never).
-  The nested Wayland display is `library-menu-dev`.
+- **The nested Wayland display** is `library-menu-dev`.
 - **`overview on` sets `OverviewActive` only if it is not already set**, so
   `do "overview on" "shot $S/x.png"` photographs an overview the extension opened (the
   button pressed from the desktop).
