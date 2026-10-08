@@ -55,7 +55,7 @@ development install back.
 
 ## The review guidelines
 
-Checked against both pages as read on 2026-10-02, before the 1.0 release, and again on 2026-10-07 (unchanged) before 1.1.
+Checked against both pages as read on 2026-10-02, before the 1.0 release, again on 2026-10-07 (unchanged) before 1.1, and on 2026-10-08 (unchanged).
 
 - **Initialisation holds only static resources.** Module scope under `lib/` is
   imports, constants, classes and plain values: `let` module state in
@@ -113,8 +113,13 @@ Checked against both pages as read on 2026-10-02, before the 1.0 release, and ag
   folders and Rescan.
 - **Knowing the code**: optional chaining is on genuinely optional paths (a
   browser not built yet, Dash to Panel absent, controller monitoring not
-  started), and a `catch` either reports, changes the UI, or says in a
-  comment why the failure is expected.
+  started), never on a method GNOME Shell 50 has, private ones included: those
+  are called directly, inside a try/catch where a throw must not cost the rest
+  ([private-api.md](private-api.md)). Every `try` (56 on 2026-10-08, 30 of
+  them in the scanner's own process) guards I/O, a subprocess, an async
+  finish, parsing outside data, or a private or Dash to Panel reach, and its
+  `catch` either reports, changes the UI, or says in a comment why the
+  failure is expected.
 - **Schemas**: ID and path under `org.gnome.shell.extensions`, file named
   after the ID, XML only.
 - **Licence**: GPL-2.0-or-later, packed from the root `LICENSE`.

@@ -3,6 +3,8 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
+import {isCancelled} from './tracking.js';
+
 const MPRIS_NAMESPACE = 'org.mpris.MediaPlayer2';
 const MPRIS_PATH = '/org/mpris/MediaPlayer2';
 const PLAYER = 'org.mpris.MediaPlayer2.Player';
@@ -15,10 +17,6 @@ const RESUME_WAIT = 60;
 const MIN_POSITION = 30;
 
 const clock = () => GLib.get_monotonic_time() / 1e6;
-
-function isCancelled(e) {
-    return e instanceof GLib.Error && e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED);
-}
 
 // A string operation, so safe on a share that is asleep.
 function pathOf(url) {

@@ -128,7 +128,7 @@ export class LibraryButton {
         try {
             if (panel?.showAppsIconWrapper && panel.panel && panel._updateGroupedElements)
                 this._attachToPanel(panel);
-            else if (Main.overview.dash?._dashContainer)
+            else
                 this._attachToDash(Main.overview.dash);
         } catch (e) {
             console.warn(`[Library Menu] No button beside Show Apps: ${e}`);
@@ -156,7 +156,7 @@ export class LibraryButton {
         const container = this._newButton();
         this._button = container;
         container.icon.setIconSize(dash.iconSize);
-        dash._hookUpLabel?.(container);
+        dash._hookUpLabel(container);
         dash._dashContainer.add_child(container);
         dash.connectObject('icon-size-changed',
             () => container.icon.setIconSize(dash.iconSize), this);
@@ -256,6 +256,6 @@ export class LibraryButton {
 
         panel.panel.add_child(box);
         panel._updateGroupedElements = wrapped;
-        panel.updateElementPositions?.();
+        panel.updateElementPositions();
     }
 }

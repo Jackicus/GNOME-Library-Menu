@@ -409,7 +409,7 @@ export class LibraryApp {
             this._keptAlive.push(ws);
         }
         if (released)
-            Main.wm._workspaceTracker?._queueCheckWorkspaces?.();
+            Main.wm._workspaceTracker._queueCheckWorkspaces();
     }
 
     // Dynamic workspaces always end in an empty one; holding it makes the shell add the next.
@@ -438,7 +438,7 @@ export class LibraryApp {
             return null;
         }
         this._keepOnly(new Set([...this._keptAlive, workspace]));
-        Main.wm._workspaceTracker?._queueCheckWorkspaces?.();
+        Main.wm._workspaceTracker._queueCheckWorkspaces();
         return workspace;
     }
 
