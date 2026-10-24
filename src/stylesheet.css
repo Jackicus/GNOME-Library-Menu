@@ -6,6 +6,36 @@
     margin-bottom: 24px;
 }
 
+/* The dash on the wallpaper (lib/desktopDash.js): a button per section, on the
+ * shell's dark neutral as the tabs' pill is, lit with the accent on hover. */
+.ml-dash {
+    spacing: 16px;
+}
+
+.ml-dash-button {
+    border-radius: 18px;
+    padding: 20px 0px;
+    background-color: rgba(34, 34, 38, 0.7);
+    border: 1px solid rgba(250, 250, 251, 0.08);
+    color: rgba(250, 250, 251, 0.85);
+    font-weight: bold;
+    transition-duration: 120ms;
+}
+
+.ml-dash-button:hover {
+    background-color: st-mix(-st-accent-color, #222226, 40%);
+    color: #fafafb;
+}
+
+.ml-dash-button:active {
+    background-color: -st-accent-color;
+    color: -st-accent-fg-color;
+}
+
+.ml-dash-button-content {
+    spacing: 10px;
+}
+
 /* One section alone: its name where the tabs would be. */
 .ml-header-title {
     font-size: 1.77em;

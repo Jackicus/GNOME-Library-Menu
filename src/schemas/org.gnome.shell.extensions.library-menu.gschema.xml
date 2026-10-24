@@ -97,6 +97,13 @@
             <description>Slot id ("tmdb@1", "tmdb@2", "igdb@1") to credential; IGDB's client id and secret are tab-separated in one slot. An empty or missing credential makes the sources that name it skip themselves.</description>
         </key>
 
+        <!-- The dash: lib/desktopDash.js. -->
+        <key name="desktop-dash" type="b">
+            <default>false</default>
+            <summary>Buttons on the desktop</summary>
+            <description>Draws a row of buttons on the wallpaper of the primary monitor, one per section shown, each opening the library on that section. Windows cover it, as they cover the wallpaper.</description>
+        </key>
+
         <!-- The library's keyboard shortcut, grabbed by the shell the way its
              own are (Main.wm.addKeybinding), so the same accelerator strings
              GNOME's keybinding settings hold. Empty by default: nothing of the

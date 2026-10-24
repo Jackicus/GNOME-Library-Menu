@@ -14,6 +14,7 @@ an `if`, and then the only sign is the symptom, with nothing logged.
 
 | Expression | File | If it changes | Guarded |
 |---|---|---|---|
+| `Main.layoutManager._backgroundGroup` | desktopDash.js | Building the dash throws; with `desktop-dash` on, the library does not build | No |
 | `Dash.ShowAppsIcon`, its `_createIcon`, `_iconActor` | libraryButton.js | The subclass throws building; no button, a warning | Yes, try/catch |
 | `ShowAppsIcon._canRemoveApp()` (overridden) | libraryButton.js | The button becomes an unpin target again, silently | No |
 | `Main.overview.dash._dashContainer`, `dash._hookUpLabel` | libraryButton.js | No button in the dash, a warning | Yes, try/catch |
@@ -122,6 +123,15 @@ the folder's box, `folderLook()` asks a real folder's `_dialog` once per open
 and copies its `Shell.BlurEffect` and extra `_viewBox` classes. A folder
 builds its dialog the first time it opens, so with none opened yet there is
 nothing to ask, and the stock shade stands, without a warning.
+
+## The dash on the wallpaper (desktopDash.js)
+
+The desktop is `Main.layoutManager._backgroundGroup`, the `Meta.BackgroundGroup`
+at the bottom of `global.window_group` that holds a background actor per
+monitor. There is no public place to draw between the wallpaper and the
+windows, so the dash is a child of that group, appended above the backgrounds.
+The overview and the workspace slide build wallpapers of their own and never
+show it, which is accepted: the dash is not cloned into them.
 
 ## Chain-safe wraps
 
