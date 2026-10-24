@@ -6,10 +6,7 @@
     margin-bottom: 24px;
 }
 
-.ml-header-titles {
-    spacing: 2px;
-}
-
+/* One section alone: its name where the tabs would be. */
 .ml-header-title {
     font-size: 1.77em;
     font-weight: 800;
@@ -17,29 +14,12 @@
     text-shadow: 0px 1px 4px rgba(0, 0, 0, 0.6);
 }
 
-.ml-header-subtitle {
-    font-size: 0.886em;
-    color: rgba(250, 250, 251, 0.7);
-    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.6);
-}
-
-/* The header is a bin (widgets.js createHeader): what is at its start and at
- * its end are rows of their own, either side of the tabs. */
-.ml-header-start {
-    spacing: 16px;
-}
-
-.ml-header-end {
-    spacing: 8px;
-}
-
 /* The switch between the libraries in the header, and between a show's
- * seasons in the detail pane — one pill, one set of rules: the shape of the
+ * seasons in the detail pane: one pill, one set of rules, the shape of the
  * shell's own screenshot/screencast switch (.screenshot-ui-shot-cast-container
  * and -button, _screenshot.scss), with words in it, the lit tab in the accent
- * and the pill on the shell's dark neutral so it reads over any wallpaper.
- * The season tabs are the theme's `.button` underneath, which these override
- * where they say so. */
+ * and the pill on the shell's dark neutral. The season tabs are the theme's
+ * `.button` underneath, which these override where they say so. */
 .ml-tabs {
     background-color: rgba(34, 34, 38, 0.7);
     border: 1px solid rgba(250, 250, 251, 0.08);
@@ -110,28 +90,12 @@
     text-align: center;
 }
 
-.ml-pane {
-    background-color: rgba(34, 34, 38, 0.72);
-    border: 1px solid rgba(250, 250, 251, 0.08);
-    border-radius: 30px;
-}
-
+/* The shell's folder panel (detailDialog.js) is the pane's chrome. The padding
+   is detailView.js's PADDING, which the panel is sized around: 32 less the
+   shape.js PANE_INSET the panel keeps outside it. */
 .ml-pane-content {
-    padding: 28px;
-    spacing: 32px;
-}
-
-/* In the popup (detailDialog.js) the shell's own folder panel is the surface,
-   so the pane draws no chrome of its own. Its padding is what detailView.js's
-   PADDING says, since the panel is sized around it — and it is short of the
-   pane's own by shape.js PANE_INSET, which the panel keeps outside it. */
-.ml-pane-bare {
-    background-color: transparent;
-    border-width: 0px;
-}
-
-.ml-pane-bare .ml-pane-content {
     padding: 26px;
+    spacing: 32px;
 }
 
 /* TMDB backdrop behind the pane content, dimmed so the type stays legible. */

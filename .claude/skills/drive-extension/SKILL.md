@@ -1,6 +1,6 @@
 ---
 name: drive-extension
-description: Where Library is on the nested shell's screen and how to drive it - coordinates of the button, tabs, grid and detail pane in each place, its remote keys and virtual pad, the stand-in library the README's screenshots are taken of, and what must never be pressed. Use with gnome-ext:nested-shell whenever a Library change must be seen (layout, the tabs, Library to Detail navigation, the overview and workspace-slide clones, the preferences).
+description: Where Library is on the nested shell's screen and how to drive it - coordinates of the button, tabs, grid and the pop-up pane, its remote keys and virtual pad, the stand-in library the README's screenshots are taken of, and what must never be pressed. Use with gnome-ext:nested-shell whenever a Library change must be seen (layout, the tabs, a pick's pop-up, the preferences).
 ---
 
 # Driving Library in a nested shell
@@ -45,8 +45,6 @@ CLAUDE.md's list, and why, unless the task asks for exactly that:
   (`"$PWD/scripts/vpad.py" FIFO &` from the repository): that is the name
   `nested.sh stop` sweeps it by (`NESTED_STRAYS` in `./scripts/ext.conf`). Controller input is acted
   on only while a library is up and no window has the focus, so close the prefs first.
-- **Places are settings**: `library-opens-in` and `detail-opens-in`; a change switches
-  live.
 - **The "Allow inhibiting shortcuts" prompt** (capturing `library-shortcut` in the
   prefs): if a test answers it, delete the entry
   afterwards (`PermissionStore.DeletePermission gnome shortcuts-inhibitor
@@ -56,38 +54,28 @@ CLAUDE.md's list, and why, unless the task asks for exactly that:
 
 Measure from a fresh screenshot if the columns, the sections, the accent or the
 geometry changed. The nested shell enables Library alone (and `--stand-in` always
-does), so the button is in the overview's dash at about (960, 838); the rest are the
-defaults' positions with **Dash to Panel on** (below, "Its own traps"). There is one button, beside Show Apps,
-tooltip "Library", and it is the only way in.
+does), so the button is in the overview's dash: `overview on` first, then click it at
+about (960, 838). With **Dash to Panel on** (below, "Its own traps") it is in the panel
+instead: Show Apps ≈ (30, 875), the library button ≈ (90, 875). There is one button,
+beside Show Apps, tooltip "Library", and with the shortcut and a pad's Home it is the
+only way in.
 
-- **The button** with Dash to Panel: Show Apps ≈ (30, 875), the library button
-  ≈ (90, 875).
-- **`desktop` / `workspaces`**: the library on the wallpaper. Header strip y ≈ 83: tabs
-  centred (TV Shows ≈ x 721, Films ≈ x 809, Games ≈ x 887), Settings ≈ (1508, 83), Close ≈ (1553, 83).
-  Grid rows from y ≈ 300, first poster ≈ (325, 300). Which mode: crop the workspace
-  indicator, `shot F 0 0 140 30`. A mode change leaves the active workspace where it
-  was, so after `workspaces` to `desktop` you may be on a workspace that is no longer
-  ours and see bare wallpaper: press the button again, or `stop` + `start`.
-- **Detail pane on the surface**: Back (48, 83); group tabs y ≈ 374 from x ≈ 372; rows
-  from y ≈ 430 in ≈ 54 px steps; Play (177, 562), never pressed.
-- **`menu`**: the overview opens onto the tabs (y ≈ 127, same x) over the grid, rows
-  centred at y ≈ 320 and 570.
-- **`modal`**: a panel out of the button, about `210,78` to `1390,800`, tabs at y ≈ 104.
-- **A pop-up detail** (`detail-opens-in` `menu` or `modal`): the shade's edge is 48 px in
-  from the work area, so `click 20 450` closes it, as `key Escape` does.
+- **The menu**: the overview opens onto the tabs (y ≈ 131: TV Shows ≈ x 721, Films
+  ≈ x 809, Games ≈ x 887) over the grid, rows centred at y ≈ 320 and 570, first poster
+  ≈ (407, 320).
+- **A pop-up detail**: Play ≈ (428, 735), never pressed; season tabs y ≈ 368 from
+  x ≈ 695; rows from y ≈ 430 in ≈ 54 px steps. The shade's edge is 48 px in from the
+  work area, so `click 20 450` closes it, as `key Escape` does.
 - **An empty section** shows a centred placeholder with Open Settings (Find Games for
   Games): normal until it has a folder and a scan.
 
-A workspace slide is over in 250 ms and a `shot` takes longer to fire, so a frame
-caught mid-slide is luck: `wait 1` after anything that changes workspace.
-
 ## Its own traps
 
-- **No `say` or `shot` inside a keyboard walk**: either takes the keyboard away, and the
-  focus watcher hands it back to the surface, not the tile or row that had it.
-- **With the library on the surface, a window on its workspace gets no keys** (the
-  prefs included). Test typing into a window with `library-opens-in` `menu` or `modal`.
-- **The look beside Dash to Panel, Blur my Shell and app folders** (`panel.js`
+- **No `say` or `shot` inside a keyboard walk**: either takes the keyboard away from
+  the tile or row that had it.
+- **The preferences open under the overview** when it is up: `overview off` before a
+  `window` shot of them.
+- **The look beside Dash to Panel, Blur my Shell and app folders** (`detailDialog.js`
   `folderLook`) needs them enabled in the nested session's own settings (`run timeout
   5 gsettings set org.gnome.shell enabled-extensions "['library-menu@jackicus',
   'dash-to-panel@jderose9.github.com', 'blur-my-shell@aunetx']"` and

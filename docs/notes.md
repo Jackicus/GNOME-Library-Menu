@@ -37,14 +37,8 @@ Design reasoning that the code keeps to one line or none.
   (`.screenshot-ui-shot-cast-container`), and the primary action is the theme's
   `button.default`, so hover, focus and pressed states are the theme's.
 
-## The surface, the button and the previews
+## The button
 
-- The surface takes the clicks the wallpaper would have had, its menu included. The
-  shell's `addBackgroundMenu` (`backgroundMenu.js`) was tried and dropped: its
-  long-press gesture wins over a tile's click, so holding a poster opened the
-  wallpaper menu rather than the item.
-- The previews are attached on the overview's `showing`, not `shown`: the shell
-  builds them before it animates in, so the clones are there from the first frame.
 - The button's icon is the theme's `tv-symbolic`, the TV Shows section's too, so it
   follows the icon theme and St recolours it.
 

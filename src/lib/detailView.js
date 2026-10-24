@@ -13,9 +13,9 @@ import {PANE_INSET, radiusStyle} from './shape.js';
 import {Tracker} from './tracking.js';
 import {adjustAnimationTime, ensureActorVisibleInScrollView} from 'resource:///org/gnome/shell/misc/animationUtils.js';
 
-// Logical pixels; the stylesheet's .ml-pane-content padding must agree. The
-// bare frame plus the panel's PANE_INSET comes to the same 32.
-const PADDING = {pane: 28, bare: 32 - PANE_INSET};
+// Logical pixels; the stylesheet's .ml-pane-content padding must agree. With the
+// panel's PANE_INSET around it, the pane sits 32 in from the panel's edge.
+const PADDING = 32 - PANE_INSET;
 
 const HERO_MAX_HEIGHT = 560;
 const HERO_RESERVED = 2 * 52 + 28;         // two action buttons and the gaps
@@ -28,12 +28,10 @@ const FIRST_ROWS = 24;
 const ROWS_PER_BATCH = 16;
 
 export class DetailView {
-    // `frame` 'bare' draws no surface of its own, inside the pop-up's panel.
-    constructor({onOpen, tracker, frame = 'pane'}) {
+    constructor({onOpen, tracker}) {
         this._onOpen = onOpen;
         this._tracker = tracker;
         this._section = null;
-        this._frame = frame;
         this._groups = [];
         this._groupIndex = 0;
         this._list = null;
@@ -88,15 +86,11 @@ export class DetailView {
     }
 
     get padding() {
-        return PADDING[this._frame] * this._scale;
+        return PADDING * this._scale;
     }
 
     get _scale() {
         return St.ThemeContext.get_for_stage(global.stage).scale_factor;
-    }
-
-    get _paneRadius() {
-        return this._frame === 'bare' ? 'paneInner' : 'pane';
     }
 
     _heroSize(aspect) {
@@ -136,8 +130,8 @@ export class DetailView {
         this._onOpen(path, this._section);
     }
 
-    // `mainColumn` 'held': the caller reveals the second column itself.
-    populate(item, section, {mainColumn = 'auto'} = {}) {
+    // The second column is built on an idle and shown by revealMain().
+    populate(item, section) {
         this.cancelDeferred();
         this.actor.destroy_all_children();
         this.item = item;
@@ -153,9 +147,9 @@ export class DetailView {
         this._main = null;
         this._tabButtons = [];
 
-        const radius = this._paneRadius;
+        // The panel is the chrome; the pane only clips its backdrop to the inner curve.
+        const radius = 'paneInner';
         const pane = new St.Widget({
-            style_class: this._frame === 'bare' ? 'ml-pane ml-pane-bare' : 'ml-pane',
             layout_manager: new Clutter.BinLayout(),
             x_expand: true,
             y_expand: true,
@@ -187,8 +181,6 @@ export class DetailView {
         this._deferredMain = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
             this._deferredMain = 0;
             this._addMain();
-            if (mainColumn === 'auto')
-                this.revealMain({settle: Duration.SLOW});
             return GLib.SOURCE_REMOVE;
         });
     }
@@ -207,10 +199,10 @@ export class DetailView {
         this._columns.add_child(this._main);
     }
 
-    revealMain({delay = 0, settle = Duration.NORMAL} = {}) {
+    revealMain({delay}) {
         this._addMain();
         this._main?.ease({opacity: 255, delay, duration: Duration.NORMAL, mode: Ease.OUT});
-        this._fillList(delay + settle);
+        this._fillList(delay + Duration.NORMAL);
     }
 
     // A timer, not an idle: an idle can fall mid-animation, and the first rows

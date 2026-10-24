@@ -59,16 +59,15 @@ Checked against both pages as read on 2026-10-02, before the 1.0 release, again 
 
 - **Initialisation holds only static resources.** Module scope under `lib/` is
   imports, constants, classes and plain values: `let` module state in
-  `log.js`, `shape.js`, `mediaGrid.js`, `controls.js` and `overviewPreview.js`,
-  a `Set` in `controls.js`, two `Cogl.Color`s in `panel.js` and
+  `log.js`, `shape.js`, `mediaGrid.js` and `controls.js`, a `Set` in
+  `controls.js`, two `Cogl.Color`s in `detailDialog.js` and
   `shape.js`'s `setCornerRadius(DEFAULT_RADIUS)`, which fills a table of
   strings. No GObject instance, signal or source exists before `enable()`.
 - **`disable()` undoes `enable()`.** `LibraryApp.disable()` removes the
-  keybinding, every `connectObject` owner, the file monitor and its timers,
-  calls `_teardown()` (previews, browser, pane, pop-up, focus group,
-  container), removes the slide hook, detaches the button, releases the
-  workspaces it held and disables the playback watcher, tracker and controls, each of which drops its own
-  subscriptions, cancellables and sources. The three wraps of methods it does
+  keybinding, every `connectObject` owner, the file monitor and its timer,
+  calls `_teardown()` (the menu and the pop-up), detaches the button and
+  disables the playback watcher, tracker and controls, each of which drops its own
+  subscriptions, cancellables and sources. The two wraps of methods it does
   not own come off chain-safely ([private-api.md](private-api.md#chain-safe-wraps)).
 - **No deprecated modules** (`ByteArray`, `Mainloop`, `Lang`), **no GTK in the
   shell, no shell in the preferences**: `prefs.js` imports Adw, Gtk, Gdk, Gio,

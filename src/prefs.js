@@ -90,19 +90,6 @@ const SECTIONS = LIBRARY_SECTIONS.map(section => ({...section, ...PAGES[section.
 
 const SHORTCUT_KEY = 'library-shortcut';
 
-const PLACES = [['menu', 'Menu'], ['desktop', 'Desktop'], ['workspaces', 'Workspaces'], ['modal', 'Modal']];
-const VIEWS = {
-    desktop: 'Drawn straight onto the wallpaper of the workspace you are on, brought up by the button next to Show Apps and put away by it, Escape or its close button.',
-    workspaces: 'Drawn straight onto the wallpaper of a workspace of its own, slid to by the button next to Show Apps and given up again when you close it.',
-    menu: 'In the overview, beside your applications, opened from the button next to Show Apps.',
-    modal: 'A panel over the desktop, opened from the button next to Show Apps. Escape, a click away, or the button again closes it.',
-};
-const DETAILS = {
-    desktop: 'What you pick opens on the workspace you are already on.',
-    workspaces: 'What you pick opens on a workspace of its own.',
-    menu: 'What you pick pops up where you picked it, the way an app folder opens.',
-    modal: 'What you pick opens in a panel over the desktop and stays up until Escape or a click away closes it.',
-};
 const TRACKING = {
     source: 'Every mark is kept on this computer, and each library folder also gets a copy of its own marks, so another computer using the same folder picks them up.',
     local: 'Marks are kept on this computer only. Switching from Folders removes the copies from the folders; switching back puts them back.',
@@ -241,10 +228,13 @@ export default class LibraryPreferences extends ExtensionPreferences {
         const {settings} = state;
         const page = new Adw.PreferencesPage({title: 'General', icon_name: 'preferences-system-symbolic'});
 
-        const view = new Adw.PreferencesGroup({title: 'View'});
+        const view = new Adw.PreferencesGroup({
+            title: 'View',
+            description: 'The library opens in the overview, beside your applications, from the ' +
+                'button next to Show Apps. What you pick pops up where you picked it, the way an ' +
+                'app folder opens.',
+        });
         page.add(view);
-        view.add(row('Library opens in', null, toggles(settings, 'library-opens-in', PLACES)));
-        view.add(row('Items open in', null, toggles(settings, 'detail-opens-in', PLACES)));
         const play = new Adw.SwitchRow({
             title: 'Play on a new workspace',
             subtitle: 'The player opens on an empty workspace of its own, leaving the one you picked from as it was',
@@ -257,14 +247,6 @@ export default class LibraryPreferences extends ExtensionPreferences {
         });
         settings.bind('dash-to-panel', dashToPanel, 'active', Gio.SettingsBindFlags.DEFAULT);
         view.add(dashToPanel);
-        const held = new Adw.ActionRow({
-            title: 'Workspaces the library is using stay open',
-            subtitle: 'A workspace opened for the library or for a picked item is held until you close ' +
-                'it or go back from it, so GNOME does not fold it away. With a fixed number of ' +
-                'workspaces, set enough in Settings → Multitasking.',
-            sensitive: false,
-        });
-        view.add(held);
 
         page.add(this._shortcutGroup(state));
 
@@ -272,15 +254,14 @@ export default class LibraryPreferences extends ExtensionPreferences {
         page.add(appearance);
         appearance.add(row('Rows', 'Covers down a page. Fewer means larger covers.', slider(settings, 'rows', 1, 3)));
         appearance.add(row('Columns',
-            'Covers across a page. Fewer means larger covers. A small space — the grid in the overview, a small screen — fits fewer of either.',
+            'Covers across a page. Fewer means larger covers. A small screen fits fewer of either.',
             slider(settings, 'columns', 4, 10)));
         appearance.add(row('Align covers', 'Where a row that is not full sits',
             toggles(settings, 'grid-align', [['center', 'Centre'], ['start', 'Left']])));
         appearance.add(row('Corner radius', 'How rounded covers, tiles and the detail pane are, in pixels. 0 is square.',
             slider(settings, 'corner-radius', 0, 40)));
-        const detailSize = row('Detail pop-up size', 'How much of the available room the pop-up fills, as a percentage',
-            slider(settings, 'detail-size', 80, 120));
-        appearance.add(detailSize);
+        appearance.add(row('Detail pop-up size', 'How much of the available room the pop-up fills, as a percentage',
+            slider(settings, 'detail-size', 80, 120)));
         const accent = new Adw.ActionRow({
             title: 'Accent colour',
             subtitle: 'Follows Settings → Appearance → Accent Color',
@@ -295,18 +276,6 @@ export default class LibraryPreferences extends ExtensionPreferences {
             }
         });
         appearance.add(accent);
-
-        // Under the group's heading rather than in the rows, which would squeeze the toggles.
-        const syncView = () => {
-            const mode = settings.get_string('library-opens-in');
-            const detail = settings.get_string('detail-opens-in');
-            view.description = `${VIEWS[mode]} ${DETAILS[detail]}`;
-            held.visible = mode === 'workspaces' || detail === 'workspaces';
-            detailSize.sensitive = detail === 'menu' || detail === 'modal';
-        };
-        settings.connect('changed::library-opens-in', syncView);
-        settings.connect('changed::detail-opens-in', syncView);
-        syncView();
 
         page.add(this._watchedGroup(settings));
 
@@ -357,7 +326,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
         const clear = iconButton('edit-clear-symbolic', 'Remove this shortcut');
         clear.connect('clicked', () => settings.set_strv(SHORTCUT_KEY, []));
         const shortcut = row('Open the library',
-            'From anywhere, wherever the library opens; the same shortcut again closes it. None is set to begin with.',
+            'From anywhere; the same shortcut again closes it. None is set to begin with.',
             label, clear);
         shortcut.activatable = true;
         shortcut.connect('activated', () => this._captureShortcut(state));
@@ -633,7 +602,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
         page.add(files);
         const enabled = new Adw.SwitchRow({
             title: `Show ${section.lower} in the library`,
-            subtitle: `The ${section.title} tab, wherever the library opens`,
+            subtitle: `The ${section.title} tab in the library`,
         });
         settings.bind(`${section.prefix}-enabled`, enabled, 'active', Gio.SettingsBindFlags.DEFAULT);
         files.add(enabled);

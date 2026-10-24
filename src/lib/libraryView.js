@@ -2,17 +2,16 @@
 
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
-import GLib from 'gi://GLib';
 
 import {createMediaView} from './mediaGrid.js';
 import {createEmptyState, createHeader} from './widgets.js';
 
 // .ml-header's height plus its margin-bottom in stylesheet.css, logical px.
-export const HEADER_ALLOWANCE = 76;
+const HEADER_ALLOWANCE = 76;
 
 export class LibraryView {
     // width and height are the whole view, header included, in physical px.
-    constructor({sections, itemsFor, active, width, height, columns, rows, onActivate, onSwitch, onBack, end, onEmpty}) {
+    constructor({sections, itemsFor, active, width, height, columns, rows, onActivate, onSwitch, onEmpty}) {
         this._sections = sections;
         this._itemsFor = itemsFor;
         this._width = width;
@@ -23,7 +22,6 @@ export class LibraryView {
         this._onSwitch = onSwitch;
         this._onEmpty = onEmpty;
         this._pages = new Map();
-        this._prebuildIdle = 0;
         this._key = this._sectionFor(active)?.key ?? null;
 
         this.actor = new St.BoxLayout({
@@ -38,8 +36,6 @@ export class LibraryView {
                 this.show(key);
                 this._onSwitch(key);
             },
-            onBack,
-            end,
         });
         this.actor.add_child(this.header.actor);
 
@@ -52,12 +48,7 @@ export class LibraryView {
         this.actor.add_child(this.stack);
 
         this.actor.connect('key-press-event', (_actor, event) => this._onKeyPress(event));
-        this.actor.connect('destroy', () => {
-            if (this._prebuildIdle)
-                GLib.source_remove(this._prebuildIdle);
-            this._prebuildIdle = 0;
-            this._pages.clear();
-        });
+        this.actor.connect('destroy', () => this._pages.clear());
     }
 
     destroy() {
@@ -72,7 +63,7 @@ export class LibraryView {
         return this._pages.get(this._key)?.view ?? null;
     }
 
-    show(key, {reveal = false} = {}) {
+    show(key) {
         this._key = this._sectionFor(key)?.key ?? this._key;
         if (!this._key)
             return;
@@ -80,23 +71,6 @@ export class LibraryView {
         const page = this._page(this._key);
         for (const other of this._pages.values())
             other.actor.visible = other === page;
-        if (reveal)
-            page.view?.reveal();
-    }
-
-    // A grid is a couple of hundred actors: the rest are built ahead, one to an idle.
-    prebuild() {
-        if (this._prebuildIdle)
-            return;
-        this._prebuildIdle = GLib.idle_add(GLib.PRIORITY_LOW, () => {
-            const next = this._sections.find(s => !this._pages.has(s.key));
-            if (next)
-                this._page(next.key).actor.hide();
-            if (this._sections.some(s => !this._pages.has(s.key)))
-                return GLib.SOURCE_CONTINUE;
-            this._prebuildIdle = 0;
-            return GLib.SOURCE_REMOVE;
-        });
     }
 
     focusFirst() {

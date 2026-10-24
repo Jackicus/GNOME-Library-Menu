@@ -1,9 +1,8 @@
 # Private and deep GNOME Shell API
 
-Library puts its button beside Show Apps, borrows the app grid for its
-posters and the folder dialog's shape for its pop-up pane, and puts its pages
-into the overview and the workspace slide, which would otherwise show bare
-wallpaper. None of that has a public API. This is everything it reaches into,
+Library puts its button beside Show Apps, puts its tabs and grids in the
+overview's app-grid slot, borrows the app grid for its posters and the folder
+dialog's shape for its pop-up pane. None of that has a public API. This is everything it reaches into,
 for reviewers on extensions.gnome.org and for whoever ports it. Which shell
 versions each reach was read at is [compatibility.md](compatibility.md)'s.
 Functions are named rather than line numbers.
@@ -15,19 +14,16 @@ an `if`, and then the only sign is the symptom, with nothing logged.
 
 | Expression | File | If it changes | Guarded |
 |---|---|---|---|
-| `Main.layoutManager._backgroundGroup` | app.js | Building the surface throws; no `desktop` or `workspaces` place | No |
-| `workspace._keepAliveId` (read and set) | app.js | A workspace the library or pane is on is folded away under it; a workspace the shell holds mid drag-and-drop can be claimed | No, and silent |
-| `Main.wm._workspaceTracker._queueCheckWorkspaces()` | app.js | Opening the library on a workspace of its own, or closing it, throws | No |
 | `Dash.ShowAppsIcon`, its `_createIcon`, `_iconActor` | libraryButton.js | The subclass throws building; no button, a warning | Yes, try/catch |
 | `ShowAppsIcon._canRemoveApp()` (overridden) | libraryButton.js | The button becomes an unpin target again, silently | No |
 | `Main.overview.dash._dashContainer`, `dash._hookUpLabel` | libraryButton.js | No button in the dash, a warning | Yes, try/catch |
 | `global.dashToPanel.panels[0]`, `panels-created`, `.showAppsIconWrapper.realShowAppsIcon`, `.panel`, `._updateGroupedElements` (wrapped), `.geom`, `.updateElementPositions` | libraryButton.js | The button goes in the dash instead; `updateElementPositions` gone: no button, a warning | Yes, each checked first or inside `_attach()`'s try/catch; read only with `dash-to-panel` on |
 | `panel._elementGroups`, a group's `.elements` and `.expandableIndex`, an element's `.actor` and `.position` | libraryButton.js | `_elementGroups` gone: the button is in the panel with no place in its layout. Another shape: the wrap throws inside `_attach()`'s try/catch, so no button and a warning | Partly |
-| `Main.overview._overview.controls`, `.appDisplay`, `._box` | mediaMenu.js; `_overview.controls` also panel.js, overviewPreview.js | No `menu` library; one warning, if a section is enabled | Yes |
+| `Main.overview._overview.controls`, `.appDisplay`, `._box` | mediaMenu.js; `_overview.controls` also detailDialog.js | No library; one warning, if a section is enabled | Yes |
 | `Main.overview.dash.showAppsButton` (`.checked`) | mediaMenu.js | The menu can no longer tell the app grid is up (the kit's "Is the app grid up?" rule) | No |
 | `controls._searchController.searchActive` | mediaMenu.js | Workspaces do not come back for a search while the view is up | Yes, `?.` |
 | `controls._stateAdjustment` | mediaMenu.js | The workspace row is not folded in step with the overview | Yes, `?.` |
-| `controls._workspacesDisplay` (`.opacity`, `.reactive`, `setPrimaryWorkspaceVisible`) | mediaMenu.js, overviewPreview.js | The row is never faded, so it stays over the posters and takes their clicks; no clones in the previews. `setPrimaryWorkspaceVisible` gone: folding the row throws | `_workspacesDisplay` `?.`; its method no |
+| `controls._workspacesDisplay` (`.opacity`, `.reactive`, `setPrimaryWorkspaceVisible`) | mediaMenu.js | The row is never faded, so it stays over the posters and takes their clicks. `setPrimaryWorkspaceVisible` gone: folding the row throws | `_workspacesDisplay` `?.`; its method no |
 | `controls.layout_manager._getAppDisplayBoxForState` (wrapped) | mediaMenu.js | The slot never grows over the workspace row | Yes, `typeof` check |
 | Restated `DASH_MAX_HEIGHT_RATIO`, `VERTICAL_SPACING_RATIO`, and `_slotSize()` restating `ControlsManagerLayout.vfunc_allocate` | mediaMenu.js | A view built before the overview ever laid out is a little off until next built | No |
 | `Object.getPrototypeOf(AppDisplay.AppDisplay)` (`BaseAppView`) | mediaGrid.js | `mediaGrid.js` throws as it loads; the extension does not load | No |
@@ -37,13 +33,8 @@ an `if`, and then the only sign is the symptom, with nothing logged.
 | `AppViewItem`'s `_id`, `_name` and positional `_init(params, isDraggable, expandTitleOnHover)` | mediaGrid.js | Tiles draw but share one id; a changed signature makes posters draggable or stops the title unfolding | No |
 | Restated `PAGE_PREVIEW_RATIO` (`ARROWS_SHARE`) | mediaGrid.js | Covers sized for the wrong margin beside the page arrows | No |
 | `IconGridLayout`'s `_pageWidth`, `_pageHeight`, `_pages`, `_pageSizeChanged`, `_shouldEaseItems` | mediaGrid.js | `_pageWidth`/`_pageHeight` gone: `vfunc_allocate` returns early and no tile is allocated, so no poster shows. `_pages` gone: it throws | No |
-| `controls._appDisplay._folderIcons`, `icon._dialog`, `dialog._viewBox` | panel.js `folderLook()` | The pop-up keeps the stock shade and theme even under Blur my Shell | Yes, `?.` to `null` |
-| Restated `DIALOG_SHADE_NORMAL` (`SHADE`) | panel.js | The shade drifts from the shell's | No |
-| `controls._workspacesDisplay._workspacesViews`, `view._workspaces` | overviewPreview.js | No clones in the overview's previews | Yes, `?? []` |
-| `workspace._background`, `._backgroundGroup`, `._monitorIndex` | overviewPreview.js | No clone in that preview | Yes, skipped |
-| `controls._thumbnailsBox._thumbnails`, `thumbnail._contents` | overviewPreview.js | No clone in the thumbnails | Yes, `?.` |
-| `Main.wm._workspaceAnimation._prepareWorkspaceSwitch` (overridden), `._switchData` | overviewPreview.js | No clones in the slide; the library blinks back once it lands | Yes, a chain-safe wrap |
-| `switchData.monitors`, `strip._monitor`, `strip._workspaceGroups`, `group._background` | overviewPreview.js | No clones in the slide | Yes, `?.` |
+| `controls._appDisplay._folderIcons`, `icon._dialog`, `dialog._viewBox` | detailDialog.js `folderLook()` | The pop-up keeps the stock shade and theme even under Blur my Shell | Yes, `?.` to `null` |
+| Restated `DIALOG_SHADE_NORMAL` (`SHADE`) | detailDialog.js | The shade drifts from the shell's | No |
 
 ## The button beside Show Apps (libraryButton.js)
 
@@ -78,8 +69,7 @@ the top bar with the button still in it; so the `destroy` of its Show Apps
 (`showAppsIconWrapper.realShowAppsIcon`) releases the button and looks for the
 new panel on the next idle. `panels-created` and `extension-state-changed`
 re-run `_attach`, but `_reattach` acts only when `panels[0]` changed or the
-button lost its parent: a button rebuilt for nothing takes the modal library's
-panel, which zooms out of it, down with it. If Dash to Panel renames or
+button lost its parent. If Dash to Panel renames or
 reshapes what the table above lists, the button falls back to the dash, or is
 missing with a warning in the log; turning the setting off puts it back in the
 dash.
@@ -87,8 +77,8 @@ dash.
 ## The overview's app-grid slot (mediaMenu.js)
 
 There is no extension point for a second view in the app grid's slot. The
-`menu` library's `LibraryView` is added to `AppDisplay` beside its `_box`, and
-the two take turns by `_box.visible`.
+library's `LibraryView` is added to `AppDisplay` beside its `_box`, and the
+two take turns by `_box.visible`.
 
 The row of small workspaces folds away by wrapping
 `ControlsManagerLayout._getAppDisplayBoxForState` (`_foldWorkspaces()`), the
@@ -123,49 +113,15 @@ one point of failure with no fallback.
   public GObject properties. `MediaGrid` replaces the layout `IconGrid` built
   and re-emits the new layout's `pages-changed` as the grid's own.
 
-## The folder's panel (panel.js, detailDialog.js, libraryWindow.js)
+## The folder's panel (detailDialog.js)
 
-`MediaPanel` is a copy of `AppFolderDialog`'s shape, not a subclass: the
+`DetailDialog` is a copy of `AppFolderDialog`'s shape, not a subclass: the
 folder's name entry and grid are built into `AppFolderDialog`'s own `_init`. To look like a folder
 under Blur my Shell, which drops the shade, blurs behind and adds a class to
 the folder's box, `folderLook()` asks a real folder's `_dialog` once per open
 and copies its `Shell.BlurEffect` and extra `_viewBox` classes. A folder
 builds its dialog the first time it opens, so with none opened yet there is
 nothing to ask, and the stock shade stands, without a warning.
-
-## Workspaces held open (app.js)
-
-The shell's `WorkspaceTracker._checkWorkspaces()` (`windowManager.js`) spares
-an empty workspace whose `_keepAliveId` is set. `_keepOnly()` sets it, with a
-`GLib.MAXUINT32` timeout that never fires, on each workspace the library or
-pane claimed and on one being slid away from, and removes it the moment
-nothing needs the workspace; `_claimWorkspace()` passes over a workspace whose
-id someone else set. The public `Main.wm.keepWorkspaceAlive(workspace,
-duration)` writes the same field but expires on a clock, and the hold here
-lasts as long as the library is open. `_queueCheckWorkspaces()` is called
-after a release and a claim so the tracker re-checks at once.
-`_releaseWorkspaces()` waits `workspaceAnimation.js`'s `WINDOW_ANIMATION_TIME` (through
-`adjustAnimationTime`, plus 50 ms) before giving up a workspace being left.
-
-## The overview previews and the workspace slide (overviewPreview.js)
-
-Neither the overview's previews nor the slide's strip shows
-`_backgroundGroup`: each builds a wallpaper of its own. So `overviewPreview.js`
-puts a `Clutter.Clone` of the live page into each, as Wallpaper FX's
-`overviewPreview.js` does for its canvas
-([its private-api.md](https://github.com/Jackicus/GNOME-Wallpaper-FX/blob/main/docs/private-api.md)).
-Unlike Wallpaper FX it draws on the primary monitor only: `_attach()` skips a
-preview whose `_monitorIndex` is not `primaryIndex`, and a secondary monitor's
-`SecondaryMonitorDisplay` has no `_workspaces`, so it adds nothing.
-
-In the slide, the clone goes above `group._background.get_first_child()`,
-below any window clones the slide adds after. The `_prepareWorkspaceSwitch`
-override compares `this._switchData` before and after calling through: unset
-before and set after is a fresh slide, handed to the current
-`OverviewPreview`. It is installed once per enable (`installSlideHook`) and
-removed at disable (`removeSlideHook`), not per rebuild, by the same protocol as
-the wraps below: Wallpaper FX wraps the same prototype method for its own slide
-clones.
 
 ## Chain-safe wraps
 
@@ -178,10 +134,3 @@ is no longer current (`inert`, or `_foldedBox` no longer itself), and on
 release puts back what it found only while it is still the outermost: another
 extension's wrap if that was there, or a `delete` if the property was never an
 own one. So disabling either, in either order, leaves the other's working.
-
-The slide wrap (`overviewPreview.js`) keeps it beside Wallpaper FX, which wraps
-`_prepareWorkspaceSwitch` on the same prototype through `InjectionManager`.
-Disabling Library leaves Wallpaper FX's wrap in place in either order.
-`InjectionManager.restoreMethod` puts back what it saved whatever is there now,
-so disabling Wallpaper FX while ours sits over its wrap drops ours until the
-next enable: that half is Wallpaper FX's to change.

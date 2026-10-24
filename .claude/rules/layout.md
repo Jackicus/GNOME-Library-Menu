@@ -4,7 +4,6 @@ paths:
   - "src/lib/mediaMenu.js"
   - "src/lib/detailView.js"
   - "src/lib/detailDialog.js"
-  - "src/lib/panel.js"
   - "src/lib/shape.js"
   - "src/lib/widgets.js"
   - "src/stylesheet.css"
@@ -12,9 +11,9 @@ paths:
 
 # How the grid and the pane size themselves
 
-- **`columns` and `rows` are the grid's shape wherever it is drawn**, each capped by
-  what fits at `mediaGrid.js` `MIN_ART` in the box that view is given, so a narrow space
-  shows fewer of either. The block is always centred, because `gridFor` shrinks the
+- **`columns` and `rows` are the grid's shape**, each capped by what fits at
+  `mediaGrid.js` `MIN_ART` in the box the view is given, so a small screen shows fewer
+  of either. The block is always centred, because `gridFor` shrinks the
   cover to fit `rows` and `columns` exactly; `grid-align` (`setGridAlign`, read as the
   layout allocates) only decides whether a part-full row is centred under the full
   ones or hugs the leading edge.

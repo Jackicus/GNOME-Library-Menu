@@ -73,11 +73,6 @@ export class LibraryButton {
         this._dashToPanel = null;
     }
 
-    get icon() {
-        const icon = this._button?.icon;
-        return icon?.mapped ? icon : null;
-    }
-
     sync(checked) {
         this._checked = !!checked;
         this._buttonHost?.sync?.();
@@ -110,8 +105,7 @@ export class LibraryButton {
         dashToPanel?.connectObject?.('panels-created', () => this._reattach(), this);
     }
 
-    // Only when the host changed: a rebuilt button takes the modal library's panel
-    // down with it.
+    // Only when the host changed.
     _reattach() {
         this._armDashToPanel();
         if ((this._dashToPanel?.panels?.[0] ?? null) !== this._hostPanel || !this._button?.get_parent())
