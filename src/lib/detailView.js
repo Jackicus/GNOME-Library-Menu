@@ -20,17 +20,20 @@ const PADDING = 32 - PANE_INSET;
 // Of the pane's width: the title and list keep the rest.
 const HERO_MAX_WIDTH_FRACTION = 0.34;
 const HERO_MIN = 132;
-// One line of the summary's 0.95em type; St has no line-height to set.
+// The summary's type, scaled by `detail-text-size`, and one line of it at 100 %;
+// St has no line-height to set.
+const SUMMARY_EM = 0.95;
 const SUMMARY_LINE = 21;
 const SUMMARY_LINES = 5;
 const FIRST_ROWS = 24;
 const ROWS_PER_BATCH = 16;
 
 export class DetailView {
-    constructor({onOpen, tracker, rowSize}) {
+    constructor({onOpen, tracker, rowSize, textSize}) {
         this._onOpen = onOpen;
         this._tracker = tracker;
         this._rowSize = rowSize;
+        this._textSize = textSize;
         this._section = null;
         this._groups = [];
         this._groupIndex = 0;
@@ -297,11 +300,16 @@ export class DetailView {
             main.add_child(facts);
 
         if (item.summary) {
-            const summary = new St.Label({text: item.summary, style_class: 'ml-summary', x_expand: true});
+            const summary = new St.Label({
+                text: item.summary,
+                style_class: 'ml-summary',
+                x_expand: true,
+                style: `font-size: ${(SUMMARY_EM * this._textSize).toFixed(2)}em;`,
+            });
             summary.clutter_text.line_wrap = true;
             summary.clutter_text.line_wrap_mode = Pango.WrapMode.WORD_CHAR;
             summary.clutter_text.ellipsize = Pango.EllipsizeMode.END;
-            summary.height = SUMMARY_LINE * this._scale * SUMMARY_LINES;
+            summary.height = Math.round(SUMMARY_LINE * this._scale * SUMMARY_LINES * this._textSize);
             summary.y_expand = false;
             main.add_child(summary);
         }
@@ -389,6 +397,7 @@ export class DetailView {
                     size: entry.size,
                     icon: entry.icon,
                     height: this._rowSize,
+                    textSize: this._textSize,
                     onActivate: () => this._open(entry.path),
                     watched: tracker && entry.path ? tracker.isWatched(entry.path) : null,
                     onWatched: watched => tracker.setWatched(entry.path, watched),

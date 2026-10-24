@@ -411,8 +411,10 @@ export default class LibraryPreferences extends ExtensionPreferences {
 
         const list = new Adw.PreferencesGroup({title: 'Episode list'});
         page.add(list);
-        list.add(row('Row size', 'The height of each episode, film or disc row, in pixels. Its text and icons scale with it.',
+        list.add(row('Row size', 'The height of each episode, film or disc row, in pixels. Its icons scale with it.',
             slider(settings, 'detail-row-size', 28, 56)));
+        list.add(row('Text size', 'The rows and the description, as a percentage.',
+            slider(settings, 'detail-text-size', 70, 150)));
         return page;
     }
 

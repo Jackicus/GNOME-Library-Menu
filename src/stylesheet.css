@@ -194,6 +194,7 @@
     font-weight: normal;
 }
 
+/* The size is detailView.js SUMMARY_EM, set inline by `detail-text-size`. */
 .ml-summary {
     font-size: 0.95em;
     color: rgba(250, 250, 251, 0.78);
@@ -247,8 +248,9 @@
      * height, so rows left to size themselves came out squashed to their
      * minimum in a long list and full-size in a short one. `height` alone
      * sets only the natural; the index disc's height, which a two-line
-     * row's text fits inside. widgets.js createRow sets the three inline
-     * from `detail-row-size`, scaling the type with it; these are its default. */
+     * row's text fits inside. widgets.js createRow sets the two inline from
+     * `detail-row-size` and the type from `detail-text-size`; these are the
+     * defaults. */
     min-height: 36px;
     height: 36px;
     transition-duration: 120ms;

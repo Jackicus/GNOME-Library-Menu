@@ -122,10 +122,10 @@ controllers are the keyboard too: `.claude/rules/keyboard.md`.
 - **One set of style settings**: the grid's (`gridMath.js` `GRID_KEYS`: `columns`
   4–10, `rows` 1–3, the spacing and padding pairs, `show-titles`, `grid-align`),
   `corner-radius`, the pop-up's (`detail-width` and `detail-height`, 60–120 %, its
-  share of the work area, applied in `detailDialog.js` `_budget()`, and
+  share of the work area, applied in `detailDialog.js` `_budget()`,
   `detail-row-size`, the list's row height, which `widgets.js` `createRow` scales
-  its type and icons from). No view keeps a copy, and a change
-  rebuilds what is built.
+  its icons from, and `detail-text-size`, the rows' and the description's type). No
+  view keeps a copy, and a change rebuilds what is built.
   `.claude/rules/layout.md` has how the grid and the pane size themselves.
 - **The neutrals are the dark palette's** (`#222226`, `#fafafb`) on purpose: the
   overview is dark in both schemes. A light variant would be a class synced from

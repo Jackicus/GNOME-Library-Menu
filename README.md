@@ -178,13 +178,13 @@ button.
   </tr>
   <tr>
     <td width="50%"><img src="docs/screenshots/prefs-controls.png" alt="The Controls page: the keys a remote sends for Up, Down, Left, Right, Select, Back, Home and a page each way"></td>
-    <td width="50%"><img src="docs/screenshots/prefs-window.png" alt="The Window page: the pop-up's width and height sliders, and the episode row size"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-window.png" alt="The Window page: the pop-up's width and height sliders, the episode row size and the text size"></td>
   </tr>
   <tr>
     <td valign="top"><b>Controls</b>: remote keys and controller buttons for browsing
     from the sofa.</td>
-    <td valign="top"><b>Window</b>: the pop-up's width and height, and the size of
-    the rows in its episode list.</td>
+    <td valign="top"><b>Window</b>: the pop-up's width and height, the size of the
+    rows in its episode list, and of their text and the description.</td>
   </tr>
 </table>
 
