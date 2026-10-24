@@ -1,8 +1,8 @@
 # Library Menu
 
-Your own TV shows, films and games as a library, opened from a button beside Show
-Apps: posters, synopses, seasons and episodes, in the overview, a pop-up panel, on
-the desktop or on a workspace of its own. It plays nothing itself: a show or film
+Your own TV shows, films and games as a library in the overview, opened from a button
+beside Show Apps: posters, synopses, seasons and episodes beside your applications.
+It plays nothing itself: a show or film
 opens in VLC, mpv or whichever player you choose, and it remembers what you have
 watched; a game starts through Steam or PCSX2.
 
@@ -21,8 +21,6 @@ watched; a game starts through Steam or PCSX2.
   with the same paging, swiping and keyboard.
 - **Remote or controller.** Map a TV remote's keys or a game controller's buttons, and
   browse from the sofa.
-- **Four places to open.** In the overview, in a pop-up panel, on the desktop, or on a
-  workspace of its own.
 
 ## Games
 
@@ -46,34 +44,12 @@ picks up what you installed since.
 
 ## Where it opens
 
-The **General** page of the preferences chooses where the library opens and where a
-picked item opens. The two settings are separate, so you can mix them.
+The library takes the app grid's place in the overview, with the row of workspaces
+folded away, and the button beside Show Apps, a keyboard shortcut or a controller's
+Home button opens it. A picked show, film or game pops up out of its poster, the way
+an app folder opens, and Escape or a click outside puts it back.
 
-| | The library | A picked item |
-|---|---|---|
-| **Menu** (the default) | In the overview, where the app grid goes | Pops up out of its poster, the way an app folder opens |
-| **Modal** | In a panel over the desktop | In a panel over the desktop, until Escape or a click outside |
-| **Desktop** | On the wallpaper of the workspace you are on | On the wallpaper, in place of the grid when the library is there too |
-| **Workspaces** | On a workspace of its own | On a workspace of its own |
-
-<table>
-  <tr>
-    <td width="50%"><img src="docs/screenshots/detail.jpg" alt="A show picked in the overview: its details pop up the way an app folder opens, poster and Play button on the left, facts, synopsis and a season's episodes on the right"></td>
-    <td width="50%"><img src="docs/screenshots/modal.jpg" alt="The library in a panel over the desktop, on the Films tab"></td>
-  </tr>
-  <tr>
-    <td valign="top"><b>Menu</b>: a picked show pops up out of its poster.</td>
-    <td valign="top"><b>Modal</b>: the library in a panel.</td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="docs/screenshots/desktop.jpg" alt="The library drawn on the desktop wallpaper, with Settings and Close at the top right"></td>
-    <td width="50%"><img src="docs/screenshots/desktop-detail.jpg" alt="A film picked on the desktop: its details take the grid's place, with Back to library at the top left"></td>
-  </tr>
-  <tr>
-    <td valign="top"><b>Desktop</b>: the library on the wallpaper.</td>
-    <td valign="top"><b>Desktop</b>: a picked film in place of the grid.</td>
-  </tr>
-</table>
+![A show picked in the overview: its details pop up the way an app folder opens, poster and Play button on the left, facts, synopsis and a season's episodes on the right](docs/screenshots/detail.jpg)
 
 ## Requirements
 
@@ -163,17 +139,17 @@ To update, `git pull && make install`, then log out and back in. To remove,
 
 ## Preferences
 
-`gnome-extensions prefs library-menu@jackicus`, or the Settings button beside the
-library on the desktop.
+`gnome-extensions prefs library-menu@jackicus`, or an empty tab's Open Settings
+button.
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/prefs-general.png" alt="The General page: where the library and a picked item open, playing on a new workspace, the keyboard shortcut, and the rows setting"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-general.png" alt="The General page: playing on a new workspace, the Dash to Panel switch, the keyboard shortcut, and the rows and columns sliders"></td>
     <td width="50%"><img src="docs/screenshots/prefs-tv-shows.png" alt="The TV Shows page: the switch for the TV Shows tab, no folder yet, and the information sources tried in order: TVmaze, TMDB and Wikipedia"></td>
   </tr>
   <tr>
-    <td valign="top"><b>General</b>: where things open, the button in Dash to Panel's
-    panel (off to begin with), the keyboard shortcut (none to begin with), the grid's size and shape, watched marks, and Rescan everything.</td>
+    <td valign="top"><b>General</b>: playing on a new workspace, the button in Dash to
+    Panel's panel (off to begin with), the keyboard shortcut (none to begin with), the grid's size and shape, watched marks, and Rescan everything.</td>
     <td valign="top"><b>TV Shows</b> and <b>Films</b>: folders, the information
     sources and their keys, and the player command.</td>
   </tr>

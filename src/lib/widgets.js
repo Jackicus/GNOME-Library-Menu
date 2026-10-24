@@ -2,7 +2,6 @@ import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import Pango from 'gi://Pango';
 
-import {Duration, Ease, fadeTo} from './anim.js';
 import {radiusStyle} from './shape.js';
 
 // The radius must travel in the same inline style as the image to round it.
@@ -70,18 +69,6 @@ export function createArtwork({path, title, icon, width, height, styleClass = 'm
     return art;
 }
 
-// No St.Icon child and no size: the theme's `.icon-button StIcon` sizes the
-// glyph in em, so it follows Large Text.
-export function createIconButton(iconName, {accessibleName} = {}) {
-    return new St.Button({
-        style_class: 'icon-button',
-        can_focus: true,
-        track_hover: true,
-        accessible_name: accessibleName,
-        icon_name: iconName,
-    });
-}
-
 export function createActionButton({label, icon, styleClass = 'button default ml-action'}) {
     const content = new St.BoxLayout({style_class: 'ml-action-content', y_align: Clutter.ActorAlign.CENTER});
     if (icon)
@@ -98,19 +85,6 @@ export function createActionButton({label, icon, styleClass = 'button default ml
         text.text = value;
     };
     return button;
-}
-
-function crossFade(label, text) {
-    label.remove_all_transitions();
-    label.ease({
-        opacity: 0,
-        duration: Duration.FAST / 2,
-        mode: Ease.OUT,
-        onComplete: () => {
-            label.text = text;
-            label.ease({opacity: 255, duration: Duration.FAST, mode: Ease.OUT});
-        },
-    });
 }
 
 // Focus landing on a tab chooses it, so a remote's arrows alone switch sections.
@@ -144,109 +118,30 @@ function createTabs(sections, active, onSwitch) {
     return {actor, setActive, lit: () => [...tabs.values()].find(tab => tab.checked) ?? null};
 }
 
-// A bin, so the tabs sit centred however wide either side is: a bin aligns a
-// child by its x_align only when it expands, and centres it otherwise.
-export function createHeader({sections, active, onSwitch, onBack = null, end = []}) {
+// The tabs, centred; one section alone is named instead of switched.
+export function createHeader({sections, active, onSwitch}) {
     const actor = new St.Widget({
         style_class: 'ml-header',
         layout_manager: new Clutter.BinLayout(),
         x_expand: true,
     });
-
-    const start = new St.BoxLayout({
-        style_class: 'ml-header-start',
-        x_expand: true,
-        x_align: Clutter.ActorAlign.START,
-        y_align: Clutter.ActorAlign.CENTER,
-    });
-    const back = createIconButton('go-previous-symbolic', {accessibleName: 'Back'});
-    back.y_align = Clutter.ActorAlign.CENTER;
-    back.connect('clicked', () => onBack?.());
-    back.hide();
-    start.add_child(back);
-    const single = sections.length < 2;
-    const name = single ? sections[0]?.title ?? '' : '';
-    const titles = new St.BoxLayout({
-        orientation: Clutter.Orientation.VERTICAL,
-        style_class: 'ml-header-titles',
-        y_align: Clutter.ActorAlign.CENTER,
-        visible: single,
-    });
-    const titleLabel = createLabel(name, 'ml-header-title');
-    const subtitleLabel = createLabel('', 'ml-header-subtitle');
-    titles.add_child(titleLabel);
-    titles.add_child(subtitleLabel);
-    start.add_child(titles);
-    actor.add_child(start);
-
-    const tabs = single ? null : createTabs(sections, active, onSwitch);
-    if (tabs) {
-        tabs.actor.x_align = Clutter.ActorAlign.CENTER;
-        actor.add_child(tabs.actor);
-    }
-
-    if (end.length) {
-        const buttons = new St.BoxLayout({
-            style_class: 'ml-header-end',
-            x_expand: true,
-            x_align: Clutter.ActorAlign.END,
+    if (sections.length === 1) {
+        actor.add_child(createLabel(sections[0].title, 'ml-header-title', {
+            x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
-        });
-        for (const button of end) {
-            button.y_align = Clutter.ActorAlign.CENTER;
-            buttons.add_child(button);
-        }
-        actor.add_child(buttons);
+        }));
+        return {actor, setActive: () => {}, focusTabs: () => false};
     }
-
-    const swap = (appearing, leaving, animate) => {
-        for (const part of leaving) {
-            if (animate) {
-                fadeTo(part, 0, {duration: Duration.FAST});
-            } else {
-                part.remove_all_transitions();
-                part.hide();
-            }
-        }
-        for (const part of appearing) {
-            if (animate) {
-                fadeTo(part, 255);
-            } else {
-                part.remove_all_transitions();
-                part.opacity = 255;
-                part.show();
-            }
-        }
-    };
-    const say = (title, subtitle, animate) => {
-        if (animate) {
-            crossFade(titleLabel, title);
-            crossFade(subtitleLabel, subtitle);
-        } else {
-            titleLabel.text = title;
-            subtitleLabel.text = subtitle;
-        }
-    };
-
+    const tabs = createTabs(sections, active, onSwitch);
+    tabs.actor.x_align = Clutter.ActorAlign.CENTER;
+    actor.add_child(tabs.actor);
     return {
         actor,
-        setActive: key => tabs?.setActive(key),
+        setActive: tabs.setActive,
         focusTabs: () => {
-            const tab = tabs?.lit();
+            const tab = tabs.lit();
             tab?.grab_key_focus();
             return !!tab;
-        },
-        setLibraryMode: (animate = false) => {
-            if (tabs) {
-                swap([tabs.actor], [back, titles], animate);
-            } else {
-                say(name, '', animate);
-                swap([titles], [back], animate);
-            }
-        },
-        setDetailMode: (title, animate = false) => {
-            say(title, 'Back to library', animate);
-            swap([back, titles], tabs ? [tabs.actor] : [], animate);
         },
     };
 }

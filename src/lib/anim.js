@@ -7,7 +7,6 @@ import {adjustAnimationTime} from 'resource:///org/gnome/shell/misc/animationUti
 export const Duration = {
     FAST: 120,     // hover, pressed state, things leaving
     NORMAL: 200,   // page change, things arriving
-    SLOW: 260,     // hero flight between views
 };
 
 export const Ease = {
@@ -16,9 +15,6 @@ export const Ease = {
     // Only for a folder's icon coming back as its dialog closes.
     IN: Clutter.AnimationMode.EASE_IN_QUAD,
 };
-
-// The scale the shell pops a window from; the grid recedes to it behind the pane.
-export const POP_SCALE = 0.94;
 
 // For an effect's properties, which actor.ease() cannot reach. Returns the
 // timeline, to stop if the object goes first.
@@ -98,63 +94,12 @@ export function slideSwap(outgoing, incoming, direction, {distance = 32, onCompl
     });
 }
 
-export function fadeTo(actor, opacity, {duration = Duration.NORMAL} = {}) {
-    actor.remove_all_transitions();
-    if (opacity > 0)
-        actor.show();
-    actor.ease({
-        opacity,
-        duration,
-        mode: Ease.OUT,
-        onComplete: () => {
-            if (opacity === 0)
-                actor.hide();
-        },
-    });
-}
-
-// Flies by transform alone, so nothing is re-allocated per frame. Resolves when
-// the clone goes, landed or destroyed with its layer, so no caller waits forever.
-export function flyClone(layer, source, from, to, {duration = Duration.SLOW} = {}) {
-    return new Promise(resolve => {
-        const clone = new Clutter.Clone({
-            source,
-            x: from.x,
-            y: from.y,
-            width: from.width,
-            height: from.height,
-        });
-        clone.set_pivot_point(0, 0);
-        clone.connect('destroy', () => resolve());
-        layer.add_child(clone);
-        clone.ease({
-            translation_x: to.x - from.x,
-            translation_y: to.y - from.y,
-            scale_x: to.width / Math.max(1, from.width),
-            scale_y: to.height / Math.max(1, from.height),
-            duration,
-            mode: Ease.OUT_EXPO,
-            onComplete: () => clone.destroy(),
-        });
-    });
-}
-
 // ensure_style() covers only the widget it is called on, and a fresh column
 // measures without its spacing and margins until each child has had it.
 export function ensureStyleDeep(actor) {
     actor.ensure_style?.();
     for (const child of actor.get_children())
         ensureStyleDeep(child);
-}
-
-// A freshly shown actor has no allocation until the next frame and measures
-// NaN. Its parent must already be allocated.
-export function allocateNow(actor) {
-    const parent = actor.get_parent();
-    if (!parent)
-        return;
-    const box = parent.get_allocation_box();
-    actor.allocate(new Clutter.ActorBox({x1: 0, y1: 0, x2: box.x2 - box.x1, y2: box.y2 - box.y1}));
 }
 
 export function rectIn(actor, ancestor) {

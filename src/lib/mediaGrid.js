@@ -8,7 +8,6 @@ import St from 'gi://St';
 import * as AppDisplay from 'resource:///org/gnome/shell/ui/appDisplay.js';
 import * as IconGrid from 'resource:///org/gnome/shell/ui/iconGrid.js';
 
-import {staggerIn} from './anim.js';
 import {handleBoundKey} from './controls.js';
 import {createArtwork} from './widgets.js';
 
@@ -227,7 +226,6 @@ class LibraryMediaView extends BaseAppView {
         this._columns = pendingGrid.columns;
         this._perPage = pendingGrid.rows * this._columns;
         this._media = [];
-        this._byId = new Map();
         this._fillTo(0);
     }
 
@@ -243,7 +241,6 @@ class LibraryMediaView extends BaseAppView {
                 onActivate: this._onActivate,
             });
             this._media.push(item);
-            this._byId.set(this._data[order].id, item);
             // Placed outright: appended, the grid keeps new apps off the first page.
             this._addItem(item, Math.floor(order / this._perPage), order % this._perPage);
         }
@@ -258,15 +255,6 @@ class LibraryMediaView extends BaseAppView {
         if (this._data)
             this._fillTo(page);
         super.goToPage(page, animate);
-    }
-
-    tileFor(itemId) {
-        return this._byId.get(itemId) ?? null;
-    }
-
-    reveal() {
-        const start = this._shownPage() * this._perPage;
-        staggerIn(this._media.slice(start, start + this._perPage));
     }
 
     focusFirst() {

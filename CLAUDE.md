@@ -3,8 +3,7 @@
 Shared rules for every extension come from gnome-ai-kit: `../CLAUDE.md` and `../.claude/rules/` (loaded with this file), and the `gnome-ext:*` skills. `.claude/kit.sh` pulls the kit at session start, or, with no kit beside this repository, fetches it and prints its rules into the session.
 
 Library Menu, a GNOME Shell extension (UUID `library-menu@jackicus`), that shows a library of TV shows,
-films and games, opened from one button beside Show Apps: in the overview, in a
-pop-up panel, on the wallpaper or on a workspace of its own, as a setting says.
+films and games in the overview, opened from one button beside Show Apps.
 `metadata.json` claims GNOME Shell 50 only, and the code is written for 50 alone, with
 no fallback for an older shell; 51 breaks it (`docs/compatibility.md`). The name is the same
 throughout: `metadata.json`'s `name`, the UUID, the schema
@@ -77,7 +76,7 @@ lists the two artwork folders once per load rather than stat a poster each.
    drop shared with other projects) when there is one, and its Check runs the scanner's
    `--check`, so the key is read from the settings and never on a command line.
 3. `extension.js` builds a `LibraryApp` (`lib/app.js`) and enables it. The app
-   reads `library.json` and builds whichever places the two "opens in" settings name.
+   reads `library.json` and builds the menu and the pop-up pane.
 4. **Watched marks and playback** (`lib/tracking.js`, `lib/playback.js`): the
    extension plays nothing. A pick runs the section's `<prefix>-open-command` (VLC by
    default), a game its own command line (`launch`: `xdg-open steam://rungameid/…` or
@@ -87,19 +86,13 @@ lists the two artwork folders once per load rather than stat a poster each.
 
 ## Where it opens
 
-`library-opens-in` (the grid) and `detail-opens-in` (a picked item's pane) are read
-**independently**, over the same four places: `desktop`, `workspaces` (the
-**surface**, drawn on the wallpaper by `app.js` on `Main.layoutManager._backgroundGroup`),
-`menu` (the overview's app-grid slot, `mediaMenu.js`; for the pane, a pop-up like an
-app folder's, `detailDialog.js`) and `modal` (a folder-style panel over the desktop,
-`libraryWindow.js`; for the pane, the same pop-up hosted in `uiGroup` always). The one
-thing that follows from the pair is `app.js` `_detailInPlace()`: grid and pane on one
-workspace, so a pick flies the artwork into the grid's place. The surface is built
-only when either setting is a surface place. The one button (`libraryButton.js`, a
+The library is the `menu` (`mediaMenu.js`): the overview's app-grid slot, with the
+tabs and grids in it and the row of small workspaces folded away. A picked item's
+pane is a pop-up like an app folder's (`detailDialog.js`), zooming out of its tile
+and gone when the tile unmaps. The one button (`libraryButton.js`, a
 `Dash.ShowAppsIcon` subclass, in the dash, or in Dash to Panel's panel when the
-`dash-to-panel` setting, off by default, asks), `library-shortcut`
-and the Home action are the only ways in. `.claude/rules/places.md` has how each place
-behaves.
+`dash-to-panel` setting, off by default, asks), `library-shortcut` and the Home
+action are the only ways in. `.claude/rules/places.md` has how each behaves.
 
 **The library grid is the shell's own app grid** (`mediaGrid.js`, a subclass of the
 `BaseAppView` that `AppDisplay` is built on): pages, swipe, dots and paging come with
@@ -111,25 +104,24 @@ controllers are the keyboard too: `.claude/rules/keyboard.md`.
 ## Design rules
 
 - **What the shell has, Library uses**: the app grid, `AppViewItem` and
-  `overview-tile`, `icon-button` and `button`, `global.focus_manager`, the dash's
-  `DashItemContainer`, and for both pop-ups `AppFolderDialog`'s shape and
-  `app-folder-dialog` style (`panel.js` `MediaPanel` is a copy, not a subclass). Ours
-  is only the tab bar, the detail pane and its rows.
-- **Motion** is `anim.js` alone: 120 ms (hover, leaving), 200 ms ease-out-quad (the
-  rest), and 260 ms for the hero flight, the one duration past the kit's 250. A
-  workspace change is the shell's slide, with no reveal of ours behind it.
+  `overview-tile`, `button`, `global.focus_manager`, the dash's `DashItemContainer`,
+  and for the pop-up `AppFolderDialog`'s shape and `app-folder-dialog` style
+  (`detailDialog.js` is a copy, not a subclass). Ours is only the tab bar, the detail
+  pane and its rows.
+- **Motion** is `anim.js` alone: 120 ms (hover, leaving) and 200 ms ease-out-quad (the
+  rest).
 - **One radius.** `corner-radius` (default 18) is the only one; `shape.js` scales it
   for artwork, hero, pane and badge, and every rounded surface sets it inline. The
   stylesheet's `border-radius` values are fallbacks matching the default; pills stay
   `9999px`. The exception is `paneInner`, the pop-up pane inside the folder's frame:
   the outer radius less `PANE_INSET`, so the curves are concentric.
-- **One set of style settings for every view**: `columns` (4–10), `rows` (1–3),
-  `corner-radius`, `detail-size` (80–120 %, the pop-up pane's share of the work
-  area, applied in `panel.js` `_budget()`), `grid-align`. No view keeps a copy, and
-  a change rebuilds what is built.
+- **One set of style settings**: `columns` (4–10), `rows` (1–3), `corner-radius`,
+  `detail-size` (80–120 %, the pop-up pane's share of the work area, applied in
+  `detailDialog.js` `_budget()`), `grid-align`. No view keeps a copy, and a change
+  rebuilds what is built.
   `.claude/rules/layout.md` has how the grid and the pane size themselves.
 - **The neutrals are the dark palette's** (`#222226`, `#fafafb`) on purpose: the
-  surface sits on the wallpaper. A light variant would be a class synced from
+  overview is dark in both schemes. A light variant would be a class synced from
   `Main.getStyleVariant()`; not worth doing until asked.
 - **Placeholders are drawn**, an accent-tinted tile in `widgets.js`, so nothing stale
   is cached and an accent change shows at once.
@@ -154,9 +146,8 @@ controllers are the keyboard too: `.claude/rules/keyboard.md`.
 - **Private shell API** is listed in `docs/private-api.md`, with what breaks when each
   piece moves (a symptom after an upgrade is looked up in its table); a new reach goes
   there in the same pull request.
-- **Measuring something just built**: `anim.js` `allocateNow()` lays out an actor
-  shown this frame (a clone flight measures NaN otherwise) and `ensureStyleDeep()`
-  styles a whole subtree; nothing is measured before them.
+- **Measuring something just built**: `anim.js` `ensureStyleDeep()` styles a whole
+  subtree; the pop-up's column is measured only after it.
 
 ## Checking and landing
 
@@ -183,7 +174,7 @@ is the real scan, run only when the user types it.
 Docks, Dash to Panel, Blur my Shell and Wallpaper FX reach the same places, so
 nothing here assumes it is the only extension in the shell: every registered
 GObject class is `Library*`, stylesheet classes are `ml-`, the pop-up's blur effect
-is `library-panel-blur` (`panel.js` `BLUR`), and the three wraps (Dash to Panel's
-`_updateGroupedElements`, only with `dash-to-panel` on, the overview layout's `_getAppDisplayBoxForState`, the
-workspace slide's `_prepareWorkspaceSwitch`) are chain-safe
-(`docs/private-api.md`, "Chain-safe wraps").
+is `library-panel-blur` (`detailDialog.js` `BLUR`), and the two wraps (Dash to
+Panel's `_updateGroupedElements`, only with `dash-to-panel` on, and the overview
+layout's `_getAppDisplayBoxForState`) are chain-safe (`docs/private-api.md`,
+"Chain-safe wraps").
