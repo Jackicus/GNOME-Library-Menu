@@ -39,8 +39,11 @@ Design reasoning that the code keeps to one line or none.
 
 ## The button
 
-- The button's icon is the theme's `tv-symbolic`, the TV Shows section's too, so it
-  follows the icon theme and St recolours it.
+- The button's icon is the theme's `video-display-symbolic`, the TV Shows section's
+  too, so it follows the icon theme and St recolours it. It is a plain screen in
+  Adwaita and Papirus alike, where `tv-symbolic` is a screen with a play triangle in
+  Papirus. The glyph is inset by an eighth of the dash's icon size each side, since
+  Show Apps' dots leave that much of their tile empty and the screen filled its own.
 
 ## Scanner
 

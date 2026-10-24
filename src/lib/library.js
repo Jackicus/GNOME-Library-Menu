@@ -8,7 +8,7 @@ export const SECTIONS = [
         key: 'tv',
         prefix: 'tv-shows',
         title: 'TV Shows',
-        icon: 'tv-symbolic',
+        icon: 'video-display-symbolic',
         aspect: 1.5,
         watched: true,
         emptyHint: 'Add a folder with one subfolder per show in Settings.',
@@ -35,10 +35,10 @@ export const SECTIONS = [
     },
 ];
 
-// The button's title and icon, the theme's own.
+// The button's title and icon, the theme's own (docs/notes.md).
 export const LIBRARY = {
     title: 'Library',
-    icon: 'tv-symbolic',
+    icon: 'video-display-symbolic',
 };
 
 export function sectionByKey(key) {
