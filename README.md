@@ -6,7 +6,7 @@ It plays nothing itself: a show or film
 opens in VLC, mpv or whichever player you choose, and it remembers what you have
 watched; a game starts through Steam or PCSX2.
 
-![The library in the overview: TV Shows, Films and Games tabs over a grid of posters, opened from the television button in the dash](docs/screenshots/menu.jpg)
+![The library in the overview: TV Shows, Films and Games tabs over a grid of posters, opened from the screen button in the dash](docs/screenshots/menu.jpg)
 
 ## What it does
 

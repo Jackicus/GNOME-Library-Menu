@@ -23,10 +23,13 @@ class LibraryButtonIcon extends Dash.ShowAppsIcon {
         this.setLabelText(LIBRARY.title);
     }
 
+    // Inset, so the glyph sits nearer the size of Show Apps' dots.
     _createIcon(size) {
+        const inset = Math.round(size / 8);
         this._iconActor = new St.Icon({
             gicon: this._gicon,
-            icon_size: size,
+            icon_size: size - 2 * inset,
+            style: `padding: ${inset}px;`,
             style_class: 'show-apps-icon',
             track_hover: true,
         });
