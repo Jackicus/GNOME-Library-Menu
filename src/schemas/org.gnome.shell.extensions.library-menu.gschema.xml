@@ -268,11 +268,24 @@
             <summary>Corner radius</summary>
             <description>How rounded artwork, tiles and the detail pane are, in pixels. 0 is square. The related radii (hero, thumbnails, rows, pane) scale with it.</description>
         </key>
-        <key name="detail-size" type="i">
-            <range min="80" max="120"/>
+        <!-- The pop-up a pick opens: lib/detailDialog.js. -->
+        <key name="detail-width" type="i">
+            <range min="60" max="120"/>
             <default>100</default>
-            <summary>Detail pop-up size</summary>
-            <description>How much of the room available the pop-up detail panel fills, as a percentage.</description>
+            <summary>Pop-up width</summary>
+            <description>How much of the room across the screen the pop-up fills, as a percentage.</description>
+        </key>
+        <key name="detail-height" type="i">
+            <range min="60" max="120"/>
+            <default>100</default>
+            <summary>Pop-up height</summary>
+            <description>How much of the room down the screen the pop-up fills, as a percentage. The artwork and the list beside it follow.</description>
+        </key>
+        <key name="detail-row-size" type="i">
+            <range min="28" max="56"/>
+            <default>36</default>
+            <summary>Episode row size</summary>
+            <description>The height of each episode, film or disc row in the pop-up, in pixels; its text and icons scale with it.</description>
         </key>
 
         <key name="play-on-new-workspace" type="b">

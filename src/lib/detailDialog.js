@@ -51,7 +51,7 @@ function folderLook() {
 
 export const DetailDialog = GObject.registerClass(
 class LibraryDetailDialog extends St.Bin {
-    constructor({onOpen, tracker, size}) {
+    constructor({onOpen, tracker, width, height, rowSize}) {
         super({
             visible: false,
             x_expand: true,
@@ -62,7 +62,8 @@ class LibraryDetailDialog extends St.Bin {
 
         this._constraint = new Layout.MonitorConstraint({index: Main.layoutManager.primaryIndex});
         this.add_constraint(this._constraint);
-        this._size = size;
+        this._width = width;
+        this._height = height;
 
         this._addClickAway();
 
@@ -93,7 +94,7 @@ class LibraryDetailDialog extends St.Bin {
         });
         this._panel.add_child(this._clip);
 
-        this._detail = new DetailView({onOpen, tracker});
+        this._detail = new DetailView({onOpen, tracker, rowSize});
         this._detail.actor.set_position(0, 0);
         this._clip.add_child(this._detail.actor);
 
@@ -168,14 +169,14 @@ class LibraryDetailDialog extends St.Bin {
         const bottom = (monitor.y + monitor.height - area.y - area.height) / scale;
         this.child.set_style(`padding: ${top}px ${right}px ${bottom}px ${left}px;`);
 
-        // `maxHeight` is for content that does not fit in the `detail-size` share.
+        // `maxHeight` is for content that does not fit in the `detail-height` share.
         const room = {
             width: Math.min(MAX_WIDTH * scale, area.width - 2 * MARGIN * scale),
             height: Math.min(MAX_HEIGHT * scale, area.height - 2 * MARGIN * scale),
         };
         return {
-            width: Math.round(room.width * this._size),
-            height: Math.round(room.height * this._size),
+            width: Math.round(room.width * this._width),
+            height: Math.round(room.height * this._height),
             maxHeight: Math.round(room.height),
         };
     }
@@ -193,7 +194,7 @@ class LibraryDetailDialog extends St.Bin {
         const [, sideWidth] = this._detail.side.get_preferred_width(-1);
         const [, sideHeight] = this._detail.side.get_preferred_height(sideWidth);
 
-        // Never shorter than the column, which HERO_MIN can make outgrow `detail-size`.
+        // Never shorter than the column, which HERO_MIN can make outgrow `detail-height`.
         const paneWidth = budget.width - frame;
         const paneHeight = Math.min(Math.ceil(sideHeight) + pad, budget.maxHeight - frame);
         this._wideWidth = budget.width;

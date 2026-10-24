@@ -4,6 +4,9 @@ import Pango from 'gi://Pango';
 
 import {radiusStyle} from './shape.js';
 
+// The stylesheet's .ml-row height, logical px: the row `detail-row-size` scales from.
+const ROW_SIZE = 36;
+
 // The radius must travel in the same inline style as the image to round it.
 export function artworkStyle(path, part = 'art') {
     return `background-image: url("file://${encodeURI(path)}"); background-size: cover; ${radiusStyle(part)}`;
@@ -151,14 +154,19 @@ export function createPill(text, styleClass, style = null) {
 }
 
 // `watched` null: nothing to track; true or false makes the disc a toggle.
-export function createRow({index, title, subtitle, badges = [], size, icon = 'media-playback-start-symbolic', onActivate, watched = null, onWatched}) {
+// `height` is logical px; the row's type and icons scale with it from the
+// stylesheet's 36 px, so a two-line row still fits.
+export function createRow({index, title, subtitle, badges = [], size, icon = 'media-playback-start-symbolic', height, onActivate, watched = null, onWatched}) {
+    const ratio = height / ROW_SIZE;
+    const iconSize = Math.round(16 * ratio);
     const row = new St.Button({
         style_class: 'button flat ml-row',
         can_focus: true,
         track_hover: true,
         x_expand: true,
-        style: radiusStyle(),
+        style: `${radiusStyle()} height: ${height}px; min-height: ${height}px; font-size: ${ratio.toFixed(2)}em;`,
     });
+    const discStyle = `width: ${height}px; height: ${height}px;`;
     const content = new St.BoxLayout({x_expand: true, y_align: Clutter.ActorAlign.CENTER});
 
     // A label sized in CSS draws its text at the top, so the disc is a bin.
@@ -172,10 +180,11 @@ export function createRow({index, title, subtitle, badges = [], size, icon = 'me
             style_class: 'ml-row-index',
             y_align: Clutter.ActorAlign.CENTER,
             child: number,
+            style: discStyle,
         }));
     } else {
         // Its own button, so ticking an episode off does not also play it.
-        const tick = new St.Icon({icon_name: 'object-select-symbolic', icon_size: 16});
+        const tick = new St.Icon({icon_name: 'object-select-symbolic', icon_size: iconSize});
         const face = new St.Widget({layout_manager: new Clutter.BinLayout()});
         face.add_child(number);
         face.add_child(tick);
@@ -187,6 +196,7 @@ export function createRow({index, title, subtitle, badges = [], size, icon = 'me
             track_hover: true,
             accessible_name: 'Watched',
             child: face,
+            style: discStyle,
         });
         const sync = () => {
             number.visible = !disc.checked;
@@ -228,7 +238,7 @@ export function createRow({index, title, subtitle, badges = [], size, icon = 'me
 
     content.add_child(new St.Icon({
         icon_name: icon,
-        icon_size: 16,
+        icon_size: iconSize,
         style_class: 'ml-row-icon',
         y_align: Clutter.ActorAlign.CENTER,
     }));
