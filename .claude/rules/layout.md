@@ -29,9 +29,16 @@ paths:
   whether a part-full row is centred under the full ones or hugs the leading edge.
 - **The page dots keep their room on a one-page section**: the shell hides them, but the
   grid still budgets their height, so every section's rows land on the same lines.
-- **The hero has a floor** (`detailView.js` `HERO_MIN`, 132 logical px): on a small
-  work area the smallest `detail-height` leaves less room than the buttons beneath the
-  artwork take, so the panel shrinks instead and the artwork does not vanish.
+- **The pop-up's height is `detail-height`'s share of a room** of at most
+  `detailDialog.js` `MAX_HEIGHT` (760 logical px) less the margins, so 100 % is the
+  same panel on every screen with the room; above it the panel grows as far as the
+  work area less `MARGIN`. The hero fills its column, what the buttons beneath it take
+  measured once styled (`detailView.js` `_buildSide`), and is capped at
+  `HERO_MAX_WIDTH_FRACTION` of the pane's width, so a narrow pop-up leaves room under
+  the buttons rather than crowd the list.
+- **The hero has a floor** (`HERO_MIN`, 132 logical px): on a small work area the
+  smallest `detail-height` leaves less room than the buttons take, so the panel
+  outgrows the share instead and the artwork does not vanish.
 - **The overview is laid out in the work area, not on the monitor.** The box
   `ControlsManagerLayout.vfunc_allocate` divides is already inset by the top bar and
   anything reserved (Dash to Panel's 48 px), so `mediaMenu.js` `_slotSize`, which works

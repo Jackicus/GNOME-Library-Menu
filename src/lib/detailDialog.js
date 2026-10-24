@@ -169,22 +169,28 @@ class LibraryDetailDialog extends St.Bin {
         const bottom = (monitor.y + monitor.height - area.y - area.height) / scale;
         this.child.set_style(`padding: ${top}px ${right}px ${bottom}px ${left}px;`);
 
-        // `maxHeight` is for content that does not fit in the `detail-height` share.
+        // A share of a room MAX_WIDTH by MAX_HEIGHT at most, so 100 % is the same
+        // panel on every screen with the room; the margins are the limit past it.
+        const limit = {
+            width: area.width - 2 * MARGIN * scale,
+            height: area.height - 2 * MARGIN * scale,
+        };
         const room = {
-            width: Math.min(MAX_WIDTH * scale, area.width - 2 * MARGIN * scale),
-            height: Math.min(MAX_HEIGHT * scale, area.height - 2 * MARGIN * scale),
+            width: Math.min(MAX_WIDTH * scale, limit.width),
+            height: Math.min(MAX_HEIGHT * scale, limit.height),
         };
         return {
-            width: Math.round(room.width * this._width),
-            height: Math.round(room.height * this._height),
-            maxHeight: Math.round(room.height),
+            width: Math.round(Math.min(room.width * this._width, limit.width)),
+            height: Math.round(Math.min(room.height * this._height, limit.height)),
+            maxHeight: Math.round(limit.height),
         };
     }
 
     // The panel opens at the side column's width and height, then widens.
     _sizePanel(budget) {
         const frame = 2 * PANE_INSET * St.ThemeContext.get_for_stage(global.stage).scale_factor;
-        this._detail.setSize(budget.width - frame, budget.height - frame);
+        const paneWidth = budget.width - frame;
+        this._detail.setSize(paneWidth, budget.height - frame);
         this._detail.populate(this._item, this._section);
 
         // Unstyled, the column measures short and the clip cuts the corners square.
@@ -195,8 +201,8 @@ class LibraryDetailDialog extends St.Bin {
         const [, sideHeight] = this._detail.side.get_preferred_height(sideWidth);
 
         // Never shorter than the column, which HERO_MIN can make outgrow `detail-height`.
-        const paneWidth = budget.width - frame;
-        const paneHeight = Math.min(Math.ceil(sideHeight) + pad, budget.maxHeight - frame);
+        const paneHeight = Math.min(Math.max(budget.height, Math.ceil(sideHeight) + pad + frame),
+            budget.maxHeight) - frame;
         this._wideWidth = budget.width;
         this._narrowWidth = Math.min(budget.width, Math.ceil(sideWidth) + pad + frame);
 
