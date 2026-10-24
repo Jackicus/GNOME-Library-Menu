@@ -22,11 +22,11 @@ paths:
   of either. `gridFor` shrinks the cover to fit `rows` and `columns` exactly inside
   the page less `grid-padding-*`; with `show-titles` off the label's share of a cell
   goes to the cover.
-- **The spacing settings are floors** (`tile-spacing-*`): `placeGrid` widens them
-  with the room the covers cannot take, up to the theme's `max-column-spacing` for
-  `.icon-grid` (`MAX_SPREAD`), as the shell spreads its icons, and centres the block
-  in what is left. `grid-align` only decides whether a part-full row is centred under
-  the full ones or hugs the leading edge.
+- **The spacing settings are what the covers get** (`tile-spacing-*`): `placeGrid`
+  lays the cells that far apart, past the tile's own `TILE_PADDING`, and centres the
+  block in what the padding leaves; nothing spreads them wider, so a height-limited
+  page has margins at its sides, as the preview shows. `grid-align` only decides
+  whether a part-full row is centred under the full ones or hugs the leading edge.
 - **The page dots keep their room on a one-page section**: the shell hides them, but the
   grid still budgets their height, so every section's rows land on the same lines.
 - **The hero has a floor** (`detailView.js` `HERO_MIN`, 132 logical px): on a small

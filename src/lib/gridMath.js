@@ -11,8 +11,6 @@ const TITLE_LINE = 20;
 // The shell's PAGE_PREVIEW_RATIO each side, for the page arrows.
 export const ARROWS_SHARE = 0.2;
 export const DOTS_HEIGHT = 36;
-// How far the spacing may widen: the theme's max-column-spacing for .icon-grid.
-const MAX_SPREAD = 36;
 
 export const GRID_KEYS = [
     'columns', 'rows', 'tile-spacing-horizontal', 'tile-spacing-vertical',
@@ -64,17 +62,15 @@ export function gridFor({width, height, aspect, scale, style}) {
     };
 }
 
-// Where the block of cells sits on a page: the spacing is a floor, and the room
-// the covers cannot take widens it, as far as the shell lets its icons spread.
+// Where the block of cells sits on a page: the cells as far apart as the
+// settings say, centred in the room the padding leaves.
 export function placeGrid({pageWidth, pageHeight, columns, rows, cellW, cellH, scale, style}) {
     const padX = style.padX * scale;
     const padY = style.padY * scale;
     const roomW = pageWidth - 2 * padX;
     const roomH = pageHeight - 2 * padY - (style.titles ? TITLE_LINE : 0) * scale;
-    const spread = (least, room, count) => count > 1
-        ? Math.min(Math.max(least, room / (count - 1)), Math.max(least, MAX_SPREAD * scale)) : 0;
-    const gapX = spread(style.gapX * scale, roomW - columns * cellW, columns);
-    const gapY = spread(style.gapY * scale, roomH - rows * cellH, rows);
+    const gapX = style.gapX * scale;
+    const gapY = style.gapY * scale;
     const blockW = columns * cellW + (columns - 1) * gapX;
     const blockH = rows * cellH + (rows - 1) * gapY;
     return {
