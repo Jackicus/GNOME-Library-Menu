@@ -50,7 +50,7 @@ Design reasoning that the code keeps to one line or none.
 - **Artwork sizes** (`backend/metadata.js` `POSTER_BOX` 512×768, `BACKDROP_BOX` 960×540).
   St decodes an image whole on the compositor thread and keeps it: a 2830×4000 poster
   costs tens of megabytes to draw a 320 px tile. 768 tall covers the detail hero
-  (`detailView.js` `HERO_MAX_HEIGHT`, 560) at scale 1, or a grid cover up to 384 at
+  (at most `detailView.js` `HERO_MAX_WIDTH_FRACTION` of the widest pane: 722) at scale 1, or a grid cover up to 384 at
   scale 2; a larger cover is drawn scaled up rather than every poster paying for a
   larger decode. The backdrop is the detail pane's dimmed backing.
 - **Six lookups at once** (`ENRICH_WORKERS`): the providers are free, and Wikipedia

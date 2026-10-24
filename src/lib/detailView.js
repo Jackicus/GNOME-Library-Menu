@@ -6,7 +6,7 @@ import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import Pango from 'gi://Pango';
 
-import {Duration, Ease, slideSwap, staggerIn} from './anim.js';
+import {Duration, Ease, ensureStyleDeep, slideSwap, staggerIn} from './anim.js';
 import {fillOnScroll} from './lazyList.js';
 import {artworkStyle, createArtwork, createActionButton, createLabel, createPill, createRow} from './widgets.js';
 import {PANE_INSET, radiusStyle} from './shape.js';
@@ -17,9 +17,8 @@ import {adjustAnimationTime, ensureActorVisibleInScrollView} from 'resource:///o
 // panel's PANE_INSET around it, the pane sits 32 in from the panel's edge.
 const PADDING = 32 - PANE_INSET;
 
-const HERO_MAX_HEIGHT = 560;
-const HERO_RESERVED = 2 * 52 + 28;         // two action buttons and the gaps
-const HERO_MAX_WIDTH_FRACTION = 0.34;      // of the pane width
+// Of the pane's width: the title and list keep the rest.
+const HERO_MAX_WIDTH_FRACTION = 0.34;
 const HERO_MIN = 132;
 // One line of the summary's 0.95em type; St has no line-height to set.
 const SUMMARY_LINE = 21;
@@ -94,12 +93,11 @@ export class DetailView {
         return St.ThemeContext.get_for_stage(global.stage).scale_factor;
     }
 
-    _heroSize(aspect) {
-        const scale = this._scale;
-        const room = this._height - 2 * this.padding - HERO_RESERVED * scale;
-        const byHeight = Math.min(HERO_MAX_HEIGHT * scale, room);
+    // `chrome` is what the column holds besides the hero, physical px.
+    _heroSize(aspect, chrome) {
+        const room = this._height - 2 * this.padding - chrome;
         const byWidth = Math.round(this._width * HERO_MAX_WIDTH_FRACTION * aspect);
-        const height = Math.max(HERO_MIN * scale, Math.min(byHeight, byWidth));
+        const height = Math.max(HERO_MIN * this._scale, Math.min(room, byWidth));
         return {width: Math.round(height / aspect), height};
     }
 
@@ -177,6 +175,14 @@ export class DetailView {
         this.side = this._buildSide(item, section);
         columns.add_child(this.side);
 
+        // The hero takes what the buttons leave of the column, measured once styled.
+        ensureStyleDeep(this.side);
+        const chrome = this.side.get_preferred_height(-1)[1] - this.hero.height;
+        const fitted = this._createHero(item, section, this._heroSize(section.aspect, chrome));
+        this.side.replace_child(this.hero, fitted);
+        this.hero.destroy();
+        this.hero = fitted;
+
         // The second column waits for an idle, off the frames of the opening move.
         this._buildPendingMain = () => this._buildMain(item);
         this._deferredMain = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
@@ -227,16 +233,7 @@ export class DetailView {
         // Clutter would otherwise inherit x_expand from the buttons inside.
         const side = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, style_class: 'ml-detail-side', x_expand: false, y_expand: true});
 
-        const {width: heroW, height: heroH} = this._heroSize(section.aspect);
-        this.hero = createArtwork({
-            path: item.art,
-            title: item.title,
-            icon: section.icon,
-            width: heroW,
-            height: heroH,
-            styleClass: 'ml-art ml-hero',
-            radius: 'hero',
-        });
+        this.hero = this._createHero(item, section, this._heroSize(section.aspect, 0));
         side.add_child(this.hero);
 
         if (item.playPath) {
@@ -263,6 +260,17 @@ export class DetailView {
         }
 
         return side;
+    }
+
+    _createHero(item, section, size) {
+        return createArtwork({
+            path: item.art,
+            title: item.title,
+            icon: section.icon,
+            ...size,
+            styleClass: 'ml-art ml-hero',
+            radius: 'hero',
+        });
     }
 
     _buildMain(item) {
