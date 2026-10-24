@@ -15,12 +15,10 @@ const DASH_MAX_SHARE = 0.16;
 const VERTICAL_SPACING_SHARE = 0.02;
 
 export class MediaMenu {
-    constructor({sections, itemsFor, onActivate, columns, rows, button, onSwitch, onEmpty}) {
+    constructor({sections, itemsFor, onActivate, button, onSwitch, onEmpty}) {
         this._sections = sections;
         this._itemsFor = itemsFor;
         this._onActivate = onActivate;
-        this._columns = columns;
-        this._rows = rows;
         this._button = button;
         this._onSwitch = onSwitch;
         this._onEmpty = onEmpty;
@@ -308,8 +306,6 @@ export class MediaMenu {
             active: this._key,
             width,
             height,
-            columns: this._columns,
-            rows: this._rows,
             onActivate: this._onActivate,
             onSwitch: key => {
                 this._key = key;

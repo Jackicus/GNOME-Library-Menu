@@ -8,6 +8,7 @@ import Pango from 'gi://Pango';
 
 import {SECTIONS as LIBRARY_SECTIONS, openCommandKey, readSections} from './lib/library.js';
 import {ACTIONS, NATIVE_KEYS, padLabel} from './lib/actions.js';
+import {ARROWS_SHARE, DOTS_HEIGHT, GRID_KEYS, TILE_PADDING, gridFor, placeGrid, readGridStyle} from './lib/gridMath.js';
 
 // A credential's `fields` are tab-joined in one slot of the `credentials` setting;
 // a field's Import reads the file the user picks, offering <field.file> from the
@@ -148,6 +149,70 @@ function slider(settings, key, min, max) {
     return scale;
 }
 
+// The library's slot on a 1600 × 900 screen, logical px: the box the preview lays out.
+const PREVIEW_BOX = {width: 1600, height: 650};
+const PREVIEW_ASPECT = 1.5;
+
+// A wireframe of one page, laid out by the same arithmetic as the grid itself.
+function gridPreview(settings) {
+    const area = new Gtk.DrawingArea({content_height: 240, hexpand: true, css_classes: ['card']});
+    area.set_draw_func((widget, cr, width, height) => {
+        const style = readGridStyle(settings);
+        const fit = gridFor({...PREVIEW_BOX, aspect: PREVIEW_ASPECT, scale: 1, style});
+        const pageWidth = PREVIEW_BOX.width * (1 - ARROWS_SHARE);
+        const pageHeight = PREVIEW_BOX.height - DOTS_HEIGHT;
+        const {left, top, gapX, gapY} = placeGrid({pageWidth, pageHeight, ...fit, scale: 1, style});
+
+        const margin = 12;
+        const k = Math.min((width - 2 * margin) / PREVIEW_BOX.width, (height - 2 * margin) / PREVIEW_BOX.height);
+        const ox = (width - PREVIEW_BOX.width * k) / 2;
+        const oy = (height - PREVIEW_BOX.height * k) / 2;
+        const px = ox + (PREVIEW_BOX.width - pageWidth) / 2 * k;
+        const fg = widget.get_color();
+        const accent = Adw.StyleManager.get_default().get_accent_color_rgba();
+        const stroke = (x, y, w, h, alpha, dash = []) => {
+            cr.setSourceRGBA(fg.red, fg.green, fg.blue, alpha);
+            cr.setDash(dash, 0);
+            cr.setLineWidth(1);
+            cr.rectangle(Math.round(x) + 0.5, Math.round(y) + 0.5, Math.round(w), Math.round(h));
+            cr.stroke();
+        };
+
+        // The slot, the page within reach of the arrows, and its padding.
+        stroke(ox, oy, PREVIEW_BOX.width * k, PREVIEW_BOX.height * k, 0.25);
+        stroke(px, oy, pageWidth * k, pageHeight * k, 0.5, [4, 3]);
+        stroke(px + style.padX * k, oy + style.padY * k,
+            (pageWidth - 2 * style.padX) * k, (pageHeight - 2 * style.padY) * k, 0.3, [1, 3]);
+
+        const coverW = (fit.cellW - TILE_PADDING) * k;
+        const inset = TILE_PADDING / 2 * k;
+        for (let r = 0; r < fit.rows; r++) {
+            for (let c = 0; c < fit.columns; c++) {
+                const x = px + (left + c * (fit.cellW + gapX)) * k;
+                const y = oy + (top + r * (fit.cellH + gapY)) * k;
+                stroke(x, y, fit.cellW * k, fit.cellH * k, 0.15);
+                cr.setSourceRGBA(accent.red, accent.green, accent.blue, 0.35);
+                cr.rectangle(x + inset, y + inset, coverW, fit.iconSize * k);
+                cr.fill();
+                if (style.titles) {
+                    cr.setSourceRGBA(fg.red, fg.green, fg.blue, 0.4);
+                    cr.rectangle(x + inset + coverW * 0.2, y + inset + fit.iconSize * k + 8 * k, coverW * 0.6, 8 * k);
+                    cr.fill();
+                }
+            }
+        }
+
+        cr.setSourceRGBA(fg.red, fg.green, fg.blue, 0.4);
+        for (let i = -1; i <= 1; i++) {
+            cr.arc(ox + PREVIEW_BOX.width / 2 * k + i * 14 * k, oy + (PREVIEW_BOX.height - DOTS_HEIGHT / 2) * k, 2.5 * k, 0, 2 * Math.PI);
+            cr.fill();
+        }
+    });
+    for (const key of GRID_KEYS)
+        settings.connect(`changed::${key}`, () => area.queue_draw());
+    return area;
+}
+
 function row(title, subtitle, ...suffixes) {
     const built = new Adw.ActionRow({title, subtitle: subtitle ?? ''});
     suffixes.forEach(suffix => built.add_suffix(suffix));
@@ -178,6 +243,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
 
         const state = {window, settings, counts: this._readCounts(), refreshCounts: [], padHandlers: []};
         window.add(this._generalPage(state));
+        window.add(this._gridPage(state));
         window.add(this._controlsPage(state));
         for (const section of SECTIONS)
             window.add(this._sectionPage(state, section));
@@ -256,14 +322,11 @@ export default class LibraryPreferences extends ExtensionPreferences {
 
         page.add(this._shortcutGroup(state));
 
-        const appearance = new Adw.PreferencesGroup({title: 'Appearance'});
+        const appearance = new Adw.PreferencesGroup({
+            title: 'Appearance',
+            description: 'The grid\'s rows, columns and spacing are on the Grid page.',
+        });
         page.add(appearance);
-        appearance.add(row('Rows', 'Covers down a page. Fewer means larger covers.', slider(settings, 'rows', 1, 3)));
-        appearance.add(row('Columns',
-            'Covers across a page. Fewer means larger covers. A small screen fits fewer of either.',
-            slider(settings, 'columns', 4, 10)));
-        appearance.add(row('Align covers', 'Where a row that is not full sits',
-            toggles(settings, 'grid-align', [['center', 'Centre'], ['start', 'Left']])));
         appearance.add(row('Corner radius', 'How rounded covers, tiles and the detail pane are, in pixels. 0 is square.',
             slider(settings, 'corner-radius', 0, 40)));
         appearance.add(row('Detail pop-up size', 'How much of the available room the pop-up fills, as a percentage',
@@ -293,6 +356,44 @@ export default class LibraryPreferences extends ExtensionPreferences {
         const rescan = row('Rescan everything', this._lastScanText(), this._scanButton(state, SECTIONS));
         state.refreshCounts.push(() => rescan.set_subtitle(this._lastScanText()));
         library.add(rescan);
+        return page;
+    }
+
+    _gridPage(state) {
+        const {settings} = state;
+        const page = new Adw.PreferencesPage({title: 'Grid', icon_name: 'view-grid-symbolic'});
+
+        const preview = new Adw.PreferencesGroup({
+            title: 'Preview',
+            description: 'One page of the library on a 1600 × 900 screen, laid out as the settings ' +
+                'below say. A smaller screen fits fewer covers.',
+        });
+        page.add(preview);
+        preview.add(gridPreview(settings));
+
+        const covers = new Adw.PreferencesGroup({title: 'Covers'});
+        page.add(covers);
+        covers.add(row('Rows', 'Covers down a page. Fewer means larger covers.', slider(settings, 'rows', 1, 3)));
+        covers.add(row('Columns', 'Covers across a page. Fewer means larger covers.', slider(settings, 'columns', 4, 10)));
+        const titles = new Adw.SwitchRow({
+            title: 'Titles under the covers',
+            subtitle: 'Off, the room a title took goes to the covers',
+        });
+        settings.bind('show-titles', titles, 'active', Gio.SettingsBindFlags.DEFAULT);
+        covers.add(titles);
+        covers.add(row('Align covers', 'Where a row that is not full sits',
+            toggles(settings, 'grid-align', [['center', 'Centre'], ['start', 'Left']])));
+
+        const spacing = new Adw.PreferencesGroup({
+            title: 'Spacing',
+            description: 'In pixels. Covers are as large as the spacing leaves room for, and the ' +
+                'room they cannot take spreads them further apart.',
+        });
+        page.add(spacing);
+        spacing.add(row('Between covers, across', 'At least this', slider(settings, 'tile-spacing-horizontal', 0, 48)));
+        spacing.add(row('Between covers, down', 'At least this', slider(settings, 'tile-spacing-vertical', 0, 48)));
+        spacing.add(row('Padding at the sides', null, slider(settings, 'grid-padding-horizontal', 0, 120)));
+        spacing.add(row('Padding above and below', null, slider(settings, 'grid-padding-vertical', 0, 120)));
         return page;
     }
 

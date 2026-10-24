@@ -9,56 +9,18 @@ import * as AppDisplay from 'resource:///org/gnome/shell/ui/appDisplay.js';
 import * as IconGrid from 'resource:///org/gnome/shell/ui/iconGrid.js';
 
 import {handleBoundKey} from './controls.js';
+import {gridFor, placeGrid} from './gridMath.js';
 import {createArtwork} from './widgets.js';
 
 // Not exported by the shell, but it is what AppDisplay extends.
 const BaseAppView = Object.getPrototypeOf(AppDisplay.AppDisplay);
 
-// Logical pixels, as the theme writes them.
-const MIN_ART = 96;
-// .icon-grid's column-spacing and row-spacing in the shell theme.
-const GAP = 12;
-// An overview-tile's padding, and its label beneath the artwork.
-const TILE_PADDING = 24;
-const TILE_CHROME = 56;
-// Room for a hovered title in the bottom row to wrap to a second line.
-const TITLE_LINE = 20;
-const PAGE_PADDING_V = 48;
-const PAGE_PADDING_H = 36;
-// The shell's PAGE_PREVIEW_RATIO each side, for the page arrows.
-const ARROWS_SHARE = 0.2;
-const DOTS_HEIGHT = 36;
 const PAGES_AHEAD = 2;
 
-let gridAlign = 'center';
-export function setGridAlign(align) {
-    gridAlign = align === 'start' ? 'start' : 'center';
-}
-
-// Decided before any item is added: the layout does not page items again
-// when the mode changes.
-function gridFor(width, height, aspect, wantColumns, wantRows) {
-    const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
-    const gap = GAP * scale;
-    const pad = TILE_PADDING * scale;
-    const chrome = TILE_CHROME * scale;
-    const minArt = MIN_ART * scale;
-
-    const gridW = width * (1 - ARROWS_SHARE) - PAGE_PADDING_H * scale;
-    const gridH = height - (DOTS_HEIGHT + PAGE_PADDING_V + TITLE_LINE) * scale;
-
-    const fitColumns = Math.floor((gridW + gap) / (minArt / aspect + pad + gap));
-    const columns = Math.max(1, Math.min(wantColumns, fitColumns));
-    const cellW = Math.floor((gridW - gap * (columns - 1)) / columns);
-    const byWidth = Math.floor((cellW - pad) * aspect);
-
-    const forRows = n => Math.floor((gridH + gap) / n - chrome - gap);
-    const fitRows = Math.floor((gridH + gap) / (minArt + chrome + gap));
-    const rows = Math.max(1, Math.min(wantRows, fitRows));
-
-    const iconSize = Math.max(minArt, Math.min(byWidth, forRows(rows)));
-
-    return {rows, columns, iconSize};
+// One set for every grid (CLAUDE.md), read as a grid is built and as it allocates.
+let style = null;
+export function setGridStyle(next) {
+    style = next;
 }
 
 // The shell's layout makes every cell a square; posters are not.
@@ -75,19 +37,19 @@ class LibraryPosterGridLayout extends IconGrid.IconGridLayout {
         const cellW = first.get_preferred_width(-1)[0];
         const cellH = first.get_preferred_height(-1)[0];
 
-        const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
-        // Already scaled by the theme, and 0 until the first style change.
-        const hGap = this.columnSpacing || GAP * scale;
-        const vGap = this.rowSpacing || GAP * scale;
-
         const rtl = Clutter.get_default_text_direction() === Clutter.TextDirection.RTL;
-        const {columnsPerPage: columns, rowsPerPage: rows, pagePadding: pad} = this;
-        const blockW = columns * cellW + (columns - 1) * hGap;
-        const blockH = rows * cellH + (rows - 1) * vGap;
-        const centred = gridAlign === 'center';
-        const left = pad.left + Math.max(0, (this._pageWidth - pad.left - pad.right - blockW) / 2);
-        const top = pad.top +
-            Math.max(0, (this._pageHeight - pad.top - pad.bottom - TITLE_LINE * scale - blockH) / 2);
+        const {columnsPerPage: columns, rowsPerPage: rows} = this;
+        const {left, top, gapX, gapY} = placeGrid({
+            pageWidth: this._pageWidth,
+            pageHeight: this._pageHeight,
+            columns,
+            rows,
+            cellW,
+            cellH,
+            scale: St.ThemeContext.get_for_stage(global.stage).scale_factor,
+            style,
+        });
+        const centred = style.align === 'center';
 
         const box = new Clutter.ActorBox();
         this._pages.forEach((page, pageIndex) => {
@@ -98,12 +60,12 @@ class LibraryPosterGridLayout extends IconGrid.IconGridLayout {
                 const row = Math.floor(index / columns);
                 const inRow = Math.min(columns, page.visibleChildren.length - row * columns);
                 const rowOffset = centred
-                    ? (rtl ? -1 : 1) * (columns - inRow) * (cellW + hGap) / 2
+                    ? (rtl ? -1 : 1) * (columns - inRow) * (cellW + gapX) / 2
                     : 0;
                 box.set_origin(
                     Math.floor(pageIndex * this._pageWidth + left + rowOffset +
-                        column * (cellW + hGap)),
-                    Math.floor(top + row * (cellH + vGap)));
+                        column * (cellW + gapX)),
+                    Math.floor(top + row * (cellH + gapY)));
                 // A hovered tile wraps its title, so the cell is a floor.
                 box.set_size(cellW, Math.max(cellH, item.get_preferred_height(cellW)[1]));
                 item.allocate(box);
@@ -157,7 +119,7 @@ class LibraryPosterIcon extends IconGrid.BaseIcon {
 const MediaItem = GObject.registerClass(
 class LibraryMediaItem extends AppDisplay.AppViewItem {
     _init({item, section, order, onActivate}) {
-        super._init({style_class: 'overview-tile'}, false, true);
+        super._init({style_class: 'overview-tile'}, false, style.titles);
         this._id = `${section.key}/${item.id}`;
         this._name = item.title;
         this.item = item;
@@ -165,6 +127,7 @@ class LibraryMediaItem extends AppDisplay.AppViewItem {
 
         this.icon = new PosterIcon(item.title, {
             setSizeManually: true,
+            showLabel: style.titles,
             createIcon: size => createArtwork({
                 path: item.art,
                 title: item.title,
@@ -297,8 +260,14 @@ class LibraryMediaView extends BaseAppView {
     }
 });
 
-export function createMediaView({section, items, width, height, columns, rows, onActivate}) {
-    pendingGrid = gridFor(width, height, section.aspect, columns, rows);
+export function createMediaView({section, items, width, height, onActivate}) {
+    pendingGrid = gridFor({
+        width,
+        height,
+        aspect: section.aspect,
+        scale: St.ThemeContext.get_for_stage(global.stage).scale_factor,
+        style,
+    });
     const view = new MediaView({section, items, onActivate});
     // Each batch of tiles moves the grid to the page it made.
     view.goToPage(0, false);
