@@ -51,7 +51,7 @@ function folderLook() {
 
 export const DetailDialog = GObject.registerClass(
 class LibraryDetailDialog extends St.Bin {
-    constructor({onOpen, tracker, width, height, rowSize}) {
+    constructor({onOpen, tracker, width, height, rowSize, textSize}) {
         super({
             visible: false,
             x_expand: true,
@@ -94,7 +94,7 @@ class LibraryDetailDialog extends St.Bin {
         });
         this._panel.add_child(this._clip);
 
-        this._detail = new DetailView({onOpen, tracker, rowSize});
+        this._detail = new DetailView({onOpen, tracker, rowSize, textSize});
         this._detail.actor.set_position(0, 0);
         this._clip.add_child(this._detail.actor);
 

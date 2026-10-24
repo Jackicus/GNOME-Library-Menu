@@ -154,17 +154,16 @@ export function createPill(text, styleClass, style = null) {
 }
 
 // `watched` null: nothing to track; true or false makes the disc a toggle.
-// `height` is logical px; the row's type and icons scale with it from the
-// stylesheet's 36 px, so a two-line row still fits.
-export function createRow({index, title, subtitle, badges = [], size, icon = 'media-playback-start-symbolic', height, onActivate, watched = null, onWatched}) {
-    const ratio = height / ROW_SIZE;
-    const iconSize = Math.round(16 * ratio);
+// `height` is logical px; the row's icons scale with it from the stylesheet's
+// 36 px, and its type with `textSize` alone, so a shorter row keeps its text.
+export function createRow({index, title, subtitle, badges = [], size, icon = 'media-playback-start-symbolic', height, textSize, onActivate, watched = null, onWatched}) {
+    const iconSize = Math.round(16 * height / ROW_SIZE);
     const row = new St.Button({
         style_class: 'button flat ml-row',
         can_focus: true,
         track_hover: true,
         x_expand: true,
-        style: `${radiusStyle()} height: ${height}px; min-height: ${height}px; font-size: ${ratio.toFixed(2)}em;`,
+        style: `${radiusStyle()} height: ${height}px; min-height: ${height}px; font-size: ${textSize.toFixed(2)}em;`,
     });
     const discStyle = `width: ${height}px; height: ${height}px;`;
     const content = new St.BoxLayout({x_expand: true, y_align: Clutter.ActorAlign.CENTER});
