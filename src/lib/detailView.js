@@ -175,6 +175,14 @@ export class DetailView {
         this.side = this._buildSide(item, section);
         columns.add_child(this.side);
 
+        // The hero takes what the buttons leave of the column, measured once styled.
+        ensureStyleDeep(this.side);
+        const chrome = this.side.get_preferred_height(-1)[1] - this.hero.height;
+        const fitted = this._createHero(item, section, this._heroSize(section.aspect, chrome));
+        this.side.replace_child(this.hero, fitted);
+        this.hero.destroy();
+        this.hero = fitted;
+
         // The second column waits for an idle, off the frames of the opening move.
         this._buildPendingMain = () => this._buildMain(item);
         this._deferredMain = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
@@ -225,15 +233,7 @@ export class DetailView {
         // Clutter would otherwise inherit x_expand from the buttons inside.
         const side = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, style_class: 'ml-detail-side', x_expand: false, y_expand: true});
 
-        const hero = size => createArtwork({
-            path: item.art,
-            title: item.title,
-            icon: section.icon,
-            ...size,
-            styleClass: 'ml-art ml-hero',
-            radius: 'hero',
-        });
-        this.hero = hero(this._heroSize(section.aspect, 0));
+        this.hero = this._createHero(item, section, this._heroSize(section.aspect, 0));
         side.add_child(this.hero);
 
         if (item.playPath) {
@@ -259,14 +259,18 @@ export class DetailView {
             side.add_child(folder);
         }
 
-        // The hero takes what the buttons leave of the column, measured once styled.
-        ensureStyleDeep(side);
-        const chrome = side.get_preferred_height(-1)[1] - this.hero.height;
-        const fitted = hero(this._heroSize(section.aspect, chrome));
-        side.replace_child(this.hero, fitted);
-        this.hero.destroy();
-        this.hero = fitted;
         return side;
+    }
+
+    _createHero(item, section, size) {
+        return createArtwork({
+            path: item.art,
+            title: item.title,
+            icon: section.icon,
+            ...size,
+            styleClass: 'ml-art ml-hero',
+            radius: 'hero',
+        });
     }
 
     _buildMain(item) {
