@@ -31,6 +31,7 @@ export class MediaMenu {
         this._box = null;
         this._fold = 0;
         this._forced = false;
+        this._pressedOff = false;
         this._escapeId = 0;
     }
 
@@ -45,20 +46,22 @@ export class MediaMenu {
             return;
         }
 
-        // Leaving an overview our button opened takes it all the way down, but
-        // not mid-swipe or for a search, which uncheck Show Apps too.
+        // Show Apps' checked state is what puts the overview in the app-grid state
+        // the library borrows, so it stays checked but reads as unlit; a press on
+        // it while the library is up then asks for the apps, not the window picker.
         this._showAppsButton = Main.overview.dash.showAppsButton;
-        this._showAppsButton.connectObject('notify::checked', button => {
-            if (button.checked)
-                return;
-            const leaving = this._showing && this._forced &&
-                Main.overview.visible && !Main.overview.animationInProgress &&
-                !this._adjustment?.gestureInProgress &&
-                !this._controls._searchController?.searchActive;
-            this._show(false);
-            if (leaving)
-                Main.overview.hide();
-        }, this);
+        this._showAppsButton.connectObject(
+            'notify::checked', button => {
+                this._pressedOff = !button.checked && this._showing;
+                if (!button.checked)
+                    this._show(false);
+                this._syncAppsLook();
+            },
+            'clicked', button => {
+                if (this._pressedOff)
+                    button.checked = true;
+            },
+            this);
 
         this._controls._searchController?.connectObject('notify::search-active', controller => {
             if (!controller.searchActive && this._showing)
@@ -168,10 +171,12 @@ export class MediaMenu {
 
     toggle(key = null) {
         if (this.isShowing) {
-            if (this._forced)
+            if (this._forced) {
                 Main.overview.hide();
-            else
+            } else {
+                this._show(false);
                 this._showAppsButton.checked = false;
+            }
             return;
         }
         this.open(key);
@@ -259,6 +264,16 @@ export class MediaMenu {
             this._library?.show(this._key);
         }
         this._button.sync(this._showing);
+        this._syncAppsLook();
+    }
+
+    // St sets the pseudo-class with the property; taken off, it stays off until
+    // the property next changes.
+    _syncAppsLook() {
+        if (this._showing)
+            this._showAppsButton.remove_style_pseudo_class('checked');
+        else if (this._showAppsButton.checked)
+            this._showAppsButton.add_style_pseudo_class('checked');
     }
 
     // Before the overview has ever been shown, the slot is worked out as
