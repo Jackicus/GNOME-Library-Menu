@@ -88,8 +88,9 @@ No `disable()` is async, which 51 now rejects.
    log in again.
 4. `./scripts/dev.sh logs '10 min ago'`: no `TypeError`, no "No button beside
    Show Apps", no "not laid out as expected".
-5. The menu from the button, the shortcut and a controller's Home; a pick's
-   pop-up, closed with Escape, a click away and by leaving the overview.
+5. The menu from the button, the shortcut, a controller's Home and a dash
+   button with **Buttons on the desktop** on; a pick's pop-up, closed with
+   Escape, a click away and by leaving the overview.
 6. Lock and unlock with the library open.
 7. With Dash to Panel on and off, and **Work with Dash to Panel** on: the button
    beside Show Apps in both; with the setting off, Dash to Panel's panel as it

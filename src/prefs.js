@@ -235,6 +235,12 @@ export default class LibraryPreferences extends ExtensionPreferences {
                 'app folder opens.',
         });
         page.add(view);
+        const dash = new Adw.SwitchRow({
+            title: 'Buttons on the desktop',
+            subtitle: 'A row of buttons on the wallpaper, one per section, each opening the library on it',
+        });
+        settings.bind('desktop-dash', dash, 'active', Gio.SettingsBindFlags.DEFAULT);
+        view.add(dash);
         const play = new Adw.SwitchRow({
             title: 'Play on a new workspace',
             subtitle: 'The player opens on an empty workspace of its own, leaving the one you picked from as it was',

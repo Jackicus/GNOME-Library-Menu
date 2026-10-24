@@ -68,6 +68,10 @@ only way in.
   work area, so `click 20 450` closes it, as `key Escape` does.
 - **An empty section** shows a centred placeholder with Open Settings (Find Games for
   Games): normal until it has a folder and a scan.
+- **The dash** (`desktop-dash` true in the nested session's own settings; a fresh
+  `--stand-in` start has it off): three buttons centred on the wallpaper, TV Shows
+  ≈ (584, 466), Films ≈ (800, 466), Games ≈ (1016, 466). A click opens the overview
+  onto that section: `overview on` before the `shot`, or the shot dismisses it.
 
 ## Its own traps
 
@@ -75,6 +79,9 @@ only way in.
   the tile or row that had it.
 - **The preferences open under the overview** when it is up: `overview off` before a
   `window` shot of them.
+- **`overview on` holds across `do` calls** until `overview off`: a later `click` meant
+  for the desktop (a dash button) lands in whatever overview is up instead, and the
+  workspace preview's click handler closes it. `overview off` first.
 - **The look beside Dash to Panel, Blur my Shell and app folders** (`detailDialog.js`
   `folderLook`) needs them enabled in the nested session's own settings (`run timeout
   5 gsettings set org.gnome.shell enabled-extensions "['library-menu@jackicus',

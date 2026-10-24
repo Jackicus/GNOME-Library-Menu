@@ -49,7 +49,20 @@ folded away, and the button beside Show Apps, a keyboard shortcut or a controlle
 Home button opens it. A picked show, film or game pops up out of its poster, the way
 an app folder opens, and Escape or a click outside puts it back.
 
-![A show picked in the overview: its details pop up the way an app folder opens, poster and Play button on the left, facts, synopsis and a season's episodes on the right](docs/screenshots/detail.jpg)
+**Buttons on the desktop**, off to begin with, draws a row of buttons on the wallpaper,
+one per section, each opening the library on that section. Windows cover them as
+they cover the wallpaper.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/detail.jpg" alt="A show picked in the overview: its details pop up the way an app folder opens, poster and Play button on the left, facts, synopsis and a season's episodes on the right"></td>
+    <td width="50%"><img src="docs/screenshots/dash.jpg" alt="Three buttons centred on the desktop wallpaper, TV Shows, Films and Games, each with its icon"></td>
+  </tr>
+  <tr>
+    <td valign="top">A picked show pops up out of its poster.</td>
+    <td valign="top">Buttons on the desktop, one per section.</td>
+  </tr>
+</table>
 
 ## Requirements
 
@@ -144,12 +157,12 @@ button.
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/prefs-general.png" alt="The General page: playing on a new workspace, the Dash to Panel switch, the keyboard shortcut, and the rows and columns sliders"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-general.png" alt="The General page: the buttons on the desktop switch, playing on a new workspace, the Dash to Panel switch, the keyboard shortcut, and the rows slider"></td>
     <td width="50%"><img src="docs/screenshots/prefs-tv-shows.png" alt="The TV Shows page: the switch for the TV Shows tab, no folder yet, and the information sources tried in order: TVmaze, TMDB and Wikipedia"></td>
   </tr>
   <tr>
-    <td valign="top"><b>General</b>: playing on a new workspace, the button in Dash to
-    Panel's panel (off to begin with), the keyboard shortcut (none to begin with), the grid's size and shape, watched marks, and Rescan everything.</td>
+    <td valign="top"><b>General</b>: the buttons on the desktop (off to begin with),
+    playing on a new workspace, the button in Dash to Panel's panel (off to begin with), the keyboard shortcut (none to begin with), the grid's size and shape, watched marks, and Rescan everything.</td>
     <td valign="top"><b>TV Shows</b> and <b>Films</b>: folders, the information
     sources and their keys, and the player command.</td>
   </tr>

@@ -1,5 +1,5 @@
-// The library's button, the menu it opens in the overview and the pane a pick
-// opens: .claude/rules/places.md.
+// The library's button, the menu it opens in the overview, the pane a pick opens
+// and the dash on the wallpaper: .claude/rules/places.md.
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Util from 'resource:///org/gnome/shell/misc/util.js';
@@ -15,6 +15,7 @@ import {setGridAlign} from './mediaGrid.js';
 import {LibraryButton} from './libraryButton.js';
 import {MediaMenu} from './mediaMenu.js';
 import {DetailDialog} from './detailDialog.js';
+import {DesktopDash} from './desktopDash.js';
 import {Tracker} from './tracking.js';
 import {PlaybackWatcher} from './playback.js';
 import {Controls} from './controls.js';
@@ -85,6 +86,7 @@ export class LibraryApp {
         this._settings = extension.getSettings();
         this._dialog = null;
         this._browser = null;
+        this._dash = null;
         this._sections = {};
         this._sectionKey = null;
         this._reloadWanted = false;
@@ -125,7 +127,7 @@ export class LibraryApp {
         St.ThemeContext.get_for_stage(global.stage).connectObject('notify::scale-factor',
             () => this._scheduleRebuild(), this);
         const rebuildKeys = ['columns', 'rows', 'grid-align', 'corner-radius', 'detail-size',
-            ...SECTIONS.map(s => `${s.prefix}-enabled`)];
+            'desktop-dash', ...SECTIONS.map(s => `${s.prefix}-enabled`)];
         for (const key of rebuildKeys)
             this._settings.connectObject(`changed::${key}`, () => this._scheduleRebuild(), this);
 
@@ -173,6 +175,8 @@ export class LibraryApp {
         this._dialog?.popdown();
         this._dialog?.destroy();
         this._dialog = null;
+        this._dash?.destroy();
+        this._dash = null;
     }
 
     // Settings and a rescan's writes come in bursts: one rebuild per burst.
@@ -337,5 +341,12 @@ export class LibraryApp {
             onEmpty: (section, button) => this._onEmpty(section, button),
         });
         this._browser.enable();
+
+        if (this._settings.get_boolean('desktop-dash')) {
+            this._dash = new DesktopDash({
+                sections,
+                onActivate: key => this._browser.open(key),
+            });
+        }
     }
 }

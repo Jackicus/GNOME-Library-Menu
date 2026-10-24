@@ -5,6 +5,7 @@ paths:
   - "src/lib/libraryView.js"
   - "src/lib/mediaMenu.js"
   - "src/lib/detailDialog.js"
+  - "src/lib/desktopDash.js"
 ---
 
 # Where the library and the pane open
@@ -50,3 +51,17 @@ paths:
 - Its `GrabHelper` takes Escape and the keyboard, and holds the grab as
   `Shell.ActionMode.POPUP`, the app folder's tier, not `SYSTEM_MODAL`. It is not a
   window: a `Meta.Window` would need a second process, since the shell links no GTK.
+
+## The dash (`desktopDash.js`, setting `desktop-dash`)
+
+- A row of one `St.Button` per enabled section, icon over title, centred in the
+  primary monitor's work area on `Main.layoutManager._backgroundGroup`
+  (`docs/private-api.md`): over the wallpaper, under every window, so a window covers
+  it as it covers the wallpaper. Its container takes no clicks, so the wallpaper's own
+  menu still opens beside the buttons. A button's click is `MediaMenu.open(key)`: the
+  overview to the library on that section.
+- The overview's previews and the workspace slide build wallpapers of their own and
+  do not show it; it is a desktop thing and is not cloned into them.
+- It follows the work area itself (`monitors-changed`, `workareas-changed`) and is
+  rebuilt with everything else on a setting or a rescan. No keyboard reaches it: the
+  shortcut and a controller's Home are the keyboard's ways in.

@@ -3,7 +3,8 @@
 Shared rules for every extension come from gnome-ai-kit: `../CLAUDE.md` and `../.claude/rules/` (loaded with this file), and the `gnome-ext:*` skills. `.claude/kit.sh` pulls the kit at session start, or, with no kit beside this repository, fetches it and prints its rules into the session.
 
 Library Menu, a GNOME Shell extension (UUID `library-menu@jackicus`), that shows a library of TV shows,
-films and games in the overview, opened from one button beside Show Apps.
+films and games in the overview, opened from one button beside Show Apps or, as a
+setting asks, from a row of buttons on the wallpaper.
 `metadata.json` claims GNOME Shell 50 only, and the code is written for 50 alone, with
 no fallback for an older shell; 51 breaks it (`docs/compatibility.md`). The name is the same
 throughout: `metadata.json`'s `name`, the UUID, the schema
@@ -76,7 +77,8 @@ lists the two artwork folders once per load rather than stat a poster each.
    drop shared with other projects) when there is one, and its Check runs the scanner's
    `--check`, so the key is read from the settings and never on a command line.
 3. `extension.js` builds a `LibraryApp` (`lib/app.js`) and enables it. The app
-   reads `library.json` and builds the menu and the pop-up pane.
+   reads `library.json` and builds the menu, the pop-up pane and, with
+   `desktop-dash` on, the dash.
 4. **Watched marks and playback** (`lib/tracking.js`, `lib/playback.js`): the
    extension plays nothing. A pick runs the section's `<prefix>-open-command` (VLC by
    default), a game its own command line (`launch`: `xdg-open steam://rungameid/…` or
@@ -91,8 +93,10 @@ tabs and grids in it and the row of small workspaces folded away. A picked item'
 pane is a pop-up like an app folder's (`detailDialog.js`), zooming out of its tile
 and gone when the tile unmaps. The one button (`libraryButton.js`, a
 `Dash.ShowAppsIcon` subclass, in the dash, or in Dash to Panel's panel when the
-`dash-to-panel` setting, off by default, asks), `library-shortcut` and the Home
-action are the only ways in. `.claude/rules/places.md` has how each behaves.
+`dash-to-panel` setting, off by default, asks), `library-shortcut`, the Home action
+and the **dash** (`desktopDash.js`, off by default: a row of one button per section on
+the wallpaper, each opening the menu on its section) are the only ways in.
+`.claude/rules/places.md` has how each behaves.
 
 **The library grid is the shell's own app grid** (`mediaGrid.js`, a subclass of the
 `BaseAppView` that `AppDisplay` is built on): pages, swipe, dots and paging come with
