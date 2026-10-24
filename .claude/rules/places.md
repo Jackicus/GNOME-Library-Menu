@@ -42,7 +42,8 @@ paths:
   holding a `DetailView` where the folder holds its grid. It lives in `overviewGroup`,
   added at build and raised on each open, since every pick is made in the overview,
   and it is gone the moment its tile unmaps.
-- The pane sits inside the panel by `shape.js` `PANE_INSET`, taken out of the pane's
+- The pane sits inside the panel by `shape.js` `PANE_INSET`, the width of the panel's
+  inset ring, so the two edges are one curve; the inset is taken out of the pane's
   own padding: `detailView.js` `PADDING` and the stylesheet's `.ml-pane-content` are
   the two halves and must agree, or the pane overhangs and the clip cuts the
   backdrop's bottom corners square.

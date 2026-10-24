@@ -122,19 +122,19 @@
 
 /* The shell's folder panel (detailDialog.js) is the pane's chrome. The padding
    is detailView.js's PADDING, which the panel is sized around: 32 less the
-   shape.js PANE_INSET the panel keeps outside it. */
+   shape.js PANE_INSET the panel keeps outside it, its ring. */
 .ml-pane-content {
-    padding: 26px;
+    padding: 31px;
     spacing: 32px;
 }
 
 /* TMDB backdrop behind the pane content, dimmed so the type stays legible. */
 .ml-backdrop {
-    border-radius: 30px;
+    border-radius: 29px;
 }
 
 .ml-backdrop-veil {
-    border-radius: 30px;
+    border-radius: 29px;
     background-gradient-direction: horizontal;
     background-gradient-start: rgba(20, 20, 24, 0.92);
     background-gradient-end: rgba(20, 20, 24, 0.7);

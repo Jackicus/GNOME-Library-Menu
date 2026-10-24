@@ -3,8 +3,9 @@
 const MAX = 40;
 const DEFAULT_RADIUS = 18;
 
-// The shell's $base_padding (_common.scss): logical pixels, into a CSS string.
-export const PANE_INSET = 6;
+// The width of the panel's inset ring (the theme's app-folder-dialog box-shadow),
+// which the pane sits inside: logical pixels, into a CSS string.
+export const PANE_INSET = 1;
 
 const PART = {
     art: r => r,
