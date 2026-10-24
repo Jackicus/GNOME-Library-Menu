@@ -237,13 +237,13 @@
             <range min="0" max="48"/>
             <default>12</default>
             <summary>Space between covers across</summary>
-            <description>The least room between two covers side by side, in pixels. Covers are as large as the grid allows, and the room they cannot take widens this.</description>
+            <description>The room between two covers side by side, in pixels, past the tile's own padding. Covers are as large as the page allows with it kept, and a block narrower than the page is centred.</description>
         </key>
         <key name="tile-spacing-vertical" type="i">
             <range min="0" max="48"/>
             <default>12</default>
             <summary>Space between covers down</summary>
-            <description>The least room between two rows of covers, in pixels, widened the same way.</description>
+            <description>The room between two rows of covers, in pixels, kept the same way.</description>
         </key>
         <key name="grid-padding-horizontal" type="i">
             <range min="0" max="120"/>

@@ -385,12 +385,12 @@ export default class LibraryPreferences extends ExtensionPreferences {
 
         const spacing = new Adw.PreferencesGroup({
             title: 'Spacing',
-            description: 'In pixels. Covers are as large as the spacing leaves room for, and the ' +
-                'room they cannot take spreads them further apart.',
+            description: 'In pixels. Covers are as large as the spacing leaves room for; a block ' +
+                'narrower than the page is centred, as the preview shows.',
         });
         page.add(spacing);
-        spacing.add(row('Between covers, across', 'At least this', slider(settings, 'tile-spacing-horizontal', 0, 48)));
-        spacing.add(row('Between covers, down', 'At least this', slider(settings, 'tile-spacing-vertical', 0, 48)));
+        spacing.add(row('Between covers, across', null, slider(settings, 'tile-spacing-horizontal', 0, 48)));
+        spacing.add(row('Between covers, down', null, slider(settings, 'tile-spacing-vertical', 0, 48)));
         spacing.add(row('Padding at the sides', null, slider(settings, 'grid-padding-horizontal', 0, 120)));
         spacing.add(row('Padding above and below', null, slider(settings, 'grid-padding-vertical', 0, 120)));
         return page;
