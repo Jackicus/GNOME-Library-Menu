@@ -11,13 +11,11 @@ const HEADER_ALLOWANCE = 76;
 
 export class LibraryView {
     // width and height are the whole view, header included, in physical px.
-    constructor({sections, itemsFor, active, width, height, columns, rows, onActivate, onSwitch, onEmpty}) {
+    constructor({sections, itemsFor, active, width, height, onActivate, onSwitch, onEmpty}) {
         this._sections = sections;
         this._itemsFor = itemsFor;
         this._width = width;
         this._height = height;
-        this._columns = columns;
-        this._rows = rows;
         this._onActivate = onActivate;
         this._onSwitch = onSwitch;
         this._onEmpty = onEmpty;
@@ -100,8 +98,6 @@ export class LibraryView {
                 items,
                 width: this._width,
                 height: this._height - HEADER_ALLOWANCE * scale,
-                columns: this._columns,
-                rows: this._rows,
                 onActivate: this._onActivate,
             });
             actor = view;

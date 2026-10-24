@@ -32,7 +32,7 @@ an `if`, and then the only sign is the symptom, with nothing logged.
 | `BaseAppView`'s `_adjustment` | mediaGrid.js | `_shownPage()` throws: no staggered reveal, keyboard landing or remote page turn; swipe, wheel and arrows still page | No |
 | `BaseAppView`'s `_createGrid`, `_loadApps`, `_compareItems` (overridden), `_addItem` (called) | mediaGrid.js | `_createGrid` renamed: square cells. `_addItem` changed: no tiles. The other two: a cancelled overview drag re-diffs the grid wrongly | No |
 | `AppViewItem`'s `_id`, `_name` and positional `_init(params, isDraggable, expandTitleOnHover)` | mediaGrid.js | Tiles draw but share one id; a changed signature makes posters draggable or stops the title unfolding | No |
-| Restated `PAGE_PREVIEW_RATIO` (`ARROWS_SHARE`) | mediaGrid.js | Covers sized for the wrong margin beside the page arrows | No |
+| Restated `PAGE_PREVIEW_RATIO` (`ARROWS_SHARE`), `.icon-grid`'s `max-column-spacing` (`MAX_SPREAD`) | gridMath.js | Covers sized for the wrong margin beside the page arrows | No |
 | `IconGridLayout`'s `_pageWidth`, `_pageHeight`, `_pages`, `_pageSizeChanged`, `_shouldEaseItems` | mediaGrid.js | `_pageWidth`/`_pageHeight` gone: `vfunc_allocate` returns early and no tile is allocated, so no poster shows. `_pages` gone: it throws | No |
 | `controls._appDisplay._folderIcons`, `icon._dialog`, `dialog._viewBox` | detailDialog.js `folderLook()` | The pop-up keeps the stock shade and theme even under Blur my Shell | Yes, `?.` to `null` |
 | Restated `DIALOG_SHADE_NORMAL` (`SHADE`) | detailDialog.js | The shade drifts from the shell's | No |

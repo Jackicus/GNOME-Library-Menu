@@ -233,6 +233,35 @@
             <summary>Grid alignment</summary>
             <description>Where the covers sit when a row is not full: "center" centres a part-full row under the full ones, as the app grid does; "start" lines it up against the leading edge. Full rows are centred on the page either way.</description>
         </key>
+        <key name="tile-spacing-horizontal" type="i">
+            <range min="0" max="48"/>
+            <default>12</default>
+            <summary>Space between covers across</summary>
+            <description>The least room between two covers side by side, in pixels. Covers are as large as the grid allows, and the room they cannot take widens this.</description>
+        </key>
+        <key name="tile-spacing-vertical" type="i">
+            <range min="0" max="48"/>
+            <default>12</default>
+            <summary>Space between covers down</summary>
+            <description>The least room between two rows of covers, in pixels, widened the same way.</description>
+        </key>
+        <key name="grid-padding-horizontal" type="i">
+            <range min="0" max="120"/>
+            <default>24</default>
+            <summary>Grid padding at the sides</summary>
+            <description>Room kept clear at each side of a page, in pixels.</description>
+        </key>
+        <key name="grid-padding-vertical" type="i">
+            <range min="0" max="120"/>
+            <default>24</default>
+            <summary>Grid padding above and below</summary>
+            <description>Room kept clear above and below a page, in pixels.</description>
+        </key>
+        <key name="show-titles" type="b">
+            <default>true</default>
+            <summary>Titles under the covers</summary>
+            <description>Off leaves each cover alone, and the room its title took goes to the covers.</description>
+        </key>
         <key name="corner-radius" type="i">
             <range min="0" max="40"/>
             <default>18</default>

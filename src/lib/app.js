@@ -11,7 +11,8 @@ import Shell from 'gi://Shell';
 
 import {SECTIONS, loadLibrary, libraryPath, openCommandKey, sectionByKey} from './library.js';
 import {setCornerRadius} from './shape.js';
-import {setGridAlign} from './mediaGrid.js';
+import {setGridStyle} from './mediaGrid.js';
+import {GRID_KEYS, readGridStyle} from './gridMath.js';
 import {LibraryButton} from './libraryButton.js';
 import {MediaMenu} from './mediaMenu.js';
 import {DetailDialog} from './detailDialog.js';
@@ -126,8 +127,8 @@ export class LibraryApp {
 
         St.ThemeContext.get_for_stage(global.stage).connectObject('notify::scale-factor',
             () => this._scheduleRebuild(), this);
-        const rebuildKeys = ['columns', 'rows', 'grid-align', 'corner-radius', 'detail-size',
-            'desktop-dash', ...SECTIONS.map(s => `${s.prefix}-enabled`)];
+        const rebuildKeys = [...GRID_KEYS, 'corner-radius', 'detail-size', 'desktop-dash',
+            ...SECTIONS.map(s => `${s.prefix}-enabled`)];
         for (const key of rebuildKeys)
             this._settings.connectObject(`changed::${key}`, () => this._scheduleRebuild(), this);
 
@@ -314,7 +315,7 @@ export class LibraryApp {
     _build() {
         // Before anything is built: every rounded surface reads it as it is made.
         setCornerRadius(this._settings.get_int('corner-radius'));
-        setGridAlign(this._settings.get_string('grid-align'));
+        setGridStyle(readGridStyle(this._settings));
 
         const sections = this._enabledSections();
         if (!sections.length) {
@@ -334,8 +335,6 @@ export class LibraryApp {
             sections,
             itemsFor: key => this._sections[key] ?? [],
             onActivate: (key, item, tile) => this._dialog.popup(tile, item, sectionByKey(key)),
-            columns: this._settings.get_int('columns'),
-            rows: this._settings.get_int('rows'),
             button: this._button,
             onSwitch: key => (this._sectionKey = key),
             onEmpty: (section, button) => this._onEmpty(section, button),

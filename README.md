@@ -157,24 +157,33 @@ button.
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/prefs-general.png" alt="The General page: the buttons on the desktop switch, playing on a new workspace, the Dash to Panel switch, the keyboard shortcut, and the rows slider"></td>
-    <td width="50%"><img src="docs/screenshots/prefs-tv-shows.png" alt="The TV Shows page: the switch for the TV Shows tab, no folder yet, and the information sources tried in order: TVmaze, TMDB and Wikipedia"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-general.png" alt="The General page: the buttons on the desktop switch, playing on a new workspace, the Dash to Panel switch, the keyboard shortcut, and the corner radius slider"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-grid.png" alt="The Grid page: a wireframe preview of one page of covers, six across and two down, over the rows and columns sliders and the titles switch"></td>
   </tr>
   <tr>
     <td valign="top"><b>General</b>: the buttons on the desktop (off to begin with),
-    playing on a new workspace, the button in Dash to Panel's panel (off to begin with), the keyboard shortcut (none to begin with), the grid's size and shape, watched marks, and Rescan everything.</td>
+    playing on a new workspace, the button in Dash to Panel's panel (off to begin with), the keyboard shortcut (none to begin with), the corner radius, the pop-up's size, watched marks, and Rescan everything.</td>
+    <td valign="top"><b>Grid</b>: rows and columns, titles under the covers, the
+    space between covers and the grid's padding, with a preview that follows them.</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/prefs-tv-shows.png" alt="The TV Shows page: the switch for the TV Shows tab, no folder yet, and the information sources tried in order: TVmaze, TMDB and Wikipedia"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-games.png" alt="The Games page: the switch for the Games tab, the Steam library and PCSX2 configuration folders, both auto-detected, and the sources Steam and IGDB"></td>
+  </tr>
+  <tr>
     <td valign="top"><b>TV Shows</b> and <b>Films</b>: folders, the information
     sources and their keys, and the player command.</td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="docs/screenshots/prefs-games.png" alt="The Games page: the switch for the Games tab, the Steam library and PCSX2 configuration folders, both auto-detected, and the sources Steam and IGDB"></td>
-    <td width="50%"><img src="docs/screenshots/prefs-controls.png" alt="The Controls page: the keys a remote sends for Up, Down, Left, Right, Select, Back, Home and a page each way"></td>
-  </tr>
-  <tr>
     <td valign="top"><b>Games</b>: where Steam and PCSX2 are, if not where they usually
     are, and IGDB's keys for PS2 discs.</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/prefs-controls.png" alt="The Controls page: the keys a remote sends for Up, Down, Left, Right, Select, Back, Home and a page each way"></td>
+    <td width="50%"></td>
+  </tr>
+  <tr>
     <td valign="top"><b>Controls</b>: remote keys and controller buttons for browsing
     from the sofa.</td>
+    <td></td>
   </tr>
 </table>
 
