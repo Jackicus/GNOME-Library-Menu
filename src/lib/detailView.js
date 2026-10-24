@@ -28,9 +28,10 @@ const FIRST_ROWS = 24;
 const ROWS_PER_BATCH = 16;
 
 export class DetailView {
-    constructor({onOpen, tracker}) {
+    constructor({onOpen, tracker, rowSize}) {
         this._onOpen = onOpen;
         this._tracker = tracker;
+        this._rowSize = rowSize;
         this._section = null;
         this._groups = [];
         this._groupIndex = 0;
@@ -379,6 +380,7 @@ export class DetailView {
                     badges: entry.badges,
                     size: entry.size,
                     icon: entry.icon,
+                    height: this._rowSize,
                     onActivate: () => this._open(entry.path),
                     watched: tracker && entry.path ? tracker.isWatched(entry.path) : null,
                     onWatched: watched => tracker.setWatched(entry.path, watched),

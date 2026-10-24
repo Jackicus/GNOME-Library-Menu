@@ -121,8 +121,10 @@ controllers are the keyboard too: `.claude/rules/keyboard.md`.
   the outer radius less `PANE_INSET`, so the curves are concentric.
 - **One set of style settings**: the grid's (`gridMath.js` `GRID_KEYS`: `columns`
   4–10, `rows` 1–3, the spacing and padding pairs, `show-titles`, `grid-align`),
-  `corner-radius` and `detail-size` (80–120 %, the pop-up pane's share of the work
-  area, applied in `detailDialog.js` `_budget()`). No view keeps a copy, and a change
+  `corner-radius`, the pop-up's (`detail-width` and `detail-height`, 60–120 %, its
+  share of the work area, applied in `detailDialog.js` `_budget()`, and
+  `detail-row-size`, the list's row height, which `widgets.js` `createRow` scales
+  its type and icons from). No view keeps a copy, and a change
   rebuilds what is built.
   `.claude/rules/layout.md` has how the grid and the pane size themselves.
 - **The neutrals are the dark palette's** (`#222226`, `#fafafb`) on purpose: the

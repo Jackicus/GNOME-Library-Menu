@@ -162,7 +162,7 @@ button.
   </tr>
   <tr>
     <td valign="top"><b>General</b>: the buttons on the desktop (off to begin with),
-    playing on a new workspace, the button in Dash to Panel's panel (off to begin with), the keyboard shortcut (none to begin with), the corner radius, the pop-up's size, watched marks, and Rescan everything.</td>
+    playing on a new workspace, the button in Dash to Panel's panel (off to begin with), the keyboard shortcut (none to begin with), the corner radius, watched marks, and Rescan everything.</td>
     <td valign="top"><b>Grid</b>: rows and columns, titles under the covers, the
     space between covers and the grid's padding, with a preview that follows them.</td>
   </tr>
@@ -178,12 +178,13 @@ button.
   </tr>
   <tr>
     <td width="50%"><img src="docs/screenshots/prefs-controls.png" alt="The Controls page: the keys a remote sends for Up, Down, Left, Right, Select, Back, Home and a page each way"></td>
-    <td width="50%"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-window.png" alt="The Window page: the pop-up's width and height sliders, and the episode row size"></td>
   </tr>
   <tr>
     <td valign="top"><b>Controls</b>: remote keys and controller buttons for browsing
     from the sofa.</td>
-    <td></td>
+    <td valign="top"><b>Window</b>: the pop-up's width and height, and the size of
+    the rows in its episode list.</td>
   </tr>
 </table>
 

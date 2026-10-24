@@ -30,7 +30,7 @@ paths:
 - **The page dots keep their room on a one-page section**: the shell hides them, but the
   grid still budgets their height, so every section's rows land on the same lines.
 - **The hero has a floor** (`detailView.js` `HERO_MIN`, 132 logical px): on a small
-  work area the smallest `detail-size` leaves less room than the buttons beneath the
+  work area the smallest `detail-height` leaves less room than the buttons beneath the
   artwork take, so the panel shrinks instead and the artwork does not vanish.
 - **The overview is laid out in the work area, not on the monitor.** The box
   `ControlsManagerLayout.vfunc_allocate` divides is already inset by the top bar and

@@ -127,8 +127,8 @@ export class LibraryApp {
 
         St.ThemeContext.get_for_stage(global.stage).connectObject('notify::scale-factor',
             () => this._scheduleRebuild(), this);
-        const rebuildKeys = [...GRID_KEYS, 'corner-radius', 'detail-size', 'desktop-dash',
-            ...SECTIONS.map(s => `${s.prefix}-enabled`)];
+        const rebuildKeys = [...GRID_KEYS, 'corner-radius', 'detail-width', 'detail-height',
+            'detail-row-size', 'desktop-dash', ...SECTIONS.map(s => `${s.prefix}-enabled`)];
         for (const key of rebuildKeys)
             this._settings.connectObject(`changed::${key}`, () => this._scheduleRebuild(), this);
 
@@ -329,7 +329,9 @@ export class LibraryApp {
         this._dialog = new DetailDialog({
             onOpen: (path, section) => this._open(path, section),
             tracker: this._tracker,
-            size: this._settings.get_int('detail-size') / 100,
+            width: this._settings.get_int('detail-width') / 100,
+            height: this._settings.get_int('detail-height') / 100,
+            rowSize: this._settings.get_int('detail-row-size'),
         });
         this._browser = new MediaMenu({
             sections,

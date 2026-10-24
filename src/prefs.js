@@ -244,6 +244,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
         const state = {window, settings, counts: this._readCounts(), refreshCounts: [], padHandlers: []};
         window.add(this._generalPage(state));
         window.add(this._gridPage(state));
+        window.add(this._windowPage(state));
         window.add(this._controlsPage(state));
         for (const section of SECTIONS)
             window.add(this._sectionPage(state, section));
@@ -324,13 +325,11 @@ export default class LibraryPreferences extends ExtensionPreferences {
 
         const appearance = new Adw.PreferencesGroup({
             title: 'Appearance',
-            description: 'The grid\'s rows, columns and spacing are on the Grid page.',
+            description: 'The grid has the Grid page, and the pop-up a pick opens the Window page.',
         });
         page.add(appearance);
         appearance.add(row('Corner radius', 'How rounded covers, tiles and the detail pane are, in pixels. 0 is square.',
             slider(settings, 'corner-radius', 0, 40)));
-        appearance.add(row('Detail pop-up size', 'How much of the available room the pop-up fills, as a percentage',
-            slider(settings, 'detail-size', 80, 120)));
         const accent = new Adw.ActionRow({
             title: 'Accent colour',
             subtitle: 'Follows Settings → Appearance → Accent Color',
@@ -394,6 +393,26 @@ export default class LibraryPreferences extends ExtensionPreferences {
         spacing.add(row('Between covers, down', 'At least this', slider(settings, 'tile-spacing-vertical', 0, 48)));
         spacing.add(row('Padding at the sides', null, slider(settings, 'grid-padding-horizontal', 0, 120)));
         spacing.add(row('Padding above and below', null, slider(settings, 'grid-padding-vertical', 0, 120)));
+        return page;
+    }
+
+    _windowPage(state) {
+        const {settings} = state;
+        const page = new Adw.PreferencesPage({title: 'Window', icon_name: 'focus-windows-symbolic'});
+
+        const size = new Adw.PreferencesGroup({
+            title: 'Size',
+            description: 'The pop-up a pick opens, as a share of the room on screen. The artwork ' +
+                'and the list beside it follow.',
+        });
+        page.add(size);
+        size.add(row('Width', null, slider(settings, 'detail-width', 60, 120)));
+        size.add(row('Height', null, slider(settings, 'detail-height', 60, 120)));
+
+        const list = new Adw.PreferencesGroup({title: 'Episode list'});
+        page.add(list);
+        list.add(row('Row size', 'The height of each episode, film or disc row, in pixels. Its text and icons scale with it.',
+            slider(settings, 'detail-row-size', 28, 56)));
         return page;
     }
 
