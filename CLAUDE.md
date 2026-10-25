@@ -125,7 +125,8 @@ controllers are the keyboard too: `.claude/rules/keyboard.md`.
   `corner-radius`, the pop-up's (`detail-width` and `detail-height`, 60–120 %, its
   share of the work area, applied in `detailDialog.js` `_budget()`,
   `detail-row-size`, the list's row height, which `widgets.js` `createRow` scales
-  its icons from, and `detail-text-size`, the rows' and the description's type). No
+  its icons from, and `detail-text-size`, the rows' and the description's type, which
+  the title, facts and tabs follow by half). No
   view keeps a copy, and a change rebuilds what is built.
   `.claude/rules/layout.md` has how the grid and the pane size themselves.
 - **The neutrals are the dark palette's** (`#222226`, `#fafafb`) on purpose: the

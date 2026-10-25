@@ -418,7 +418,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
         page.add(list);
         list.add(row('Row size', 'The height of each episode, film or disc row, in pixels. Its icons scale with it.',
             slider(settings, 'detail-row-size', 28, 56)));
-        list.add(row('Text size', 'The rows and the description, as a percentage.',
+        list.add(row('Text size', 'The rows and the description, as a percentage; the title, facts and season tabs follow by half as much.',
             slider(settings, 'detail-text-size', 70, 150)));
         return page;
     }
