@@ -1,4 +1,4 @@
-// One item up close: artwork and primary action on the left, title, facts,
+// One item up close: artwork and its actions on the left, title, facts,
 // synopsis and the group list (seasons, files) on the right.
 
 import St from 'gi://St';
@@ -8,7 +8,7 @@ import Pango from 'gi://Pango';
 
 import {Duration, Ease, ensureStyleDeep, slideSwap, staggerIn} from './anim.js';
 import {fillOnScroll} from './lazyList.js';
-import {artworkStyle, createArtwork, createActionButton, createLabel, createPill, createRow} from './widgets.js';
+import {artworkStyle, createArtwork, createIconButton, createLabel, createPill, createRow} from './widgets.js';
 import {PANE_INSET, radiusStyle} from './shape.js';
 import {Tracker} from './tracking.js';
 import {adjustAnimationTime, ensureActorVisibleInScrollView} from 'resource:///org/gnome/shell/misc/animationUtils.js';
@@ -125,7 +125,7 @@ export class DetailView {
                 label = code ? `Continue ${code}` : 'Continue';
             }
         }
-        this._play.setLabel(label);
+        this._play.accessible_name = label;
     }
 
     _open(path) {
@@ -239,28 +239,27 @@ export class DetailView {
         this.hero = this._createHero(item, section, this._heroSize(section.aspect, 0));
         side.add_child(this.hero);
 
+        const actions = new St.BoxLayout({style_class: 'ml-detail-actions'});
         if (item.playPath) {
-            const play = createActionButton({
-                label: item.playLabel,
+            const play = createIconButton({
                 icon: 'media-playback-start-symbolic',
+                name: item.playLabel,
+                styleClass: 'button default ml-action-square',
             });
-            play.set_x_expand(true);
             play.connect('clicked', () => this._open(this._playPath ?? item.playPath));
-            side.add_child(play);
+            actions.add_child(play);
             this._play = play;
             this._syncPlay();
         }
-
         if (item.folder && item.playPath !== item.folder) {
-            const folder = createActionButton({
-                label: 'Show in Files',
-                icon: 'folder-symbolic',
-                styleClass: 'button ml-action-secondary',
-            });
-            folder.set_x_expand(true);
+            const folder = createIconButton({icon: 'folder-symbolic', name: 'Show in Files'});
             folder.connect('clicked', () => this._open(item.folder));
-            side.add_child(folder);
+            actions.add_child(folder);
         }
+        if (actions.get_n_children())
+            side.add_child(actions);
+        else
+            actions.destroy();
 
         return side;
     }

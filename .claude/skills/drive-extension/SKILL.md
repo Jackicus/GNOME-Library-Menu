@@ -63,7 +63,8 @@ only way in.
 - **The menu**: the overview opens onto the tabs (y ≈ 131: TV Shows ≈ x 721, Films
   ≈ x 809, Games ≈ x 887) over the grid, rows centred at y ≈ 320 and 570, first poster
   ≈ (407, 320).
-- **A pop-up detail**: Play ≈ (428, 735), never pressed; season tabs y ≈ 368 from
+- **A pop-up detail**: the squares under the poster, Play ≈ (263, 761), never pressed,
+  and Show in Files ≈ (320, 761); season tabs y ≈ 368 from
   x ≈ 695; rows from y ≈ 430 in ≈ 54 px steps at the default row size. The shade's edge is 48 px in from the
   work area, so `click 20 450` closes it, as `key Escape` does.
 - **An empty section** shows a centred placeholder with Open Settings (Find Games for

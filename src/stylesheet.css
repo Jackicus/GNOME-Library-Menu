@@ -200,11 +200,9 @@
     color: rgba(250, 250, 251, 0.78);
 }
 
-/* Primary and secondary pill buttons. Both are the shell's own `.button` —
- * the primary is `.button.default`, which is where the accent fill, the
- * sizing, the focus ring and the hover and pressed states come from. Only the
- * pill shape the design asks for is added here. */
-.ml-action,
+/* The shell's own `.button`, so the fill, focus ring, hover and pressed states
+ * are the theme's: a pill with a label, or a square with an icon, under the
+ * hero, whose radius is set inline. */
 .ml-action-secondary {
     border-radius: 9999px;
 }
@@ -213,11 +211,21 @@
     spacing: 10px;
 }
 
+.ml-detail-actions {
+    spacing: 12px;
+}
+
+.ml-action-square {
+    width: 3em;
+    height: 3em;
+    padding: 0;
+}
+
 /* The theme rings a focused `.button.default` in its own accent, which on the
- * accent fill is next to invisible — and from across a room, with a remote,
+ * accent fill is next to invisible, and from across a room, with a remote,
  * the ring is the only way to tell where you are. The accent's foreground
  * colour is the one that shows against it. */
-.ml-action.default:focus {
+.ml-action-square.default:focus {
     box-shadow: inset 0 0 0 2px -st-accent-fg-color !important;
 }
 

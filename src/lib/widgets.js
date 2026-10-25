@@ -72,7 +72,7 @@ export function createArtwork({path, title, icon, width, height, styleClass = 'm
     return art;
 }
 
-export function createActionButton({label, icon, styleClass = 'button default ml-action'}) {
+export function createActionButton({label, icon, styleClass}) {
     const content = new St.BoxLayout({style_class: 'ml-action-content', y_align: Clutter.ActorAlign.CENTER});
     if (icon)
         content.add_child(new St.Icon({icon_name: icon, icon_size: 16, y_align: Clutter.ActorAlign.CENTER}));
@@ -88,6 +88,18 @@ export function createActionButton({label, icon, styleClass = 'button default ml
         text.text = value;
     };
     return button;
+}
+
+// A square of the shell's `.button`, icon only; `name` is what a screen reader says.
+export function createIconButton({icon, name, styleClass = 'button ml-action-square'}) {
+    return new St.Button({
+        style_class: styleClass,
+        accessible_name: name,
+        can_focus: true,
+        track_hover: true,
+        style: radiusStyle('badge'),
+        child: new St.Icon({icon_name: icon, icon_size: 20}),
+    });
 }
 
 // Focus landing on a tab chooses it, so a remote's arrows alone switch sections.
