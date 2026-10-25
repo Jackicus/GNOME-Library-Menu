@@ -11,6 +11,7 @@ import * as IconGrid from 'resource:///org/gnome/shell/ui/iconGrid.js';
 import {handleBoundKey} from './controls.js';
 import {gridFor, placeGrid} from './gridMath.js';
 import {createArtwork} from './widgets.js';
+import {tileStyle} from './shape.js';
 
 // Not exported by the shell, but it is what AppDisplay extends.
 const BaseAppView = Object.getPrototypeOf(AppDisplay.AppDisplay);
@@ -119,7 +120,8 @@ class LibraryPosterIcon extends IconGrid.BaseIcon {
 const MediaItem = GObject.registerClass(
 class LibraryMediaItem extends AppDisplay.AppViewItem {
     _init({item, section, order, onActivate}) {
-        super._init({style_class: 'overview-tile'}, false, style.titles);
+        // The theme's margin and bottom padding would come between the cells past the spacing.
+        super._init({style_class: 'overview-tile', style: 'margin: 0; padding: 0;'}, false, style.titles);
         this._id = `${section.key}/${item.id}`;
         this._name = item.title;
         this.item = item;
@@ -136,6 +138,7 @@ class LibraryMediaItem extends AppDisplay.AppViewItem {
                 height: size,
             }),
         });
+        this.icon.set_style(tileStyle(style.tilePad));
         this.set_child(this.icon);
         this.connect('clicked', () => onActivate(section.key, item, this));
     }

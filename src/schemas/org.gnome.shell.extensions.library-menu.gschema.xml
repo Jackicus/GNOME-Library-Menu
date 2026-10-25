@@ -257,6 +257,12 @@
             <summary>Grid padding above and below</summary>
             <description>Room kept clear above and below a page, in pixels.</description>
         </key>
+        <key name="tile-padding" type="i">
+            <range min="0" max="24"/>
+            <default>6</default>
+            <summary>Padding around a cover</summary>
+            <description>The tile each cover sits in, in pixels each side, lit under the pointer and the focus. 0, with no spacing, puts covers edge to edge.</description>
+        </key>
         <key name="show-titles" type="b">
             <default>true</default>
             <summary>Titles under the covers</summary>

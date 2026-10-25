@@ -17,9 +17,10 @@ const PART = {
 };
 
 let styles = {};
+let base = DEFAULT_RADIUS;
 
 export function setCornerRadius(px) {
-    const base = Math.max(0, Math.min(MAX, Math.round(px) || 0));
+    base = Math.max(0, Math.min(MAX, Math.round(px) || 0));
     styles = {};
     for (const [part, scale] of Object.entries(PART))
         styles[part] = `border-radius: ${scale(base)}px;`;
@@ -28,4 +29,9 @@ setCornerRadius(DEFAULT_RADIUS);
 
 export function radiusStyle(part = 'art') {
     return styles[part];
+}
+
+// The tile around a poster: its padding, and the radius concentric with the art's.
+export function tileStyle(padding) {
+    return `padding: ${padding}px; border-radius: ${base + padding}px;`;
 }

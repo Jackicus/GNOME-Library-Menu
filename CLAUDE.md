@@ -120,7 +120,8 @@ controllers are the keyboard too: `.claude/rules/keyboard.md`.
   `9999px`. The exception is `paneInner`, the pop-up pane inside the folder's frame:
   the outer radius less `PANE_INSET`, so the curves are concentric.
 - **One set of style settings**: the grid's (`gridMath.js` `GRID_KEYS`: `columns`
-  4–10, `rows` 1–3, the spacing and padding pairs, `show-titles`, `grid-align`),
+  4–10, `rows` 1–3, `tile-padding`, the spacing and padding pairs, `show-titles`,
+  `grid-align`),
   `corner-radius`, the pop-up's (`detail-width` and `detail-height`, 60–120 %, its
   share of the work area, applied in `detailDialog.js` `_budget()`,
   `detail-row-size`, the list's row height, which `widgets.js` `createRow` scales

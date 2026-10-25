@@ -8,7 +8,7 @@ import Pango from 'gi://Pango';
 
 import {SECTIONS as LIBRARY_SECTIONS, openCommandKey, readSections} from './lib/library.js';
 import {ACTIONS, NATIVE_KEYS, padLabel} from './lib/actions.js';
-import {ARROWS_SHARE, DOTS_HEIGHT, GRID_KEYS, TILE_PADDING, gridFor, placeGrid, readGridStyle} from './lib/gridMath.js';
+import {ARROWS_SHARE, DOTS_HEIGHT, GRID_KEYS, gridFor, placeGrid, readGridStyle} from './lib/gridMath.js';
 
 // A credential's `fields` are tab-joined in one slot of the `credentials` setting;
 // a field's Import reads the file the user picks, offering <field.file> from the
@@ -184,8 +184,8 @@ function gridPreview(settings) {
         stroke(px + style.padX * k, oy + style.padY * k,
             (pageWidth - 2 * style.padX) * k, (pageHeight - 2 * style.padY) * k, 0.3, [1, 3]);
 
-        const coverW = (fit.cellW - TILE_PADDING) * k;
-        const inset = TILE_PADDING / 2 * k;
+        const coverW = (fit.cellW - 2 * style.tilePad) * k;
+        const inset = style.tilePad * k;
         for (let r = 0; r < fit.rows; r++) {
             for (let c = 0; c < fit.columns; c++) {
                 const x = px + (left + c * (fit.cellW + gapX)) * k;
@@ -325,11 +325,9 @@ export default class LibraryPreferences extends ExtensionPreferences {
 
         const appearance = new Adw.PreferencesGroup({
             title: 'Appearance',
-            description: 'The grid has the Grid page, and the pop-up a pick opens the Window page.',
+            description: 'The covers have the Grid page, and the pop-up a pick opens the Window page.',
         });
         page.add(appearance);
-        appearance.add(row('Corner radius', 'How rounded covers, tiles and the detail pane are, in pixels. 0 is square.',
-            slider(settings, 'corner-radius', 0, 40)));
         const accent = new Adw.ActionRow({
             title: 'Accent colour',
             subtitle: 'Follows Settings → Appearance → Accent Color',
@@ -370,7 +368,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
         page.add(preview);
         preview.add(gridPreview(settings));
 
-        const covers = new Adw.PreferencesGroup({title: 'Covers'});
+        const covers = new Adw.PreferencesGroup({title: 'Page'});
         page.add(covers);
         covers.add(row('Rows', 'Covers down a page. Fewer means larger covers.', slider(settings, 'rows', 1, 3)));
         covers.add(row('Columns', 'Covers across a page. Fewer means larger covers.', slider(settings, 'columns', 4, 10)));
@@ -382,6 +380,13 @@ export default class LibraryPreferences extends ExtensionPreferences {
         covers.add(titles);
         covers.add(row('Align covers', 'Where a row that is not full sits',
             toggles(settings, 'grid-align', [['center', 'Centre'], ['start', 'Left']])));
+
+        const posters = new Adw.PreferencesGroup({title: 'Posters'});
+        page.add(posters);
+        posters.add(row('Corner radius', 'How rounded the covers are, in pixels; their tiles, the pop-up and its rows follow. 0 is square.',
+            slider(settings, 'corner-radius', 0, 40)));
+        posters.add(row('Padding', 'The tile around a cover, lit under the pointer, in pixels. 0, with no spacing, puts covers edge to edge.',
+            slider(settings, 'tile-padding', 0, 24)));
 
         const spacing = new Adw.PreferencesGroup({
             title: 'Spacing',
