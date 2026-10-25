@@ -45,8 +45,9 @@ paths:
 
 ## Continue (`detailView.js` `_syncPlay`, `Tracker.continueFrom`)
 
-The pane's primary button is the file touched last if it was left partway or unticked,
+The pane's Play square plays the file touched last if it was left partway or unticked,
 else the first unwatched episode after it in the numbered seasons (Extras are not part
-of the run). With nothing touched, or everything after it watched, it is the item's
-`playLabel` ("Play S01E01", from `library.js` `normalizeShow`). It follows `changed`,
-which a kept position emits too.
+of the run). With nothing touched, or everything after it watched, it plays the item's
+`playPath` from the beginning. Its accessible name says which ("Continue S01E03", else
+the item's `playLabel`, "Play S01E01" from `library.js` `normalizeShow`). It follows
+`changed`, which a kept position emits too.
