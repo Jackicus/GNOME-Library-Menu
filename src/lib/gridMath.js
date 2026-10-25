@@ -3,9 +3,8 @@
 
 // Logical pixels, as the theme writes them.
 const MIN_ART = 96;
-// An overview-tile's padding, and with its label beneath the artwork.
-export const TILE_PADDING = 24;
-const TILE_CHROME = 56;
+// Beneath the artwork with its label: the tile's spacing and a line of text.
+const LABEL_CHROME = 32;
 // Room for a hovered title in the bottom row to wrap to a second line.
 const TITLE_LINE = 20;
 // The shell's PAGE_PREVIEW_RATIO each side, for the page arrows.
@@ -13,7 +12,7 @@ export const ARROWS_SHARE = 0.2;
 export const DOTS_HEIGHT = 36;
 
 export const GRID_KEYS = [
-    'columns', 'rows', 'tile-spacing-horizontal', 'tile-spacing-vertical',
+    'columns', 'rows', 'tile-padding', 'tile-spacing-horizontal', 'tile-spacing-vertical',
     'grid-padding-horizontal', 'grid-padding-vertical', 'show-titles', 'grid-align',
 ];
 
@@ -21,6 +20,7 @@ export function readGridStyle(settings) {
     return {
         columns: settings.get_int('columns'),
         rows: settings.get_int('rows'),
+        tilePad: settings.get_int('tile-padding'),
         gapX: settings.get_int('tile-spacing-horizontal'),
         gapY: settings.get_int('tile-spacing-vertical'),
         padX: settings.get_int('grid-padding-horizontal'),
@@ -35,8 +35,8 @@ export function readGridStyle(settings) {
 export function gridFor({width, height, aspect, scale, style}) {
     const gapX = style.gapX * scale;
     const gapY = style.gapY * scale;
-    const pad = TILE_PADDING * scale;
-    const chrome = (style.titles ? TILE_CHROME : TILE_PADDING) * scale;
+    const pad = 2 * style.tilePad * scale;
+    const chrome = pad + (style.titles ? LABEL_CHROME : 0) * scale;
     const titleLine = (style.titles ? TITLE_LINE : 0) * scale;
     const minArt = MIN_ART * scale;
 

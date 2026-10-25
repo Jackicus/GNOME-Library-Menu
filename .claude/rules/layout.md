@@ -14,7 +14,7 @@ paths:
 
 - **The grid's arithmetic is `gridMath.js`**, which imports nothing of the shell so
   the preferences' preview (`prefs.js` `gridPreview`) lays a page out by the same
-  sums over a nominal 1600 × 900 slot. `readGridStyle` reads the eight grid keys
+  sums over a nominal 1600 × 900 slot. `readGridStyle` reads the nine grid keys
   once; `app.js` hands them to `mediaGrid.js` `setGridStyle`, read as a grid is built
   and as it allocates.
 - **`columns` and `rows` are the grid's shape**, each capped by what fits at
@@ -23,8 +23,9 @@ paths:
   the page less `grid-padding-*`; with `show-titles` off the label's share of a cell
   goes to the cover.
 - **The spacing settings are what the covers get** (`tile-spacing-*`): `placeGrid`
-  lays the cells that far apart, past the tile's own `TILE_PADDING`, and centres the
-  block in what the padding leaves; nothing spreads them wider, so a height-limited
+  lays the cells that far apart, past the tile's own `tile-padding` (the theme's margin
+  and bottom padding are zeroed inline, so 0 of each puts covers edge to edge), and
+  centres the block in what the padding leaves; nothing spreads them wider, so a height-limited
   page has margins at its sides, as the preview shows. `grid-align` only decides
   whether a part-full row is centred under the full ones or hugs the leading edge.
 - **The page dots keep their room on a one-page section**: the shell hides them, but the

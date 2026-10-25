@@ -157,14 +157,15 @@ button.
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/prefs-general.png" alt="The General page: the buttons on the desktop switch, playing on a new workspace, the Dash to Panel switch, the keyboard shortcut, and the corner radius slider"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-general.png" alt="The General page: the buttons on the desktop switch, playing on a new workspace, the Dash to Panel switch, the keyboard shortcut and the accent colour row"></td>
     <td width="50%"><img src="docs/screenshots/prefs-grid.png" alt="The Grid page: a wireframe preview of one page of covers, six across and two down, over the rows and columns sliders and the titles switch"></td>
   </tr>
   <tr>
     <td valign="top"><b>General</b>: the buttons on the desktop (off to begin with),
-    playing on a new workspace, the button in Dash to Panel's panel (off to begin with), the keyboard shortcut (none to begin with), the corner radius, watched marks, and Rescan everything.</td>
+    playing on a new workspace, the button in Dash to Panel's panel (off to begin with), the keyboard shortcut (none to begin with), watched marks, and Rescan everything.</td>
     <td valign="top"><b>Grid</b>: rows and columns, titles under the covers, the
-    space between covers and the grid's padding, with a preview that follows them.</td>
+    covers' corner radius and the padding around each, the space between covers and
+    the grid's padding, with a preview that follows them.</td>
   </tr>
   <tr>
     <td width="50%"><img src="docs/screenshots/prefs-tv-shows.png" alt="The TV Shows page: the switch for the TV Shows tab, no folder yet, and the information sources tried in order: TVmaze, TMDB and Wikipedia"></td>
