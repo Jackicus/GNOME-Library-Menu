@@ -297,7 +297,7 @@
             <range min="70" max="150"/>
             <default>100</default>
             <summary>Pop-up text size</summary>
-            <description>The size of the description and of the episode, film and disc rows' text in the pop-up, as a percentage of the shell's. Apart from the row size, so a shorter row keeps its text.</description>
+            <description>The size of the description and of the episode, film and disc rows' text in the pop-up, as a percentage of the shell's; the title, facts and season tabs follow it by half as much. Apart from the row size, so a shorter row keeps its text.</description>
         </key>
 
         <key name="play-on-new-workspace" type="b">

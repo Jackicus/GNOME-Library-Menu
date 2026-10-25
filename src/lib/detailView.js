@@ -21,7 +21,7 @@ const PADDING = 32 - PANE_INSET;
 const HERO_MAX_WIDTH_FRACTION = 0.34;
 const HERO_MIN = 132;
 // The summary's type, scaled by `detail-text-size`, and one line of it at 100 %;
-// St has no line-height to set.
+// St has no line-height to set. The title, facts and tabs follow the size by half.
 const SUMMARY_EM = 0.95;
 const SUMMARY_LINE = 21;
 const SUMMARY_LINES = 5;
@@ -275,14 +275,21 @@ export class DetailView {
         });
     }
 
+    // Set on a box around each, so the labels' own em sizes scale from it.
+    get _headingStyle() {
+        return `font-size: ${((1 + this._textSize) / 2).toFixed(2)}em;`;
+    }
+
     _buildMain(item) {
         const main = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true, y_expand: true, style_class: 'ml-detail-main'});
 
-        main.add_child(createLabel(item.title, 'ml-detail-title'));
+        const heading = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, style_class: 'ml-detail-heading', style: this._headingStyle});
+        heading.add_child(createLabel(item.title, 'ml-detail-title'));
         if (item.tagline)
-            main.add_child(createLabel(item.tagline, 'ml-tagline'));
+            heading.add_child(createLabel(item.tagline, 'ml-tagline'));
+        main.add_child(heading);
 
-        const facts = new St.BoxLayout({style_class: 'ml-facts', y_align: Clutter.ActorAlign.CENTER});
+        const facts = new St.BoxLayout({style_class: 'ml-facts', y_align: Clutter.ActorAlign.CENTER, style: this._headingStyle});
         if (item.subtitle)
             facts.add_child(createPill(item.subtitle, 'ml-fact ml-fact-strong'));
         if (item.year)
@@ -303,20 +310,20 @@ export class DetailView {
                 text: item.summary,
                 style_class: 'ml-summary',
                 x_expand: true,
-                style: `font-size: ${(SUMMARY_EM * this._textSize).toFixed(2)}em;`,
+                // As tall as its text, to SUMMARY_LINES; the list takes the rest.
+                style: `font-size: ${(SUMMARY_EM * this._textSize).toFixed(2)}em; ` +
+                    `max-height: ${Math.round(SUMMARY_LINE * SUMMARY_LINES * this._textSize)}px;`,
             });
             summary.clutter_text.line_wrap = true;
             summary.clutter_text.line_wrap_mode = Pango.WrapMode.WORD_CHAR;
             summary.clutter_text.ellipsize = Pango.EllipsizeMode.END;
-            summary.height = Math.round(SUMMARY_LINE * this._scale * SUMMARY_LINES * this._textSize);
-            summary.y_expand = false;
             main.add_child(summary);
         }
 
         if (this._groups.length > 1 || this._groups[0]?.season)
             main.add_child(this._buildTabs());
         else if (this._groups.length === 1)
-            main.add_child(new St.Label({text: this._groups[0].name, style_class: 'ml-group-heading'}));
+            main.add_child(new St.Bin({style: this._headingStyle, x_align: Clutter.ActorAlign.START, child: new St.Label({text: this._groups[0].name, style_class: 'ml-group-heading'})}));
 
         this._listHost = new St.Widget({
             layout_manager: new Clutter.BinLayout(),
@@ -329,7 +336,7 @@ export class DetailView {
     }
 
     _buildTabs() {
-        const tabs = new St.BoxLayout({style_class: 'ml-tabs', x_expand: true});
+        const tabs = new St.BoxLayout({style_class: 'ml-tabs', x_expand: true, style: this._headingStyle});
         this._groups.forEach((group, i) => {
             const tab = new St.Button({
                 style_class: 'button ml-tab',

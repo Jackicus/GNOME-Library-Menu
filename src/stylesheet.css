@@ -155,7 +155,8 @@
     margin-bottom: 8px;
 }
 
-.ml-detail-main {
+.ml-detail-main,
+.ml-detail-heading {
     spacing: 14px;
 }
 

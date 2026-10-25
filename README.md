@@ -40,7 +40,7 @@ picks up what you installed since.
 - Steam and PCSX2 are found in their usual places, the Flatpak installs included; the
   Games page takes a different folder for either.
 
-![A Steam game picked in the overview: its poster, Play and Show in Files on the left; Steam, the year, its rating, hours played, genres, its description and its install folder on the right](docs/screenshots/games.jpg)
+![A Steam game picked in the overview: its poster with the Play and Show in Files squares beneath; Steam, the year, its rating, hours played, genres, its description and its install folder on the right](docs/screenshots/games.jpg)
 
 ## Where it opens
 
@@ -55,7 +55,7 @@ they cover the wallpaper.
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/detail.jpg" alt="A show picked in the overview: its details pop up the way an app folder opens, poster and Play button on the left, facts, synopsis and a season's episodes on the right"></td>
+    <td width="50%"><img src="docs/screenshots/detail.jpg" alt="A show picked in the overview: its details pop up the way an app folder opens, poster with the Play and Show in Files squares beneath on the left, facts, synopsis and a season's episodes on the right"></td>
     <td width="50%"><img src="docs/screenshots/dash.jpg" alt="Three buttons centred on the desktop wallpaper, TV Shows, Films and Games, each with its icon"></td>
   </tr>
   <tr>
