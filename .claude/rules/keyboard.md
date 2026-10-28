@@ -21,10 +21,15 @@ paths:
   opens, Escape backs out a level. A focused row destroyed under the pop-up drops key
   focus to the stage, so `detailDialog.js` watches `notify::key-focus` and takes it
   back while it is open.
-- The tabs and the grid are two groups, and St never walks between groups: an arrow
-  up from the grid's top row (`atTopRow`) focuses the tabs and an arrow down from them
-  the first tile (`libraryView.js`). A tab chooses itself on `key-focus-in`
-  (`widgets.js`), so a remote with only arrows can switch sections.
+- The tabs and the grid are two groups, and the step between them is ours: an arrow
+  up from the grid's top row (`atTopRow`) focuses the lit tab and an arrow down from
+  the tabs the shown page's first tile (`libraryView.js`). A tab chooses itself on
+  `key-focus-in` (`widgets.js`), so a remote with only arrows can switch sections, and
+  this is why the step is not left to St: the overview's own group (`ControlsManager`)
+  walks across both by position, so Up from a tile would choose whichever tab is above
+  it. The view takes the step with a `Clutter.KeyController` in the capture phase,
+  ahead of the groups' own, on an actor made reactive for it: Clutter hands a key
+  event only to reactive actors.
 - The pop-up holds the keyboard as it opens and an arrow finds nothing to move to, so
   its first navigation key lands where Tab would (`detailDialog.js`
   `vfunc_key_press_event`).

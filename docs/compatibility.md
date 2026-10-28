@@ -91,10 +91,10 @@ gjs.guide's "Port Extensions to GNOME Shell 51":
    stage's context for the backend.
 3. `ControlsManager` is now a focus group and takes the key focus when the
    overview settles, handing it to `AppDisplay`; `AppDisplay` pages with a
-   binding pool, not a stage handler. The library's arrows still walk its own
-   group (the grid) first, and the step between the tabs and the grid lands
-   on the tile under the tab: `libraryView.js`'s own handler for that step is
-   on an actor that is not reactive, so no key reaches it (#142).
+   binding pool, not a stage handler. Its walk crosses from the grid to the
+   tabs by position, so `libraryView.js` takes that step first, with a
+   capture-phase `Clutter.KeyController` on the view, made reactive because
+   Clutter delivers key events to reactive actors only.
 4. `BaseAppView` scrolls with a `Clutter.ScrollController` and
    `_onScroll(controller, sprite, source, dx, dy)`; `mediaGrid.js` does not
    override it.
