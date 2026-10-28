@@ -26,6 +26,8 @@ export class LibraryView {
             orientation: Clutter.Orientation.VERTICAL,
             x_expand: true,
             y_expand: true,
+            // Clutter hands key events to reactive actors only.
+            reactive: true,
         });
         this.header = createHeader({
             sections,
@@ -45,7 +47,10 @@ export class LibraryView {
         });
         this.actor.add_child(this.stack);
 
-        this.actor.connect('key-press-event', (_actor, event) => this._onKeyPress(event));
+        // Captured ahead of the focus groups, whose walk picks whichever tab is above a tile.
+        const keys = new Clutter.KeyController();
+        keys.connect('key-press', () => this._onKeyPress(keys));
+        this.actor.add_action_full('library-tab-step', Clutter.EventPhase.CAPTURE, keys);
         this.actor.connect('destroy', () => this._pages.clear());
     }
 
@@ -118,13 +123,12 @@ export class LibraryView {
         return page;
     }
 
-    // St walks within one focus group, so the step between the tabs and the grid is ours.
-    _onKeyPress(event) {
+    _onKeyPress(keys) {
         const view = this.currentView;
         if (!view?.visible)
             return Clutter.EVENT_PROPAGATE;
         const focus = global.stage.get_key_focus();
-        const symbol = event.get_key_symbol();
+        const [, symbol] = keys.get_key();
         if (symbol === Clutter.KEY_Up && view.atTopRow(focus))
             return this.header.focusTabs() ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
         if (symbol === Clutter.KEY_Down && focus && this.header.actor.contains(focus))
