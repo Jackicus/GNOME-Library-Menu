@@ -30,7 +30,7 @@ export class MediaMenu {
         this._fold = 0;
         this._forced = false;
         this._pressedOff = false;
-        this._escapeId = 0;
+        this._escape = null;
     }
 
     enable() {
@@ -222,24 +222,26 @@ export class MediaMenu {
     // of the shell's handler, which would only step down to the window picker.
     _force() {
         this._forced = true;
-        if (this._escapeId)
+        if (this._escape)
             return;
-        this._escapeId = global.stage.connect('captured-event::key', (_stage, event) => {
-            if (event.type() !== Clutter.EventType.KEY_PRESS ||
-                event.get_key_symbol() !== Clutter.KEY_Escape ||
+        this._escape = new Clutter.KeyController();
+        this._escape.connect('key-press', () => {
+            const [, symbol] = this._escape.get_key();
+            if (symbol !== Clutter.KEY_Escape ||
                 !this._showing || !this._showAppsButton?.checked ||
                 Main.modalCount > 1 || this._controls?._searchController?.searchActive)
                 return Clutter.EVENT_PROPAGATE;
             Main.overview.hide();
             return Clutter.EVENT_STOP;
         });
+        global.stage.add_action_full('library-escape', Clutter.EventPhase.CAPTURE, this._escape);
     }
 
     _unforce() {
         this._forced = false;
-        if (this._escapeId)
-            global.stage.disconnect(this._escapeId);
-        this._escapeId = 0;
+        if (this._escape)
+            global.stage.remove_action(this._escape);
+        this._escape = null;
     }
 
     _show(showing) {

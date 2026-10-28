@@ -17,10 +17,13 @@ that depends on the version, and what claiming a version takes.
   from the dash button and from a desktop-dash button (Escape closing the
   overview it opened), the tabs, a pick's pop-up by click and by Return, the
   arrows and Tab in the grid, between tabs and grid and in the pop-up, the
-  pop-up closed with Escape and a click away, a `reload` with the menu up, a
+  pop-up closed with Escape and a click away, the bound keys (Page Down,
+  `XF86Back`, `XF86HomePage`) in the grid and the pop-up, a virtual pad
+  (`scripts/vpad.py`: D-pad, stick, A, B, RB) through the grid, the tabs and
+  the pop-up, a `reload` with the menu up, a
   `stop` + `start`, and the preferences' General page. Not yet: Dash to Panel
-  and Blur my Shell beside it, a controller, the scanner online, the packed
-  zip, the HP all-in-one.
+  and Blur my Shell beside it, a pad's Home (Guide), a real controller, the
+  scanner online, the packed zip, the HP all-in-one.
 - **The main desktop on 50**, before it moved to 51
   (CachyOS, Wayland): GNOME Shell 50.5, mutter 50.5, GJS 1.88.1, GLib 2.88.3,
   GTK 4.22.5, libadwaita 1.9.4, libmanette 0.2.13, libsoup 3.6.6,
@@ -63,7 +66,7 @@ the values restated.
 
 ## Version-sensitive code
 
-- **The pop-up's keyboard** (`detailDialog.js` `vfunc_key_press_event()`)
+- **The pop-up's keyboard** (`detailDialog.js` `_onKeyPress()`)
   leans on 51's focus manager, which walks a group from a key controller on
   the group's root, under a grab too (below).
 - **`Adw.ShortcutLabel`** (`prefs.js`) is libadwaita 1.8 (GNOME 49) and
@@ -104,9 +107,15 @@ gjs.guide's "Port Extensions to GNOME Shell 51":
 
 Everything else in [private-api.md](private-api.md) is there at `51.1`
 (`AppDisplay` is now an exported ES class and still extends the unexported
-`BaseAppView`). `key-press-event` and `captured-event` are deprecated in favour
-of event controllers but still delivered; `mediaGrid.js`, `detailDialog.js`
-and `mediaMenu.js` connect to them.
+`BaseAppView`). Connecting to an actor's event signals (`key-press-event`,
+`captured-event`) is deprecated in favour of event controllers, and nothing
+here does: the grid's and the pop-up's bound keys, the step between the tabs
+and the grid, and Escape closing an overview the library opened (on the
+stage, in the capture phase) are each a `Clutter.KeyController`. The grid
+view is reactive, as `AppDisplay` is, or no key event reaches it. The rest of
+gjs.guide's list (`St.ReducedMotion`, `NoGrabPopup`, `SearchEntry`,
+`pointerWatcher`, `Shell.GLSLEffect`, `Gio.DBus.makeProxyWrapper()`) is
+not used.
 
 ## Checklist for a new GNOME version
 
