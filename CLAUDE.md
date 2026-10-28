@@ -5,8 +5,8 @@ Shared rules for every extension come from gnome-ai-kit: `../CLAUDE.md` and `../
 Library Menu, a GNOME Shell extension (UUID `library-menu@jackicus`), that shows a library of TV shows,
 films and games in the overview, opened from one button beside Show Apps or, as a
 setting asks, from a row of buttons on the wallpaper.
-`metadata.json` claims GNOME Shell 50 only, and the code is written for 50 alone, with
-no fallback for an older shell; 51 breaks it (`docs/compatibility.md`). The name is the same
+`metadata.json` claims GNOME Shell 51 only, and the code is written for 51 alone, with
+no fallback for an older shell (`docs/compatibility.md`). The name is the same
 throughout: `metadata.json`'s `name`, the UUID, the schema
 `org.gnome.shell.extensions.library-menu`, the cache and data folders and the
 `[Library Menu]` log prefix. The code keeps a shorter prefix of its own: `Library*`

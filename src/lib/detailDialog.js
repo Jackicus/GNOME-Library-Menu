@@ -409,9 +409,6 @@ class LibraryDetailDialog extends St.Bin {
         if (handleBoundKey(event))
             return Clutter.EVENT_STOP;
 
-        if (global.focus_manager.navigate_from_event(event))
-            return Clutter.EVENT_STOP;
-
         // An arrow from the panel itself has nowhere to go; land where Tab would.
         if (global.stage.get_key_focus() === this &&
             NAVIGATION_KEYS.includes(event.get_key_symbol()) &&

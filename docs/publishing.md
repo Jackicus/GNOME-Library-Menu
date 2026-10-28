@@ -48,7 +48,7 @@ development install back.
 | `name` | `Library Menu` | |
 | `description` | Several paragraphs | Says a Rescan is needed, where titles are looked up, that it plays nothing, where watched marks are written (the library folders included), and carries the TMDB notice |
 | `settings-schema` | `org.gnome.shell.extensions.library-menu` | `getSettings()` takes no argument in `lib/app.js` and `prefs.js` |
-| `shell-version` | `["50"]` | [compatibility.md](compatibility.md) |
+| `shell-version` | `["51"]` | [compatibility.md](compatibility.md) |
 | `version-name` | `1.1.1` | |
 | `url` | `https://github.com/Jackicus/GNOME-Library-Menu` | |
 | `version`, `session-modes`, `donations`, `gettext-domain` | absent | EGO sets `version`; `user` mode only, so no `session-modes` |
@@ -112,7 +112,7 @@ Checked against both pages as read on 2026-10-02, before the 1.0 release, again 
   folders and Rescan.
 - **Knowing the code**: optional chaining is on genuinely optional paths (a
   browser not built yet, Dash to Panel absent, controller monitoring not
-  started), never on a method GNOME Shell 50 has, private ones included: those
+  started), never on a method GNOME Shell 51 has, private ones included: those
   are called directly, inside a try/catch where a throw must not cost the rest
   ([private-api.md](private-api.md)). Every `try` (56 on 2026-10-08, 30 of
   them in the scanner's own process) guards I/O, a subprocess, an async

@@ -66,7 +66,7 @@ they cover the wallpaper.
 
 ## Requirements
 
-- GNOME Shell 50.
+- GNOME Shell 51.
 - A video player. The default command is VLC's; any other command works, and left
   empty a file opens in your default video app. Watched marks and Continue need a
   player that shows up in GNOME's media controls (MPRIS): VLC, Showtime, Celluloid, or
