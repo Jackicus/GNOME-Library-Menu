@@ -158,6 +158,8 @@ class LibraryMediaView extends BaseAppView {
             layout_manager: new Clutter.BinLayout(),
             x_expand: true,
             y_expand: true,
+            // As AppDisplay is: Clutter hands key events to reactive actors only.
+            reactive: true,
         });
         this.add_child(this._box);
 
@@ -168,8 +170,10 @@ class LibraryMediaView extends BaseAppView {
         global.focus_manager.add_group(this);
         this.connect('destroy', () => global.focus_manager.remove_group(this));
 
-        this.connect('key-press-event', (_view, event) => handleBoundKey(event)
+        const keys = new Clutter.KeyController();
+        keys.connect('key-press', () => handleBoundKey(keys)
             ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE);
+        this.add_action(keys);
 
         // The dots keep their room on a one-page section (.claude/rules/layout.md).
         const dots = this._pageIndicators;

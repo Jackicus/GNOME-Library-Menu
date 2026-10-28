@@ -31,8 +31,7 @@ paths:
   ahead of the groups' own, on an actor made reactive for it: Clutter hands a key
   event only to reactive actors.
 - The pop-up holds the keyboard as it opens and an arrow finds nothing to move to, so
-  its first navigation key lands where Tab would (`detailDialog.js`
-  `vfunc_key_press_event`).
+  its first navigation key lands where Tab would (`detailDialog.js` `_onKeyPress`).
 
 ## Bound keys and controllers
 
@@ -44,8 +43,9 @@ paths:
   do exactly what the arrows, Enter and Escape do. Paging (`mediaGrid.js` `pageBy`:
   the shell's grid turns no page for a key), Home and Mark watched (a row's
   `toggleWatched`: St's focus stops at the row) are done directly.
-- A bound key is handed over by the view it reached (a grid's key handler, the pop-up's
-  `vfunc_key_press_event`), so a binding means nothing outside a library. The arrows,
+- A bound key is handed over by the view it reached (a `Clutter.KeyController` on a grid,
+  reactive as `AppDisplay` is, and on the pop-up), so a binding means nothing outside a
+  library. The arrows,
   Enter and Escape are never offered for binding.
 - Controllers are read with libmanette, loaded on demand (it runs without it), and
   acted on only while the menu or the pop-up is up (`app.js` `isActive`), except

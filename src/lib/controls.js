@@ -37,8 +37,8 @@ function keyId(keyval, state) {
 // The enabled instance, for the views' key handlers.
 let current = null;
 
-export function handleBoundKey(event) {
-    return current?._onKey(event) ?? false;
+export function handleBoundKey(controller) {
+    return current?._onKey(controller) ?? false;
 }
 
 export class Controls {
@@ -100,10 +100,10 @@ export class Controls {
         }
     }
 
-    _onKey(event) {
-        if (event.type() !== Clutter.EventType.KEY_PRESS)
-            return false;
-        const action = this._keys.get(keyId(event.get_key_symbol(), event.get_state()));
+    _onKey(controller) {
+        const [, symbol] = controller.get_key();
+        const [, pressed, latched, locked] = controller.get_state();
+        const action = this._keys.get(keyId(symbol, pressed | latched | locked));
         if (!action)
             return false;
         this._do(action);

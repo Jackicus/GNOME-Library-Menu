@@ -99,6 +99,9 @@ class LibraryDetailDialog extends St.Bin {
         this._clip.add_child(this._detail.actor);
 
         global.focus_manager.add_group(this);
+        const keys = new Clutter.KeyController();
+        keys.connect('key-press', () => this._onKeyPress(keys));
+        this.add_action(keys);
 
         this._grabHelper = new GrabHelper.GrabHelper(this, {
             actionMode: Shell.ActionMode.POPUP,
@@ -405,13 +408,14 @@ class LibraryDetailDialog extends St.Bin {
             this._zoomAndFadeIn();
     }
 
-    vfunc_key_press_event(event) {
-        if (handleBoundKey(event))
+    _onKeyPress(keys) {
+        if (handleBoundKey(keys))
             return Clutter.EVENT_STOP;
 
         // An arrow from the panel itself has nowhere to go; land where Tab would.
+        const [, symbol] = keys.get_key();
         if (global.stage.get_key_focus() === this &&
-            NAVIGATION_KEYS.includes(event.get_key_symbol()) &&
+            NAVIGATION_KEYS.includes(symbol) &&
             this.navigate_focus(null, St.DirectionType.TAB_FORWARD, false))
             return Clutter.EVENT_STOP;
 
