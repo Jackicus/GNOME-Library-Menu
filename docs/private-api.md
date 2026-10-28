@@ -31,6 +31,7 @@ an `if`, and then the only sign is the symptom, with nothing logged.
 | `BaseAppView`'s `_parentalControlsManager`, `_appFavorites`, `_box`, `_pageIndicators`, `_grid` | mediaGrid.js | `MediaView`'s constructor throws; no grid anywhere | No |
 | `BaseAppView`'s `_adjustment` | mediaGrid.js | `_shownPage()` throws: no staggered reveal, keyboard landing or remote page turn; swipe, wheel and arrows still page | No |
 | `BaseAppView`'s `_createGrid`, `_loadApps`, `_compareItems` (overridden), `_addItem` (called) | mediaGrid.js | `_createGrid` renamed: square cells. `_addItem` changed: no tiles. The other two: a cancelled overview drag re-diffs the grid wrongly | No |
+| `IconGrid`'s `_ensureItemIsVisible` (overridden) | mediaGrid.js | Renamed: a setting changed with the pop-up open logs Gjs-CRITICALs about a disposed `St.Adjustment` again, nothing worse | No |
 | `AppViewItem`'s `_id`, `_name` and positional `_init(params, isDraggable, expandTitleOnHover)` | mediaGrid.js | Tiles draw but share one id; a changed signature makes posters draggable or stops the title unfolding | No |
 | Restated `PAGE_PREVIEW_RATIO` (`ARROWS_SHARE`) | gridMath.js | Covers sized for the wrong margin beside the page arrows | No |
 | `IconGridLayout`'s `_pageWidth`, `_pageHeight`, `_pages`, `_pageSizeChanged`, `_shouldEaseItems` | mediaGrid.js | `_pageWidth`/`_pageHeight` gone: `vfunc_allocate` returns early and no tile is allocated, so no poster shows. `_pages` gone: it throws | No |
@@ -113,6 +114,11 @@ one point of failure with no fallback.
   square, and no narrower vfunc exists. The spacing and per-page counts are
   public GObject properties. `MediaGrid` replaces the layout `IconGrid` built
   and re-emits the new layout's `pages-changed` as the grid's own.
+- `IconGrid` scrolls to a tile when it takes the key focus
+  (`_ensureItemIsVisible`), on a later. The pop-up's modal grab hands the focus
+  back to its tile as the view is torn down (a rebuild with the pop-up open),
+  and the later then eases an adjustment already disposed. `MediaGrid` skips
+  the scroll for a tile that is no longer mapped.
 
 ## The folder's panel (detailDialog.js)
 

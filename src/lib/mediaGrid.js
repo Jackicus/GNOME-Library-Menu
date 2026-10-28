@@ -80,6 +80,13 @@ class LibraryPosterGridLayout extends IconGrid.IconGridLayout {
 
 const MediaGrid = GObject.registerClass(
 class LibraryMediaGrid extends AppDisplay.AppGrid {
+    // The pop-up hands the focus back to its tile as the view goes. The page scroll
+    // that would follow runs on a later, after the scroll view's adjustment is disposed.
+    _ensureItemIsVisible(item) {
+        if (item.mapped)
+            super._ensureItemIsVisible(item);
+    }
+
     constructor({rows, columns, iconSize}) {
         super({
             allow_incomplete_pages: true,
