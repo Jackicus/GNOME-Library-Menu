@@ -13,7 +13,7 @@ import {SECTIONS, loadLibrary, libraryPath, openCommandKey, sectionByKey} from '
 import {setCornerRadius} from './shape.js';
 import {setGridStyle} from './mediaGrid.js';
 import {GRID_KEYS, readGridStyle} from './gridMath.js';
-import {LibraryButton} from './libraryButton.js';
+import {LibraryButtons} from './libraryButton.js';
 import {MediaMenu} from './mediaMenu.js';
 import {DetailDialog} from './detailDialog.js';
 import {DesktopDash} from './desktopDash.js';
@@ -94,9 +94,9 @@ export class LibraryApp {
         this._monitor = null;
         this._rebuildTimer = 0;
         this._scanProc = null;
-        this._button = new LibraryButton({
+        this._buttons = new LibraryButtons({
             settings: this._settings,
-            onActivate: () => this._browser?.toggle(this._sectionKey),
+            onActivate: key => this._browser?.toggle(key),
         });
         this._tracker = new Tracker(this._settings);
         this._playback = new PlaybackWatcher(this._settings, this._tracker);
@@ -162,7 +162,7 @@ export class LibraryApp {
         this._scanProc?.force_exit();
         this._scanProc = null;
         this._teardown();
-        settle('button', () => this._button.detach());
+        settle('buttons', () => this._buttons.detach());
         this._sections = {};
         // Playback saves its position before the tracker stops.
         this._playback.disable();
@@ -319,12 +319,12 @@ export class LibraryApp {
 
         const sections = this._enabledSections();
         if (!sections.length) {
-            this._button.detach();
+            this._buttons.detach();
             return;
         }
         if (!sections.some(s => s.key === this._sectionKey))
             this._sectionKey = (sections.find(s => this._sections[s.key]?.length) ?? sections[0]).key;
-        this._button.attach();
+        this._buttons.attach(sections);
 
         this._dialog = new DetailDialog({
             onOpen: (path, section) => this._open(path, section),
@@ -336,9 +336,10 @@ export class LibraryApp {
         });
         this._browser = new MediaMenu({
             sections,
+            active: this._sectionKey,
             itemsFor: key => this._sections[key] ?? [],
             onActivate: (key, item, tile) => this._dialog.popup(tile, item, sectionByKey(key)),
-            button: this._button,
+            buttons: this._buttons,
             onSwitch: key => (this._sectionKey = key),
             onEmpty: (section, button) => this._onEmpty(section, button),
         });

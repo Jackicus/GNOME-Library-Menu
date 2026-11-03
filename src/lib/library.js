@@ -35,12 +35,6 @@ export const SECTIONS = [
     },
 ];
 
-// The button's title and icon, the theme's own (docs/notes.md).
-export const LIBRARY = {
-    title: 'Library',
-    icon: 'video-display-symbolic',
-};
-
 export function sectionByKey(key) {
     return SECTIONS.find(s => s.key === key) ?? SECTIONS[0];
 }

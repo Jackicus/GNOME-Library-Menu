@@ -21,8 +21,12 @@ that depends on the version, and what claiming a version takes.
   `XF86Back`, `XF86HomePage`) in the grid and the pop-up, a virtual pad
   (`scripts/vpad.py`: D-pad, stick, A, B, RB) through the grid, the tabs and
   the pop-up, a `reload` with the menu up, a
-  `stop` + `start`, and the preferences' General page. Not yet: Dash to Panel
-  and Blur my Shell beside it, a pad's Home (Guide), a real controller, the
+  `stop` + `start`, and the preferences' General page. On 2026-11-03, the same
+  machine and versions: the section buttons in place of the tabs, each opening
+  and switching to its section and closing it on a second press, a section
+  switched off taking its button, the Layout page, all under `start --stand-in`;
+  and the buttons in Dash to Panel's panel, after a `reload` and a fresh
+  `start`. Not yet: Blur my Shell beside it, a pad's Home (Guide), a real controller, the
   scanner online, the packed zip, the HP all-in-one.
 - **The main desktop on 50**, before it moved to 51
   (CachyOS, Wayland): GNOME Shell 50.5, mutter 50.5, GJS 1.88.1, GLib 2.88.3,
@@ -94,10 +98,8 @@ gjs.guide's "Port Extensions to GNOME Shell 51":
    stage's context for the backend.
 3. `ControlsManager` is now a focus group and takes the key focus when the
    overview settles, handing it to `AppDisplay`; `AppDisplay` pages with a
-   binding pool, not a stage handler. Its walk crosses from the grid to the
-   tabs by position, so `libraryView.js` takes that step first, with a
-   capture-phase `Clutter.KeyController` on the view, made reactive because
-   Clutter delivers key events to reactive actors only.
+   binding pool, not a stage handler. Nothing sits above the grid for its
+   walk to cross to: sections switch from their buttons in the dash.
 4. `BaseAppView` scrolls with a `Clutter.ScrollController` and
    `_onScroll(controller, sprite, source, dx, dy)`; `mediaGrid.js` does not
    override it.
@@ -109,8 +111,7 @@ Everything else in [private-api.md](private-api.md) is there at `51.1`
 (`AppDisplay` is now an exported ES class and still extends the unexported
 `BaseAppView`). Connecting to an actor's event signals (`key-press-event`,
 `captured-event`) is deprecated in favour of event controllers, and nothing
-here does: the grid's and the pop-up's bound keys, the step between the tabs
-and the grid, and Escape closing an overview the library opened (on the
+here does: the grid's and the pop-up's bound keys and Escape closing an overview the library opened (on the
 stage, in the capture phase) are each a `Clutter.KeyController`. The grid
 view is reactive, as `AppDisplay` is, or no key event reaches it. The rest of
 gjs.guide's list (`St.ReducedMotion`, `NoGrabPopup`, `SearchEntry`,
@@ -128,13 +129,13 @@ not used.
 3. Install the zip, not the link: `make uninstall`, `make pack`,
    `gnome-extensions install dist/library-menu@jackicus.shell-extension.zip`,
    log in again.
-4. `./scripts/dev.sh logs '10 min ago'`: no `TypeError`, no "No button beside
+4. `./scripts/dev.sh logs '10 min ago'`: no `TypeError`, no "No buttons beside
    Show Apps", no "not laid out as expected".
-5. The menu from the button, the shortcut, a controller's Home and a dash
+5. The menu from each section's button (and another's switching to it), the shortcut, a controller's Home and a dash
    button with **Buttons on the desktop** on; a pick's pop-up, closed with
    Escape, a click away and by leaving the overview.
 6. Lock and unlock with the library open.
-7. With Dash to Panel on and off, and **Work with Dash to Panel** on: the button
+7. With Dash to Panel on and off, and **Work with Dash to Panel** on: the buttons
    beside Show Apps in both; with the setting off, Dash to Panel's panel as it
    is without Library Menu; with
    Blur my Shell on and off: the pop-up's shade follows a folder's.

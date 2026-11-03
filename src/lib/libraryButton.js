@@ -1,4 +1,4 @@
-// The library's button beside Show Apps, in the dash or in Dash to Panel's panel.
+// A button per section beside Show Apps, in the dash or in Dash to Panel's panel.
 
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
@@ -9,18 +9,16 @@ import GObject from 'gi://GObject';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Dash from 'resource:///org/gnome/shell/ui/dash.js';
 
-import {LIBRARY} from './library.js';
-
 const DASH_TO_PANEL = 'dash-to-panel@jderose9.github.com';
 
 const LibraryIcon = GObject.registerClass(
 class LibraryButtonIcon extends Dash.ShowAppsIcon {
-    _init(gicon) {
+    _init(section) {
         // Read by _createIcon, which BaseIcon's _init calls before the chain-up returns.
-        this._gicon = gicon;
+        this._gicon = new Gio.ThemedIcon({name: section.icon});
         // eslint-disable-next-line no-restricted-syntax -- constructor() could not set it first
         super._init();
-        this.setLabelText(LIBRARY.title);
+        this.setLabelText(section.title);
     }
 
     _createIcon(size) {
@@ -39,23 +37,29 @@ class LibraryButtonIcon extends Dash.ShowAppsIcon {
     }
 });
 
-export class LibraryButton {
+export class LibraryButtons {
     constructor({settings, onActivate}) {
-        this._gicon = new Gio.ThemedIcon({name: LIBRARY.icon});
         this._settings = settings;
         this._onActivate = onActivate;
-        this._button = null;
+        this._sections = [];
+        this._buttons = new Map();
         this._buttonHost = null;
         this._hostPanel = null;
         this._dashToPanel = null;
         this._reattachId = 0;
-        this._checked = false;
+        this._lit = null;
         this._attached = false;
     }
 
-    attach() {
-        if (this._attached)
+    attach(sections) {
+        const same = sections.length === this._sections.length &&
+            sections.every((section, i) => section === this._sections[i]);
+        this._sections = sections;
+        if (this._attached) {
+            if (!same)
+                this._attach();
             return;
+        }
         this._attached = true;
         this._settings.connectObject('changed::dash-to-panel', () => this._follow(), this);
         this._follow();
@@ -63,6 +67,7 @@ export class LibraryButton {
 
     detach() {
         this._attached = false;
+        this._sections = [];
         this._settings.disconnectObject(this);
         Main.extensionManager.disconnectObject(this);
         if (this._reattachId)
@@ -73,11 +78,12 @@ export class LibraryButton {
         this._dashToPanel = null;
     }
 
-    sync(checked) {
-        this._checked = !!checked;
+    // The key of the section showing, or null.
+    sync(key) {
+        this._lit = key;
         this._buttonHost?.sync?.();
-        if (this._button)
-            this._button.toggleButton.checked = this._checked;
+        for (const [k, button] of this._buttons)
+            button.toggleButton.checked = k === key;
     }
 
     // Nothing of Dash to Panel is read or watched unless the setting asks.
@@ -108,7 +114,8 @@ export class LibraryButton {
     // Only when the host changed.
     _reattach() {
         this._armDashToPanel();
-        if ((this._dashToPanel?.panels?.[0] ?? null) !== this._hostPanel || !this._button?.get_parent())
+        const [first] = this._buttons.values();
+        if ((this._dashToPanel?.panels?.[0] ?? null) !== this._hostPanel || !first?.get_parent())
             this._attach();
     }
 
@@ -122,42 +129,48 @@ export class LibraryButton {
             else
                 this._attachToDash(Main.overview.dash);
         } catch (e) {
-            console.warn(`[Library Menu] No button beside Show Apps: ${e}`);
+            console.warn(`[Library Menu] No buttons beside Show Apps: ${e}`);
             this._detach();
         }
-        this.sync(this._checked);
+        this.sync(this._lit);
     }
 
     _detach() {
         const host = this._buttonHost;
         this._buttonHost = null;
         host?.release();
-        this._button = null;
+        this._buttons.clear();
         this._hostPanel = null;
     }
 
-    _newButton() {
-        const container = new LibraryIcon(this._gicon);
-        container.show(false);
-        container.toggleButton.connect('clicked', () => this._onActivate());
-        return container;
+    _newButtons() {
+        for (const section of this._sections) {
+            const container = new LibraryIcon(section);
+            container.show(false);
+            container.toggleButton.connect('clicked', () => this._onActivate(section.key));
+            this._buttons.set(section.key, container);
+        }
+        return [...this._buttons.values()];
     }
 
     _attachToDash(dash) {
-        const container = this._newButton();
-        this._button = container;
-        container.icon.setIconSize(dash.iconSize);
-        dash._hookUpLabel(container);
-        dash._dashContainer.add_child(container);
-        dash.connectObject('icon-size-changed',
-            () => container.icon.setIconSize(dash.iconSize), this);
+        const buttons = this._newButtons();
+        const resize = () => buttons.forEach(b => b.icon.setIconSize(dash.iconSize));
+        for (const container of buttons) {
+            dash._hookUpLabel(container);
+            dash._dashContainer.add_child(container);
+        }
+        resize();
+        dash.connectObject('icon-size-changed', resize, this);
         this._buttonHost = {
             release: () => {
                 dash.disconnectObject(this);
-                // The dash cancels a show-label timeout it armed for the item only
-                // when its hover goes; one left to fire after the destroy throws.
-                container.toggleButton.hover = false;
-                container.destroy();
+                for (const container of buttons) {
+                    // The dash cancels a show-label timeout it armed for the item only
+                    // when its hover goes; one left to fire after the destroy throws.
+                    container.toggleButton.hover = false;
+                    container.destroy();
+                }
             },
         };
     }
@@ -169,19 +182,23 @@ export class LibraryButton {
             orientation: panel.geom?.vertical
                 ? Clutter.Orientation.VERTICAL : Clutter.Orientation.HORIZONTAL,
         });
-        const container = this._newButton();
-        this._button = container;
-        container.icon.setIconSize(showApps.icon.iconSize);
-        const style = showApps.toggleButton.get_style();
-        if (style)
-            container.toggleButton.set_style(style);
-        container.toggleButton.connect('notify::hover', button => {
-            if (button.hover)
-                container.showLabel();
-            else
-                container.hideLabel();
-        });
-        box.add_child(container);
+        const buttons = this._newButtons();
+        const match = () => {
+            for (const container of buttons) {
+                container.icon.setIconSize(showApps.icon.iconSize);
+                container.toggleButton.set_style(showApps.toggleButton.get_style());
+            }
+        };
+        for (const container of buttons) {
+            container.toggleButton.connect('notify::hover', button => {
+                if (button.hover)
+                    container.showLabel();
+                else
+                    container.hideLabel();
+            });
+            box.add_child(container);
+        }
+        match();
 
         // The way out is in place before anything goes into the panel. The shell disables
         // and re-enables the extensions enabled after one being disabled, with no signal,
@@ -220,10 +237,7 @@ export class LibraryButton {
             box.visible = showApps.visible;
         };
         host = {
-            sync: () => {
-                container.icon.setIconSize(showApps.icon.iconSize);
-                container.toggleButton.set_style(showApps.toggleButton.get_style());
-            },
+            sync: match,
             release: () => {
                 inert = true;
                 if (panel._updateGroupedElements === wrapped) {

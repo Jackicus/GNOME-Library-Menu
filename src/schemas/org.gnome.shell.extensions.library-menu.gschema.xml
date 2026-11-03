@@ -9,6 +9,7 @@
         <key name="tv-shows-enabled" type="b">
             <default>true</default>
             <summary>Show TV shows</summary>
+            <description>A button of its own beside Show Apps, and on the desktop when desktop-dash is on.</description>
         </key>
         <key name="tv-shows-folders" type="as">
             <default>[]</default>
@@ -35,6 +36,7 @@
         <key name="films-enabled" type="b">
             <default>true</default>
             <summary>Show films</summary>
+            <description>A button of its own beside Show Apps, and on the desktop when desktop-dash is on.</description>
         </key>
         <key name="films-folders" type="as">
             <default>[]</default>
@@ -64,6 +66,7 @@
         <key name="games-enabled" type="b">
             <default>true</default>
             <summary>Show games</summary>
+            <description>A button of its own beside Show Apps, and on the desktop when desktop-dash is on.</description>
         </key>
         <key name="games-steam-path" type="s">
             <default>""</default>
@@ -111,7 +114,7 @@
         <key name="library-shortcut" type="as">
             <default>[]</default>
             <summary>Open the library</summary>
-            <description>Opens the library in the overview, as the button next to Show Apps does, and closes it again when it is what is up. Empty is no shortcut.</description>
+            <description>Opens the library in the overview on the section last shown, as its button next to Show Apps does, and closes it again when it is what is up. Empty is no shortcut.</description>
         </key>
 
         <!-- Remotes, controllers and keys of the user's own (lib/actions.js,
@@ -233,29 +236,17 @@
             <summary>Grid alignment</summary>
             <description>Where the covers sit when a row is not full: "center" centres a part-full row under the full ones, as the app grid does; "start" lines it up against the leading edge. Full rows are centred on the page either way.</description>
         </key>
-        <key name="tile-spacing-horizontal" type="i">
+        <key name="tile-spacing" type="i">
             <range min="0" max="48"/>
             <default>12</default>
-            <summary>Space between covers across</summary>
-            <description>The room between two covers side by side, in pixels, past the tile's own padding. Covers are as large as the page allows with it kept, and a block narrower than the page is centred.</description>
+            <summary>Space between covers</summary>
+            <description>The room between two covers, across and down, in pixels, past the tile's own padding. Covers are as large as the page allows with it kept, and a block narrower than the page is centred.</description>
         </key>
-        <key name="tile-spacing-vertical" type="i">
-            <range min="0" max="48"/>
-            <default>12</default>
-            <summary>Space between covers down</summary>
-            <description>The room between two rows of covers, in pixels, kept the same way.</description>
-        </key>
-        <key name="grid-padding-horizontal" type="i">
+        <key name="grid-padding" type="i">
             <range min="0" max="120"/>
-            <default>24</default>
-            <summary>Grid padding at the sides</summary>
-            <description>Room kept clear at each side of a page, in pixels.</description>
-        </key>
-        <key name="grid-padding-vertical" type="i">
-            <range min="0" max="120"/>
-            <default>24</default>
-            <summary>Grid padding above and below</summary>
-            <description>Room kept clear above and below a page, in pixels.</description>
+            <default>16</default>
+            <summary>Page margin</summary>
+            <description>Room kept clear at every edge of a page, in pixels.</description>
         </key>
         <key name="tile-padding" type="i">
             <range min="0" max="24"/>
@@ -309,7 +300,7 @@
         <key name="dash-to-panel" type="b">
             <default>false</default>
             <summary>Work with Dash to Panel</summary>
-            <description>When on and Dash to Panel is enabled, the library's button goes beside Show Apps in Dash to Panel's panel, on the primary monitor. When off, the extension leaves Dash to Panel alone and the button stays in the overview's dash.</description>
+            <description>When on and Dash to Panel is enabled, the library's buttons go beside Show Apps in Dash to Panel's panel, on the primary monitor. When off, the extension leaves Dash to Panel alone and the buttons stay in the overview's dash.</description>
         </key>
 
         <!-- What has been watched: lib/tracking.js. -->

@@ -3,8 +3,8 @@
 Shared rules for every extension come from gnome-ai-kit: `../CLAUDE.md` and `../.claude/rules/` (loaded with this file), and the `gnome-ext:*` skills. `.claude/kit.sh` pulls the kit at session start, or, with no kit beside this repository, fetches it and prints its rules into the session.
 
 Library Menu, a GNOME Shell extension (UUID `library-menu@jackicus`), that shows a library of TV shows,
-films and games in the overview, opened from one button beside Show Apps or, as a
-setting asks, from a row of buttons on the wallpaper.
+films and games in the overview, opened from a button per section beside Show Apps or,
+as a setting asks, from a row of buttons on the wallpaper.
 `metadata.json` claims GNOME Shell 51 only, and the code is written for 51 alone, with
 no fallback for an older shell (`docs/compatibility.md`). The name is the same
 throughout: `metadata.json`'s `name`, the UUID, the schema
@@ -18,11 +18,10 @@ GObject class names and `ml-` style classes.
   stylesheet and schema, `lib/` and `backend/`'s JS, never the
   `CLAUDE.md` notes under it (`src/backend/CLAUDE.md`, the scanner's).
 - `src/lib/library.js`: `SECTIONS` (TV Shows, Films and Games, in that order) is a
-  section's whole identity, its key, `<prefix>-` settings, title and icon. Nothing
-  restates it: `prefs.js` imports it and adds only its pages, and the scanner takes
-  its folders from the settings. A third section is an entry there plus its schema
-  keys. `LIBRARY` is the button's own title ("Library") and icon, read only by
-  `libraryButton.js`.
+  section's whole identity, its key, `<prefix>-` settings, title and icon, which its
+  button beside Show Apps wears. Nothing restates it: `prefs.js` imports it and adds
+  only its pages, and the scanner takes its folders from the settings. A fourth
+  section is an entry there plus its schema keys.
 - `src/backend/`: the scanner (below, and `src/backend/CLAUDE.md`).
 - `docs/`: `private-api.md` (every reach into shell internals, with what breaks),
   `compatibility.md` (what was checked where), `publishing.md` (the
@@ -88,13 +87,14 @@ lists the two artwork folders once per load rather than stat a poster each.
 
 ## Where it opens
 
-The library is the `menu` (`mediaMenu.js`): the overview's app-grid slot, with the
-tabs and grids in it and the row of small workspaces folded away. A picked item's
+The library is the `menu` (`mediaMenu.js`): the overview's app-grid slot, with a
+grid per section in it and the row of small workspaces folded away. A picked item's
 pane is a pop-up like an app folder's (`detailDialog.js`), zooming out of its tile
-and gone when the tile unmaps. The one button (`libraryButton.js`, a
-`Dash.ShowAppsIcon` subclass, in the dash, or in Dash to Panel's panel when the
-`dash-to-panel` setting, off by default, asks), `library-shortcut`, the Home action
-and the **dash** (`desktopDash.js`, off by default: a row of one button per section on
+and gone when the tile unmaps. The section buttons (`libraryButton.js`, one
+`Dash.ShowAppsIcon` subclass per section whose `<prefix>-enabled` is on, in the dash,
+or in Dash to Panel's panel when the `dash-to-panel` setting, off by default, asks),
+`library-shortcut`, the Home action (both on the section last shown) and the
+**dash** (`desktopDash.js`, off by default: a row of one button per section on
 the wallpaper, each opening the menu on its section) are the only ways in.
 `.claude/rules/places.md` has how each behaves.
 
@@ -110,8 +110,8 @@ controllers are the keyboard too: `.claude/rules/keyboard.md`.
 - **What the shell has, Library uses**: the app grid, `AppViewItem` and
   `overview-tile`, `button`, `global.focus_manager`, the dash's `DashItemContainer`,
   and for the pop-up `AppFolderDialog`'s shape and `app-folder-dialog` style
-  (`detailDialog.js` is a copy, not a subclass). Ours is only the tab bar, the detail
-  pane and its rows.
+  (`detailDialog.js` is a copy, not a subclass). Ours is only the detail pane and its
+  rows.
 - **Motion** is `anim.js` alone: 120 ms (hover, leaving) and 200 ms ease-out-quad (the
   rest).
 - **One radius.** `corner-radius` (default 18) is the only one; `shape.js` scales it
@@ -120,13 +120,14 @@ controllers are the keyboard too: `.claude/rules/keyboard.md`.
   `9999px`. The exception is `paneInner`, the pop-up pane inside the folder's frame:
   the outer radius less `PANE_INSET`, so the curves are concentric.
 - **One set of style settings**: the grid's (`gridMath.js` `GRID_KEYS`: `columns`
-  4–10, `rows` 1–3, `tile-padding`, the spacing and padding pairs, `show-titles`,
+  4–10, `rows` 1–3, `tile-padding`, `tile-spacing`, `grid-padding`, `show-titles`,
   `grid-align`),
   `corner-radius`, the pop-up's (`detail-width` and `detail-height`, 60–120 %, its
   share of the work area, applied in `detailDialog.js` `_budget()`,
   `detail-row-size`, the list's row height, which `widgets.js` `createRow` scales
   its icons from, and `detail-text-size`, the rows' and the description's type, which
-  the title, facts and tabs follow by half). No
+  the title, facts and season tabs follow by half). The preferences keep them all on
+  one Layout page, and `corner-radius` under General's Appearance. No
   view keeps a copy, and a change rebuilds what is built.
   `.claude/rules/layout.md` has how the grid and the pane size themselves.
 - **The neutrals are the dark palette's** (`#222226`, `#fafafb`) on purpose: the

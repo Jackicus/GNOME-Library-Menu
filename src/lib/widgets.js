@@ -102,65 +102,6 @@ export function createIconButton({icon, name, styleClass = 'button ml-action-squ
     });
 }
 
-// Focus landing on a tab chooses it, so a remote's arrows alone switch sections.
-function createTabs(sections, active, onSwitch) {
-    const actor = new St.BoxLayout({style_class: 'ml-tabs', y_align: Clutter.ActorAlign.CENTER});
-    const tabs = new Map();
-    const setActive = key => {
-        for (const [k, tab] of tabs)
-            tab.checked = k === key;
-    };
-    for (const section of sections) {
-        const tab = new St.Button({
-            style_class: 'ml-tab',
-            label: section.title,
-            can_focus: true,
-            // Tracked: the tab paints its own `:hover`.
-            track_hover: true,
-        });
-        const choose = () => {
-            if (tab.checked)
-                return;
-            setActive(section.key);
-            onSwitch(section.key);
-        };
-        tab.connect('clicked', choose);
-        tab.connect('key-focus-in', choose);
-        tabs.set(section.key, tab);
-        actor.add_child(tab);
-    }
-    setActive(active);
-    return {actor, setActive, lit: () => [...tabs.values()].find(tab => tab.checked) ?? null};
-}
-
-// The tabs, centred; one section alone is named instead of switched.
-export function createHeader({sections, active, onSwitch}) {
-    const actor = new St.Widget({
-        style_class: 'ml-header',
-        layout_manager: new Clutter.BinLayout(),
-        x_expand: true,
-    });
-    if (sections.length === 1) {
-        actor.add_child(createLabel(sections[0].title, 'ml-header-title', {
-            x_align: Clutter.ActorAlign.CENTER,
-            y_align: Clutter.ActorAlign.CENTER,
-        }));
-        return {actor, setActive: () => {}, focusTabs: () => false};
-    }
-    const tabs = createTabs(sections, active, onSwitch);
-    tabs.actor.x_align = Clutter.ActorAlign.CENTER;
-    actor.add_child(tabs.actor);
-    return {
-        actor,
-        setActive: tabs.setActive,
-        focusTabs: () => {
-            const tab = tabs.lit();
-            tab?.grab_key_focus();
-            return !!tab;
-        },
-    };
-}
-
 export function createPill(text, styleClass, style = null) {
     return new St.Label({text, style_class: styleClass, style, y_align: Clutter.ActorAlign.CENTER});
 }

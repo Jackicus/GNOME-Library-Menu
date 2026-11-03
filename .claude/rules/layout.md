@@ -14,18 +14,18 @@ paths:
 
 - **The grid's arithmetic is `gridMath.js`**, which imports nothing of the shell so
   the preferences' preview (`prefs.js` `gridPreview`) lays a page out by the same
-  sums over a nominal 1600 × 900 slot. `readGridStyle` reads the nine grid keys
+  sums over a nominal 1600 × 900 slot. `readGridStyle` reads the seven grid keys
   once; `app.js` hands them to `mediaGrid.js` `setGridStyle`, read as a grid is built
   and as it allocates.
 - **`columns` and `rows` are the grid's shape**, each capped by what fits at
   `gridMath.js` `MIN_ART` in the box the view is given, so a small screen shows fewer
   of either. `gridFor` shrinks the cover to fit `rows` and `columns` exactly inside
-  the page less `grid-padding-*`; with `show-titles` off the label's share of a cell
+  the page less `grid-padding` at every edge; with `show-titles` off the label's share of a cell
   goes to the cover.
-- **The spacing settings are what the covers get** (`tile-spacing-*`): `placeGrid`
-  lays the cells that far apart, past the tile's own `tile-padding` (the theme's margin
+- **The spacing setting is what the covers get** (`tile-spacing`, across and down):
+  `placeGrid` lays the cells that far apart, past the tile's own `tile-padding` (the theme's margin
   and bottom padding are zeroed inline, so 0 of each puts covers edge to edge), and
-  centres the block in what the padding leaves; nothing spreads them wider, so a height-limited
+  centres the block in what the margin leaves; nothing spreads them wider, so a height-limited
   page has margins at its sides, as the preview shows. `grid-align` only decides
   whether a part-full row is centred under the full ones or hugs the leading edge.
 - **The page dots keep their room on a one-page section**: the shell hides them, but the
@@ -45,10 +45,12 @@ paths:
   anything reserved (Dash to Panel's 48 px), so `mediaMenu.js` `_slotSize`, which works
   the slot out before the overview has ever been shown, starts from
   `getWorkAreaForMonitor` and measures the dash whether or not it is visible, as the
-  shell does. Wrong, and the first tab's grid is built against a taller box than every
-  later one. The box each view was built for is kept, and every view is rebuilt when it
+  shell does. Wrong, and the first section's grid is built against a taller box than
+  every later one. The box each view was built for is kept, and every view is rebuilt when it
   moves.
-- What tracks hover is what paints its own `:hover`: the section and season tabs, the
+- **The grid has the whole slot**: nothing sits over it, so `LibraryView` hands each
+  section's grid the slot's height as it is.
+- What tracks hover is what paints its own `:hover`: the season tabs, the
   detail rows and their watched disc, and the icon and action buttons (`widgets.js`,
   `detailView.js`). Tiles do not.
 - **A measurement of something just built**: the detail pop-up's height is asked of the

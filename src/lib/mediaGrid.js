@@ -40,7 +40,7 @@ class LibraryPosterGridLayout extends IconGrid.IconGridLayout {
 
         const rtl = Clutter.get_default_text_direction() === Clutter.TextDirection.RTL;
         const {columnsPerPage: columns, rowsPerPage: rows} = this;
-        const {left, top, gapX, gapY} = placeGrid({
+        const {left, top, gap} = placeGrid({
             pageWidth: this._pageWidth,
             pageHeight: this._pageHeight,
             columns,
@@ -61,12 +61,12 @@ class LibraryPosterGridLayout extends IconGrid.IconGridLayout {
                 const row = Math.floor(index / columns);
                 const inRow = Math.min(columns, page.visibleChildren.length - row * columns);
                 const rowOffset = centred
-                    ? (rtl ? -1 : 1) * (columns - inRow) * (cellW + gapX) / 2
+                    ? (rtl ? -1 : 1) * (columns - inRow) * (cellW + gap) / 2
                     : 0;
                 box.set_origin(
                     Math.floor(pageIndex * this._pageWidth + left + rowOffset +
-                        column * (cellW + gapX)),
-                    Math.floor(top + row * (cellH + gapY)));
+                        column * (cellW + gap)),
+                    Math.floor(top + row * (cellH + gap)));
                 // A hovered tile wraps its title, so the cell is a floor.
                 box.set_size(cellW, Math.max(cellH, item.get_preferred_height(cellW)[1]));
                 item.allocate(box);
@@ -200,8 +200,7 @@ class LibraryMediaView extends BaseAppView {
         this._section = section;
         this._data = items;
         this._onActivate = onActivate;
-        this._columns = pendingGrid.columns;
-        this._perPage = pendingGrid.rows * this._columns;
+        this._perPage = pendingGrid.rows * pendingGrid.columns;
         this._media = [];
         this._fillTo(0);
     }
@@ -232,17 +231,6 @@ class LibraryMediaView extends BaseAppView {
         if (this._data)
             this._fillTo(page);
         super.goToPage(page, animate);
-    }
-
-    focusFirst() {
-        const item = this._media[this._shownPage() * this._perPage] ?? this._media[0];
-        item?.grab_key_focus();
-        return !!item;
-    }
-
-    atTopRow(actor) {
-        const order = this._media.indexOf(actor);
-        return order >= 0 && order % this._perPage < this._columns;
     }
 
     // The adjustment's answer, not the grid's, which the last batch of tiles moved.

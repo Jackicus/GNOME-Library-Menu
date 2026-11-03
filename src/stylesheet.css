@@ -1,13 +1,8 @@
 /* Paint only: layout is in lib/. Radii are fallbacks matching the default
  * corner-radius, which lib/shape.js sets inline on every rounded surface. */
 
-.ml-header {
-    height: 52px;
-    margin-bottom: 24px;
-}
-
 /* The dash on the wallpaper (lib/desktopDash.js): a button per section, on the
- * shell's dark neutral as the tabs' pill is, lit with the accent on hover. */
+ * shell's dark neutral as the season tabs' pill is, lit with the accent on hover. */
 .ml-dash {
     spacing: 16px;
 }
@@ -36,20 +31,11 @@
     spacing: 10px;
 }
 
-/* One section alone: its name where the tabs would be. */
-.ml-header-title {
-    font-size: 1.77em;
-    font-weight: 800;
-    color: #fafafb;
-    text-shadow: 0px 1px 4px rgba(0, 0, 0, 0.6);
-}
-
-/* The switch between the libraries in the header, and between a show's
- * seasons in the detail pane: one pill, one set of rules, the shape of the
+/* The switch between a show's seasons in the detail pane: the shape of the
  * shell's own screenshot/screencast switch (.screenshot-ui-shot-cast-container
  * and -button, _screenshot.scss), with words in it, the lit tab in the accent
- * and the pill on the shell's dark neutral. The season tabs are the theme's
- * `.button` underneath, which these override where they say so. */
+ * and the pill on the shell's dark neutral. The tabs are the theme's `.button`
+ * underneath, which these override where they say so. */
 .ml-tabs {
     background-color: rgba(34, 34, 38, 0.7);
     border: 1px solid rgba(250, 250, 251, 0.08);

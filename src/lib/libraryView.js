@@ -1,65 +1,34 @@
-// Tabs over one grid per section, each built the first time its tab is chosen.
+// One grid per section, each built the first time its section is shown.
 
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 
 import {createMediaView} from './mediaGrid.js';
-import {createEmptyState, createHeader} from './widgets.js';
-
-// .ml-header's height plus its margin-bottom in stylesheet.css, logical px.
-const HEADER_ALLOWANCE = 76;
+import {createEmptyState} from './widgets.js';
 
 export class LibraryView {
-    // width and height are the whole view, header included, in physical px.
-    constructor({sections, itemsFor, active, width, height, onActivate, onSwitch, onEmpty}) {
+    // width and height are the whole view, in physical px.
+    constructor({sections, itemsFor, active, width, height, onActivate, onEmpty}) {
         this._sections = sections;
         this._itemsFor = itemsFor;
         this._width = width;
         this._height = height;
         this._onActivate = onActivate;
-        this._onSwitch = onSwitch;
         this._onEmpty = onEmpty;
         this._pages = new Map();
         this._key = this._sectionFor(active)?.key ?? null;
 
-        this.actor = new St.BoxLayout({
-            orientation: Clutter.Orientation.VERTICAL,
-            x_expand: true,
-            y_expand: true,
-            // Clutter hands key events to reactive actors only.
-            reactive: true,
-        });
-        this.header = createHeader({
-            sections,
-            active: this._key,
-            onSwitch: key => {
-                this.show(key);
-                this._onSwitch(key);
-            },
-        });
-        this.actor.add_child(this.header.actor);
-
         // Unclipped: the grid overhangs it so hovered edge tiles are not cut off.
-        this.stack = new St.Widget({
+        this.actor = new St.Widget({
             layout_manager: new Clutter.BinLayout(),
             x_expand: true,
             y_expand: true,
         });
-        this.actor.add_child(this.stack);
-
-        // Captured ahead of the focus groups, whose walk picks whichever tab is above a tile.
-        const keys = new Clutter.KeyController();
-        keys.connect('key-press', () => this._onKeyPress(keys));
-        this.actor.add_action_full('library-tab-step', Clutter.EventPhase.CAPTURE, keys);
         this.actor.connect('destroy', () => this._pages.clear());
     }
 
     destroy() {
         this.actor.destroy();
-    }
-
-    get key() {
-        return this._key;
     }
 
     get currentView() {
@@ -70,18 +39,9 @@ export class LibraryView {
         this._key = this._sectionFor(key)?.key ?? this._key;
         if (!this._key)
             return;
-        this.header.setActive(this._key);
         const page = this._page(this._key);
         for (const other of this._pages.values())
             other.actor.visible = other === page;
-    }
-
-    focusFirst() {
-        const view = this.currentView;
-        if (view)
-            return view.focusFirst();
-        return this._pages.get(this._key)?.actor
-            .navigate_focus(null, St.DirectionType.TAB_FORWARD, false) ?? false;
     }
 
     _sectionFor(key) {
@@ -94,7 +54,6 @@ export class LibraryView {
             return page;
         const section = this._sections.find(s => s.key === key);
         const items = this._itemsFor(key);
-        const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
         let view = null;
         let actor;
         if (items.length) {
@@ -102,7 +61,7 @@ export class LibraryView {
                 section,
                 items,
                 width: this._width,
-                height: this._height - HEADER_ALLOWANCE * scale,
+                height: this._height,
                 onActivate: this._onActivate,
             });
             actor = view;
@@ -117,22 +76,9 @@ export class LibraryView {
                 onAction: button => this._onEmpty(section, button),
             });
         }
-        this.stack.add_child(actor);
+        this.actor.add_child(actor);
         page = {actor, view};
         this._pages.set(key, page);
         return page;
-    }
-
-    _onKeyPress(keys) {
-        const view = this.currentView;
-        if (!view?.visible)
-            return Clutter.EVENT_PROPAGATE;
-        const focus = global.stage.get_key_focus();
-        const [, symbol] = keys.get_key();
-        if (symbol === Clutter.KEY_Up && view.atTopRow(focus))
-            return this.header.focusTabs() ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
-        if (symbol === Clutter.KEY_Down && focus && this.header.actor.contains(focus))
-            return view.focusFirst() ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
-        return Clutter.EVENT_PROPAGATE;
     }
 }

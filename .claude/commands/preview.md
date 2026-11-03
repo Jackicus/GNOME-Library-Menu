@@ -1,6 +1,6 @@
 ---
 description: Show Library running in a nested shell, mirrored live on the desktop, and describe what it looks like
-argument-hint: "[optional: what to click through first, e.g. 'open a show' or 'the Films tab']"
+argument-hint: "[optional: what to click through first, e.g. 'open a show' or 'the Films button']"
 allowed-tools: Bash(./scripts/nested.sh:*), Bash(make nested:*), Read
 ---
 

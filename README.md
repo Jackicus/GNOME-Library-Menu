@@ -1,17 +1,18 @@
 # Library Menu
 
-Your own TV shows, films and games as a library in the overview, opened from a button
-beside Show Apps: posters, synopses, seasons and episodes beside your applications.
+Your own TV shows, films and games as a library in the overview, opened from their
+buttons beside Show Apps: posters, synopses, seasons and episodes beside your applications.
 It plays nothing itself: a show or film
 opens in VLC, mpv or whichever player you choose, and it remembers what you have
 watched; a game starts through Steam or PCSX2.
 
-![The library in the overview: TV Shows, Films and Games tabs over a grid of posters, opened from the screen button in the dash](docs/screenshots/menu.jpg)
+![The library in the overview: a grid of TV show posters filling the space above the dash, opened from the lit TV Shows button, beside the Films and Games buttons after Show Apps](docs/screenshots/menu.jpg)
 
 ## What it does
 
-- **One button, three tabs.** TV Shows, Films and Games, switched at the top. Turn a
-  section off and its tab goes. Games are found in Steam's own library files and the
+- **A button per section.** TV Shows, Films and Games each have their own button
+  beside Show Apps, and the posters have the whole height. Turn a section off and its
+  button goes. Games are found in Steam's own library files and the
   folders PCSX2 points at, with nothing to set up.
 - **Finds the artwork.** Each title is looked up on TVmaze, TMDB and Wikipedia for its
   poster, backdrop, rating and synopsis, and kept in a local cache.
@@ -24,9 +25,9 @@ watched; a game starts through Steam or PCSX2.
 
 ## Games
 
-The Games tab finds your games by itself, with nothing to set up: Steam's own library
+The Games section finds your games by itself, with nothing to set up: Steam's own library
 files list every installed Steam game, libraries on other drives included, and the
-folders PCSX2 is pointed at hold your PlayStation 2 discs. On a first run the empty tab
+folders PCSX2 is pointed at hold your PlayStation 2 discs. On a first run the empty section
 has a **Find Games** button; after that, **Rescan** on the Games page of the preferences
 picks up what you installed since.
 
@@ -45,8 +46,8 @@ picks up what you installed since.
 ## Where it opens
 
 The library takes the app grid's place in the overview, with the row of workspaces
-folded away, and the button beside Show Apps, a keyboard shortcut or a controller's
-Home button opens it. A picked show, film or game pops up out of its poster, the way
+folded away, and a section's button beside Show Apps opens it on that section; a
+keyboard shortcut or a controller's Home button opens it on the section last shown. A picked show, film or game pops up out of its poster, the way
 an app folder opens, and Escape or a click outside puts it back.
 
 **Buttons on the desktop**, off to begin with, draws a row of buttons on the wallpaper,
@@ -137,7 +138,7 @@ then `gnome-extensions enable library-menu@jackicus`.
 TV Shows and Films are empty until they have folders. Open the preferences
 (`gnome-extensions prefs library-menu@jackicus`), and on the **TV Shows** and **Films**
 pages add your folders and press **Rescan**. Games need nothing: press **Find Games** on
-the empty Games tab, or **Rescan** on its page.
+the empty Games section, or **Rescan** on its page.
 
 - **TV Shows:** one folder per show. Seasons can be subfolders (`Season 2`) or
   `S02E05` in the file names.
@@ -152,40 +153,40 @@ To update, `git pull && make install`, then log out and back in. To remove,
 
 ## Preferences
 
-`gnome-extensions prefs library-menu@jackicus`, or an empty tab's Open Settings
+`gnome-extensions prefs library-menu@jackicus`, or an empty section's Open Settings
 button.
 
 <table>
   <tr>
     <td width="50%"><img src="docs/screenshots/prefs-general.png" alt="The General page: the buttons on the desktop switch, playing on a new workspace, the Dash to Panel switch, the keyboard shortcut and the accent colour row"></td>
-    <td width="50%"><img src="docs/screenshots/prefs-grid.png" alt="The Grid page: a wireframe preview of one page of covers, six across and two down, over the rows and columns sliders and the titles switch"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-grid.png" alt="The Layout page: a wireframe preview of one page of covers, six across and two down, over the rows and columns sliders"></td>
   </tr>
   <tr>
     <td valign="top"><b>General</b>: the buttons on the desktop (off to begin with),
-    playing on a new workspace, the button in Dash to Panel's panel (off to begin with), the keyboard shortcut (none to begin with), watched marks, and Rescan everything.</td>
-    <td valign="top"><b>Grid</b>: rows and columns, titles under the covers, the
-    covers' corner radius and the padding around each, the space between covers and
-    the grid's padding, with a preview that follows them.</td>
+    playing on a new workspace, the buttons in Dash to Panel's panel (off to begin with), the keyboard shortcut (none to begin with), the corner radius, watched marks, and Rescan everything.</td>
+    <td valign="top"><b>Layout</b>, everything about size in one place: rows and
+    columns, titles under the covers, with a preview that follows them…</td>
   </tr>
   <tr>
-    <td width="50%"><img src="docs/screenshots/prefs-tv-shows.png" alt="The TV Shows page: the switch for the TV Shows tab, no folder yet, and the information sources tried in order: TVmaze, TMDB and Wikipedia"></td>
-    <td width="50%"><img src="docs/screenshots/prefs-games.png" alt="The Games page: the switch for the Games tab, the Steam library and PCSX2 configuration folders, both auto-detected, and the sources Steam and IGDB"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-tv-shows.png" alt="The TV Shows page: the switch for the TV Shows button, no folder yet, and the information sources tried in order: TVmaze, TMDB and Wikipedia"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-games.png" alt="The Games page: the switch for the Games button, the Steam library and PCSX2 configuration folders, both auto-detected, and the sources Steam and IGDB"></td>
   </tr>
   <tr>
-    <td valign="top"><b>TV Shows</b> and <b>Films</b>: folders, the information
-    sources and their keys, and the player command.</td>
+    <td valign="top"><b>TV Shows</b> and <b>Films</b>: whether the section has a
+    button, folders, the information sources and their keys, and the player
+    command.</td>
     <td valign="top"><b>Games</b>: where Steam and PCSX2 are, if not where they usually
     are, and IGDB's keys for PS2 discs.</td>
   </tr>
   <tr>
     <td width="50%"><img src="docs/screenshots/prefs-controls.png" alt="The Controls page: the keys a remote sends for Up, Down, Left, Right, Select, Back, Home and a page each way"></td>
-    <td width="50%"><img src="docs/screenshots/prefs-window.png" alt="The Window page: the pop-up's width and height sliders, the episode row size and the text size"></td>
+    <td width="50%"><img src="docs/screenshots/prefs-window.png" alt="The Layout page further down: the space between and around the covers and the page margin, in pixels, then the pop-up's width and height as percentages, its row size and its text size"></td>
   </tr>
   <tr>
     <td valign="top"><b>Controls</b>: remote keys and controller buttons for browsing
     from the sofa.</td>
-    <td valign="top"><b>Window</b>: the pop-up's width and height, the size of the
-    rows in its episode list, and of their text and the description.</td>
+    <td valign="top">…then the space between and around the covers and the page
+    margin, and the pop-up's width, height, row size and text size.</td>
   </tr>
 </table>
 
@@ -206,7 +207,7 @@ journalctl -f -o cat SYSLOG_IDENTIFIER=org.gnome.Shell.Extensions
 From a clone, `make status` says whether it is installed and running, and `make logs`
 follows both.
 
-- **A tab says "Nothing in Films yet".** The section has no folder, or has not been
+- **A section says "Nothing in Films yet".** The section has no folder, or has not been
   scanned: its Open Settings button opens the preferences, where you add a folder on its
   page and press Rescan.
 - **Find Games finds nothing.** Steam or PCSX2 is installed somewhere other than its

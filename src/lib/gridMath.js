@@ -12,8 +12,7 @@ export const ARROWS_SHARE = 0.2;
 export const DOTS_HEIGHT = 36;
 
 export const GRID_KEYS = [
-    'columns', 'rows', 'tile-padding', 'tile-spacing-horizontal', 'tile-spacing-vertical',
-    'grid-padding-horizontal', 'grid-padding-vertical', 'show-titles', 'grid-align',
+    'columns', 'rows', 'tile-padding', 'tile-spacing', 'grid-padding', 'show-titles', 'grid-align',
 ];
 
 export function readGridStyle(settings) {
@@ -21,10 +20,8 @@ export function readGridStyle(settings) {
         columns: settings.get_int('columns'),
         rows: settings.get_int('rows'),
         tilePad: settings.get_int('tile-padding'),
-        gapX: settings.get_int('tile-spacing-horizontal'),
-        gapY: settings.get_int('tile-spacing-vertical'),
-        padX: settings.get_int('grid-padding-horizontal'),
-        padY: settings.get_int('grid-padding-vertical'),
+        gap: settings.get_int('tile-spacing'),
+        margin: settings.get_int('grid-padding'),
         titles: settings.get_boolean('show-titles'),
         align: settings.get_string('grid-align'),
     };
@@ -33,24 +30,24 @@ export function readGridStyle(settings) {
 // Decided before any item is added: the layout does not page items again when
 // the mode changes. Rows and columns are capped by what fits at MIN_ART.
 export function gridFor({width, height, aspect, scale, style}) {
-    const gapX = style.gapX * scale;
-    const gapY = style.gapY * scale;
+    const gap = style.gap * scale;
+    const margin = style.margin * scale;
     const pad = 2 * style.tilePad * scale;
     const chrome = pad + (style.titles ? LABEL_CHROME : 0) * scale;
     const titleLine = (style.titles ? TITLE_LINE : 0) * scale;
     const minArt = MIN_ART * scale;
 
-    const gridW = width * (1 - ARROWS_SHARE) - 2 * style.padX * scale;
-    const gridH = height - (DOTS_HEIGHT + 2 * style.padY) * scale - titleLine;
+    const gridW = width * (1 - ARROWS_SHARE) - 2 * margin;
+    const gridH = height - DOTS_HEIGHT * scale - 2 * margin - titleLine;
 
-    const fitColumns = Math.floor((gridW + gapX) / (minArt / aspect + pad + gapX));
+    const fitColumns = Math.floor((gridW + gap) / (minArt / aspect + pad + gap));
     const columns = Math.max(1, Math.min(style.columns, fitColumns));
-    const roomW = Math.floor((gridW - gapX * (columns - 1)) / columns);
+    const roomW = Math.floor((gridW - gap * (columns - 1)) / columns);
     const byWidth = Math.floor((roomW - pad) * aspect);
 
-    const fitRows = Math.floor((gridH + gapY) / (minArt + chrome + gapY));
+    const fitRows = Math.floor((gridH + gap) / (minArt + chrome + gap));
     const rows = Math.max(1, Math.min(style.rows, fitRows));
-    const byHeight = Math.floor((gridH + gapY) / rows - chrome - gapY);
+    const byHeight = Math.floor((gridH + gap) / rows - chrome - gap);
 
     const iconSize = Math.max(minArt, Math.min(byWidth, byHeight));
     return {
@@ -65,18 +62,15 @@ export function gridFor({width, height, aspect, scale, style}) {
 // Where the block of cells sits on a page: the cells as far apart as the
 // settings say, centred in the room the padding leaves.
 export function placeGrid({pageWidth, pageHeight, columns, rows, cellW, cellH, scale, style}) {
-    const padX = style.padX * scale;
-    const padY = style.padY * scale;
-    const roomW = pageWidth - 2 * padX;
-    const roomH = pageHeight - 2 * padY - (style.titles ? TITLE_LINE : 0) * scale;
-    const gapX = style.gapX * scale;
-    const gapY = style.gapY * scale;
-    const blockW = columns * cellW + (columns - 1) * gapX;
-    const blockH = rows * cellH + (rows - 1) * gapY;
+    const margin = style.margin * scale;
+    const gap = style.gap * scale;
+    const roomW = pageWidth - 2 * margin;
+    const roomH = pageHeight - 2 * margin - (style.titles ? TITLE_LINE : 0) * scale;
+    const blockW = columns * cellW + (columns - 1) * gap;
+    const blockH = rows * cellH + (rows - 1) * gap;
     return {
-        left: padX + Math.max(0, (roomW - blockW) / 2),
-        top: padY + Math.max(0, (roomH - blockH) / 2),
-        gapX,
-        gapY,
+        left: margin + Math.max(0, (roomW - blockW) / 2),
+        top: margin + Math.max(0, (roomH - blockH) / 2),
+        gap,
     };
 }

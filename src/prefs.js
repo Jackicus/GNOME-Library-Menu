@@ -133,18 +133,18 @@ function toggles(settings, key, options) {
 }
 
 // The tick marks the schema's default.
-function slider(settings, key, min, max) {
+function slider(settings, key, min, max, unit = '') {
     const scale = new Gtk.Scale({
         adjustment: new Gtk.Adjustment({lower: min, upper: max, step_increment: 1}),
         digits: 0,
         round_digits: 0,
         draw_value: true,
         value_pos: Gtk.PositionType.RIGHT,
-        hexpand: true,
-        width_request: 220,
+        width_request: 260,
         valign: Gtk.Align.CENTER,
     });
     scale.add_mark(settings.get_default_value(key).deep_unpack(), Gtk.PositionType.BOTTOM, null);
+    scale.set_format_value_func((_scale, value) => `${Math.round(value)}${unit}`);
     settings.bind(key, scale.adjustment, 'value', Gio.SettingsBindFlags.DEFAULT);
     return scale;
 }
@@ -161,7 +161,7 @@ function gridPreview(settings) {
         const fit = gridFor({...PREVIEW_BOX, aspect: PREVIEW_ASPECT, scale: 1, style});
         const pageWidth = PREVIEW_BOX.width * (1 - ARROWS_SHARE);
         const pageHeight = PREVIEW_BOX.height - DOTS_HEIGHT;
-        const {left, top, gapX, gapY} = placeGrid({pageWidth, pageHeight, ...fit, scale: 1, style});
+        const {left, top, gap} = placeGrid({pageWidth, pageHeight, ...fit, scale: 1, style});
 
         const margin = 12;
         const k = Math.min((width - 2 * margin) / PREVIEW_BOX.width, (height - 2 * margin) / PREVIEW_BOX.height);
@@ -181,15 +181,15 @@ function gridPreview(settings) {
         // The slot, the page within reach of the arrows, and its padding.
         stroke(ox, oy, PREVIEW_BOX.width * k, PREVIEW_BOX.height * k, 0.25);
         stroke(px, oy, pageWidth * k, pageHeight * k, 0.5, [4, 3]);
-        stroke(px + style.padX * k, oy + style.padY * k,
-            (pageWidth - 2 * style.padX) * k, (pageHeight - 2 * style.padY) * k, 0.3, [1, 3]);
+        stroke(px + style.margin * k, oy + style.margin * k,
+            (pageWidth - 2 * style.margin) * k, (pageHeight - 2 * style.margin) * k, 0.3, [1, 3]);
 
         const coverW = (fit.cellW - 2 * style.tilePad) * k;
         const inset = style.tilePad * k;
         for (let r = 0; r < fit.rows; r++) {
             for (let c = 0; c < fit.columns; c++) {
-                const x = px + (left + c * (fit.cellW + gapX)) * k;
-                const y = oy + (top + r * (fit.cellH + gapY)) * k;
+                const x = px + (left + c * (fit.cellW + gap)) * k;
+                const y = oy + (top + r * (fit.cellH + gap)) * k;
                 stroke(x, y, fit.cellW * k, fit.cellH * k, 0.15);
                 cr.setSourceRGBA(accent.red, accent.green, accent.blue, 0.35);
                 cr.rectangle(x + inset, y + inset, coverW, fit.iconSize * k);
@@ -243,8 +243,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
 
         const state = {window, settings, counts: this._readCounts(), refreshCounts: [], padHandlers: []};
         window.add(this._generalPage(state));
-        window.add(this._gridPage(state));
-        window.add(this._windowPage(state));
+        window.add(this._layoutPage(state));
         window.add(this._controlsPage(state));
         for (const section of SECTIONS)
             window.add(this._sectionPage(state, section));
@@ -297,9 +296,9 @@ export default class LibraryPreferences extends ExtensionPreferences {
 
         const view = new Adw.PreferencesGroup({
             title: 'View',
-            description: 'The library opens in the overview, beside your applications, from the ' +
-                'button next to Show Apps. What you pick pops up where you picked it, the way an ' +
-                'app folder opens.',
+            description: 'The library opens in the overview, beside your applications, from a ' +
+                'button per section next to Show Apps. What you pick pops up where you picked it, ' +
+                'the way an app folder opens.',
         });
         page.add(view);
         const dash = new Adw.SwitchRow({
@@ -316,7 +315,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
         view.add(play);
         const dashToPanel = new Adw.SwitchRow({
             title: 'Work with Dash to Panel',
-            subtitle: 'Puts the library button beside Show Apps in Dash to Panel\'s panel',
+            subtitle: 'Puts the library\'s buttons beside Show Apps in Dash to Panel\'s panel',
         });
         settings.bind('dash-to-panel', dashToPanel, 'active', Gio.SettingsBindFlags.DEFAULT);
         view.add(dashToPanel);
@@ -325,7 +324,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
 
         const appearance = new Adw.PreferencesGroup({
             title: 'Appearance',
-            description: 'The covers have the Grid page, and the pop-up a pick opens the Window page.',
+            description: 'The sizes of the covers and of the pop-up a pick opens are on the Layout page.',
         });
         page.add(appearance);
         const accent = new Adw.ActionRow({
@@ -342,6 +341,8 @@ export default class LibraryPreferences extends ExtensionPreferences {
             }
         });
         appearance.add(accent);
+        appearance.add(row('Corner radius', 'How rounded the covers, the pop-up and its rows are. 0 is square.',
+            slider(settings, 'corner-radius', 0, 40, ' px')));
 
         page.add(this._watchedGroup(settings));
 
@@ -356,22 +357,24 @@ export default class LibraryPreferences extends ExtensionPreferences {
         return page;
     }
 
-    _gridPage(state) {
+    _layoutPage(state) {
         const {settings} = state;
-        const page = new Adw.PreferencesPage({title: 'Grid', icon_name: 'view-grid-symbolic'});
+        const page = new Adw.PreferencesPage({title: 'Layout', icon_name: 'view-grid-symbolic'});
 
         const preview = new Adw.PreferencesGroup({
             title: 'Preview',
-            description: 'One page of the library on a 1600 × 900 screen, laid out as the settings ' +
-                'below say. A smaller screen fits fewer covers.',
+            description: 'One page of the library on a 1600 × 900 screen. A smaller screen fits fewer covers.',
         });
         page.add(preview);
         preview.add(gridPreview(settings));
 
-        const covers = new Adw.PreferencesGroup({title: 'Page'});
+        const covers = new Adw.PreferencesGroup({
+            title: 'Covers',
+            description: 'Covers are as large as the page leaves room for: fewer of them, or less space, makes them larger.',
+        });
         page.add(covers);
-        covers.add(row('Rows', 'Covers down a page. Fewer means larger covers.', slider(settings, 'rows', 1, 3)));
-        covers.add(row('Columns', 'Covers across a page. Fewer means larger covers.', slider(settings, 'columns', 4, 10)));
+        covers.add(row('Rows', null, slider(settings, 'rows', 1, 3)));
+        covers.add(row('Columns', null, slider(settings, 'columns', 4, 10)));
         const titles = new Adw.SwitchRow({
             title: 'Titles under the covers',
             subtitle: 'Off, the room a title took goes to the covers',
@@ -381,45 +384,24 @@ export default class LibraryPreferences extends ExtensionPreferences {
         covers.add(row('Align covers', 'Where a row that is not full sits',
             toggles(settings, 'grid-align', [['center', 'Centre'], ['start', 'Left']])));
 
-        const posters = new Adw.PreferencesGroup({title: 'Posters'});
-        page.add(posters);
-        posters.add(row('Corner radius', 'How rounded the covers are, in pixels; their tiles, the pop-up and its rows follow. 0 is square.',
-            slider(settings, 'corner-radius', 0, 40)));
-        posters.add(row('Padding', 'The tile around a cover, lit under the pointer, in pixels. 0, with no spacing, puts covers edge to edge.',
-            slider(settings, 'tile-padding', 0, 24)));
-
-        const spacing = new Adw.PreferencesGroup({
-            title: 'Spacing',
-            description: 'In pixels. Covers are as large as the spacing leaves room for; a block ' +
-                'narrower than the page is centred, as the preview shows.',
-        });
+        const spacing = new Adw.PreferencesGroup({title: 'Spacing'});
         page.add(spacing);
-        spacing.add(row('Between covers, across', null, slider(settings, 'tile-spacing-horizontal', 0, 48)));
-        spacing.add(row('Between covers, down', null, slider(settings, 'tile-spacing-vertical', 0, 48)));
-        spacing.add(row('Padding at the sides', null, slider(settings, 'grid-padding-horizontal', 0, 120)));
-        spacing.add(row('Padding above and below', null, slider(settings, 'grid-padding-vertical', 0, 120)));
-        return page;
-    }
+        spacing.add(row('Between covers', null, slider(settings, 'tile-spacing', 0, 48, ' px')));
+        spacing.add(row('Around each cover', 'The tile lit under the pointer. 0, with no space between, puts covers edge to edge.',
+            slider(settings, 'tile-padding', 0, 24, ' px')));
+        spacing.add(row('Page margin', null, slider(settings, 'grid-padding', 0, 120, ' px')));
 
-    _windowPage(state) {
-        const {settings} = state;
-        const page = new Adw.PreferencesPage({title: 'Window', icon_name: 'focus-windows-symbolic'});
-
-        const size = new Adw.PreferencesGroup({
-            title: 'Size',
-            description: 'The pop-up a pick opens, as a share of the room on screen. The artwork ' +
-                'and the list beside it follow.',
+        const popup = new Adw.PreferencesGroup({
+            title: 'Pop-up',
+            description: 'What a pick opens, as a share of the room on screen. The artwork and the list beside it follow.',
         });
-        page.add(size);
-        size.add(row('Width', null, slider(settings, 'detail-width', 60, 120)));
-        size.add(row('Height', null, slider(settings, 'detail-height', 60, 120)));
-
-        const list = new Adw.PreferencesGroup({title: 'Episode list'});
-        page.add(list);
-        list.add(row('Row size', 'The height of each episode, film or disc row, in pixels. Its icons scale with it.',
-            slider(settings, 'detail-row-size', 28, 56)));
-        list.add(row('Text size', 'The rows and the description, as a percentage; the title, facts and season tabs follow by half as much.',
-            slider(settings, 'detail-text-size', 70, 150)));
+        page.add(popup);
+        popup.add(row('Width', null, slider(settings, 'detail-width', 60, 120, '%')));
+        popup.add(row('Height', null, slider(settings, 'detail-height', 60, 120, '%')));
+        popup.add(row('Row size', 'Each episode, film or disc row. Its icons scale with it.',
+            slider(settings, 'detail-row-size', 28, 56, ' px')));
+        popup.add(row('Text size', 'The rows and the description. The title, facts and season tabs follow by half as much.',
+            slider(settings, 'detail-text-size', 70, 150, '%')));
         return page;
     }
 
@@ -429,7 +411,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
             toggles(settings, 'tracking', [['source', 'Folders'], ['local', 'Local'], ['none', 'Off']])));
         const threshold = row('Watched after',
             'How far through an episode or film playback has to get, as a percentage. Works with any player that shows up in the media controls, VLC included.',
-            slider(settings, 'watched-threshold', 50, 100));
+            slider(settings, 'watched-threshold', 50, 100, '%'));
         group.add(threshold);
         const resume = new Adw.SwitchRow({
             title: 'Continue where you left off',
@@ -438,7 +420,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
         settings.bind('resume-playback', resume, 'active', Gio.SettingsBindFlags.DEFAULT);
         group.add(resume);
         const rewind = row('Rewind on resume', 'Seconds before where it stopped, so the moment it was left at is seen again',
-            slider(settings, 'resume-rewind', 0, 60));
+            slider(settings, 'resume-rewind', 0, 60, ' s'));
         settings.bind('resume-playback', rewind, 'sensitive', Gio.SettingsBindFlags.GET);
         group.add(rewind);
         const sync = () => {
@@ -735,7 +717,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
         page.add(files);
         const enabled = new Adw.SwitchRow({
             title: `Show ${section.lower} in the library`,
-            subtitle: `The ${section.title} tab in the library`,
+            subtitle: 'With a button of its own beside Show Apps',
         });
         settings.bind(`${section.prefix}-enabled`, enabled, 'active', Gio.SettingsBindFlags.DEFAULT);
         files.add(enabled);

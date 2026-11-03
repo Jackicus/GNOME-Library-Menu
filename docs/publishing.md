@@ -65,7 +65,7 @@ Checked against both pages as read on 2026-10-02, before the 1.0 release, again 
   strings. No GObject instance, signal or source exists before `enable()`.
 - **`disable()` undoes `enable()`.** `LibraryApp.disable()` removes the
   keybinding, every `connectObject` owner, the file monitor and its timer,
-  calls `_teardown()` (the menu and the pop-up), detaches the button and
+  calls `_teardown()` (the menu and the pop-up), detaches the buttons and
   disables the playback watcher, tracker and controls, each of which drops its own
   subscriptions, cancellables and sources. The two wraps of methods it does
   not own come off chain-safely ([private-api.md](private-api.md#chain-safe-wraps)).
@@ -78,7 +78,7 @@ Checked against both pages as read on 2026-10-02, before the 1.0 release, again 
   up edits lives only in `./scripts/dev-extension.js`, which never ships.
 - **Other extensions.** The guidelines discourage interacting with another
   extension and review it case by case. The one reach, into Dash to Panel's
-  panel for the button beside Show Apps, happens only while **Work with Dash
+  panel for the buttons beside Show Apps, happens only while **Work with Dash
   to Panel** (`dash-to-panel`, off by default) is on: off, nothing of Dash to
   Panel is read or watched. On, it uses Dash to Panel's exported
   `global.dashToPanel` and its `panels-created` signal, and one chain-safe
@@ -95,7 +95,7 @@ Checked against both pages as read on 2026-10-02, before the 1.0 release, again 
   `api.tvmaze.com`, `api.themoviedb.org`, `en.wikipedia.org`, and for games
   `store.steampowered.com`, Steam's CDN, `id.twitch.tv` and `api.igdb.com`, over Soup 3
   and writes `~/.cache/library-menu@jackicus/`; the extension watches the file it
-  writes. Only a Rescan button (`prefs.js` `_scanButton`) or an empty Games tab's
+  writes. Only a Rescan button (`prefs.js` `_scanButton`) or an empty Games section's
   Find Games (`app.js` `_scan`) starts it, and it reads the keys from the settings,
   so no key is ever on a command line; each source can
   be switched off per section (`<prefix>-online`). The preferences also start
