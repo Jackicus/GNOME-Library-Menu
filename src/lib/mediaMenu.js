@@ -15,16 +15,16 @@ const DASH_MAX_SHARE = 0.16;
 const VERTICAL_SPACING_SHARE = 0.02;
 
 export class MediaMenu {
-    constructor({sections, itemsFor, onActivate, button, onSwitch, onEmpty}) {
+    constructor({sections, active, itemsFor, onActivate, buttons, onSwitch, onEmpty}) {
         this._sections = sections;
         this._itemsFor = itemsFor;
         this._onActivate = onActivate;
-        this._button = button;
+        this._buttons = buttons;
         this._onSwitch = onSwitch;
         this._onEmpty = onEmpty;
         this._library = null;
         this._showing = false;
-        this._key = sections[0]?.key ?? null;
+        this._key = active;
         this._slot = null;
         this._box = null;
         this._fold = 0;
@@ -167,8 +167,9 @@ export class MediaMenu {
         }
     }
 
+    // A section's button on another section switches to it rather than close.
     toggle(key = null) {
-        if (this.isShowing) {
+        if (this.isShowing && (key === null || key === this._key)) {
             if (this._forced) {
                 Main.overview.hide();
             } else {
@@ -207,8 +208,10 @@ export class MediaMenu {
     open(key = null) {
         if (!this._appsBox)
             return;
-        if (this._sections.some(s => s.key === key))
+        if (this._sections.some(s => s.key === key)) {
             this._key = key;
+            this._onSwitch(key);
+        }
         this._show(true);
         if (Main.overview.visible) {
             this._showAppsButton.checked = true;
@@ -263,7 +266,7 @@ export class MediaMenu {
         } else if (showing) {
             this._library?.show(this._key);
         }
-        this._button.sync(this._showing);
+        this._buttons.sync(this._showing ? this._key : null);
         this._syncAppsLook();
     }
 
@@ -293,7 +296,7 @@ export class MediaMenu {
         return [width, height - searchHeight - dashHeight - 2 * spacing];
     }
 
-    // Rebuilt, every tab at once, when the slot it was built for moves.
+    // Rebuilt, every section at once, when the slot it was built for moves.
     _view() {
         const [width, height] = this._slotSize();
         if (this._box && (this._box[0] !== width || this._box[1] !== height))
@@ -309,10 +312,6 @@ export class MediaMenu {
             width,
             height,
             onActivate: this._onActivate,
-            onSwitch: key => {
-                this._key = key;
-                this._onSwitch(key);
-            },
             onEmpty: this._onEmpty,
         });
         this._library.actor.visible = false;

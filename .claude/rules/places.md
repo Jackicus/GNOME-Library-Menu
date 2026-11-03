@@ -12,27 +12,33 @@ paths:
 
 ## The menu (`mediaMenu.js`)
 
-- The library is one `MediaMenu` holding one `LibraryView` (tabs over a grid per
-  section, each grid built the first time its tab is chosen and kept, so a tab switch
-  is which grid is visible), opened from the button, the shortcut or a controller's
-  Home. The button behaves as a dock's Show Apps: pressed on the desktop it opens the
-  overview, so a second press or Escape lands back on the desktop; pressed with the
-  overview up, back to the window picker. A dock's own `forcedOverview` flag is never
-  set by us.
+- The library is one `MediaMenu` holding one `LibraryView` (a grid per section, each
+  built the first time its section is shown and kept, so a switch is which grid is
+  visible), opened from a section's button, the shortcut or a controller's Home (those
+  two on the section last shown). A button behaves as a dock's Show Apps: pressed on
+  the desktop it opens the overview, so a second press or Escape lands back on the
+  desktop; pressed with the overview up, back to the window picker. Another section's
+  button with the library up switches to it in place, and lights instead
+  (`MediaMenu.toggle`). A dock's own `forcedOverview` flag is never set by us.
+- One `LibraryIcon` per enabled section, its icon and title from `SECTIONS`, in the
+  order `SECTIONS` gives, after Show Apps: added to the dash's `_dashContainer`, or as
+  one box spliced into Dash to Panel's layout. A section's `<prefix>-enabled` switch
+  adds or removes its button; with none on there is no button and no menu.
 - The shell lights Show Apps for its app-grid state, which the library borrows:
   `showAppsButton.checked` is what drives that state, so it stays checked, and the
   `checked` pseudo-class is taken off it instead (`_syncAppsLook`), so only the
-  library's button is lit. A press on Show Apps then reads as "show the apps", and
+  library's buttons are lit. A press on Show Apps then reads as "show the apps", and
   does: the library is swapped out for the apps, in place. The shell's own unchecks
   (a swipe to the window picker, a search, Super+A, the overview closing) close the
   library as they always did. Dash to Panel mirrors the stock button's `checked` on
   its own, which stays lit.
-- The tabs and grids go into the overview's app-grid slot, and the row of small
+- The grids go into the overview's app-grid slot, and the row of small
   workspaces folds away, read from the overview's own state adjustment, never timed (a
   fade of ours is out of step with the shell's, and one started as the overview unmaps
   stalls until it is next shown).
-- Tabs switch in place, with no overview transition. A rebuild (a setting, a rescan)
-  replaces the menu and puts back the tab that was showing (`state`/`restore`).
+- Sections switch in place, with no overview transition. A rebuild (a setting, a
+  rescan) replaces the menu and puts back the section that was showing
+  (`state`/`restore`).
 - Nothing is drawn on the wallpaper. Every poster is `widgets.js` `createArtwork`.
 
 ## The pop-up pane (`detailDialog.js`)

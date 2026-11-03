@@ -1,6 +1,6 @@
 # Private and deep GNOME Shell API
 
-Library puts its button beside Show Apps, puts its tabs and grids in the
+Library puts its buttons beside Show Apps, puts its grids in the
 overview's app-grid slot, borrows the app grid for its posters and the folder
 dialog's shape for its pop-up pane. None of that has a public API. This is everything it reaches into,
 for reviewers on extensions.gnome.org and for whoever ports it. Which shell
@@ -18,8 +18,8 @@ an `if`, and then the only sign is the symptom, with nothing logged.
 | `Dash.ShowAppsIcon`, its `_createIcon`, `_iconActor` | libraryButton.js | The subclass throws building; no button, a warning | Yes, try/catch |
 | `ShowAppsIcon._canRemoveApp()` (overridden) | libraryButton.js | The button becomes an unpin target again, silently | No |
 | `Main.overview.dash._dashContainer`, `dash._hookUpLabel` | libraryButton.js | No button in the dash, a warning | Yes, try/catch |
-| `global.dashToPanel.panels[0]`, `panels-created`, `.showAppsIconWrapper.realShowAppsIcon`, `.panel`, `._updateGroupedElements` (wrapped), `.geom`, `.updateElementPositions` | libraryButton.js | The button goes in the dash instead; `updateElementPositions` gone: no button, a warning | Yes, each checked first or inside `_attach()`'s try/catch; read only with `dash-to-panel` on |
-| `panel._elementGroups`, a group's `.elements` and `.expandableIndex`, an element's `.actor` and `.position` | libraryButton.js | `_elementGroups` gone: the button is in the panel with no place in its layout. Another shape: the wrap throws inside `_attach()`'s try/catch, so no button and a warning | Partly |
+| `global.dashToPanel.panels[0]`, `panels-created`, `.showAppsIconWrapper.realShowAppsIcon`, `.panel`, `._updateGroupedElements` (wrapped), `.geom`, `.updateElementPositions` | libraryButton.js | The buttons go in the dash instead; `updateElementPositions` gone: no buttons, a warning | Yes, each checked first or inside `_attach()`'s try/catch; read only with `dash-to-panel` on |
+| `panel._elementGroups`, a group's `.elements` and `.expandableIndex`, an element's `.actor` and `.position` | libraryButton.js | `_elementGroups` gone: the buttons are in the panel with no place in its layout. Another shape: the wrap throws inside `_attach()`'s try/catch, so no buttons and a warning | Partly |
 | `Main.overview._overview.controls`, `.appDisplay`, `._box` | mediaMenu.js; `_overview.controls` also detailDialog.js | No library; one warning, if a section is enabled | Yes |
 | `Main.overview.dash.showAppsButton` (`.checked`) | mediaMenu.js | The menu can no longer tell the app grid is up (the kit's "Is the app grid up?" rule) | No |
 | `controls._searchController.searchActive` | mediaMenu.js | Workspaces do not come back for a search while the view is up | Yes, `?.` |
@@ -38,22 +38,22 @@ an `if`, and then the only sign is the symptom, with nothing logged.
 | `controls._appDisplay._folderIcons`, `icon._dialog`, `dialog._viewBox` | detailDialog.js `folderLook()` | The pop-up keeps the stock shade and theme even under Blur my Shell | Yes, `?.` to `null` |
 | Restated `DIALOG_SHADE_NORMAL` (`SHADE`) | detailDialog.js | The shade drifts from the shell's | No |
 
-## The button beside Show Apps (libraryButton.js)
+## The buttons beside Show Apps (libraryButton.js)
 
-`LibraryButtonIcon` subclasses `Dash.ShowAppsIcon` for the hover, focus
-ring, label and sizing every dash icon has. `BaseIcon._init` calls
+`LibraryButtonIcon`, one per enabled section, subclasses `Dash.ShowAppsIcon`
+for the hover, focus ring, label and sizing every dash icon has. `BaseIcon._init` calls
 `_createIcon` before the subclass's `_init` returns, so `_gicon` is set before
-the chain-up; `_canRemoveApp()` returns false so the button is no unpin target.
-`_attach()` builds it inside one try/catch and logs "No button beside Show
+the chain-up; `_canRemoveApp()` returns false so a button is no unpin target.
+`_attach()` builds them inside one try/catch and logs "No buttons beside Show
 Apps" on failure, at enable and on each re-attach.
 
-In the plain dash it goes into `_dashContainer` and `_hookUpLabel` gives it
+In the plain dash each goes into `_dashContainer` and `_hookUpLabel` gives it
 the dash's label. The dash cancels a pending show-label timeout only when the
-item's hover goes, so the button's hover is cleared before it is destroyed.
+item's hover goes, so each button's hover is cleared before it is destroyed.
 Dash to Panel is reached only while the `dash-to-panel`
 setting ("Work with Dash to Panel", off by default) is on. Off, none of what
-follows runs, nothing of Dash to Panel is read or watched, and the button
-stays in the overview's dash, which Dash to Panel hides. On,
+follows runs, nothing of Dash to Panel is read or watched, and the buttons
+stay in the overview's dash, which Dash to Panel hides. On,
 `global.dashToPanel` is the object Dash to Panel exports for other extensions,
 with its `panels` and its `panels-created` signal, and the extension manager's
 `extension-state-changed` for Dash to Panel's UUID says when it comes and
@@ -63,17 +63,17 @@ rebuilds from its own settings. So the one patch is a wrap of that method on
 `panels[0]`, the primary monitor's panel, put on at attach and taken off
 ("Chain-safe wraps", below) at detach, when the setting goes off, and when
 Dash to Panel rebuilds its panels or is disabled. The wrap splices the
-button's entry in after Show Apps in `_elementGroups`, with Show Apps'
+buttons' box in, as one entry, after Show Apps in `_elementGroups`, with Show Apps'
 `position`, and moves `expandableIndex` up one if it lay beyond. The shell
 disables and re-enables the extensions enabled after one being disabled
 without a signal, and Dash to Panel then hands its primary panel's bar back to
-the top bar with the button still in it; so the `destroy` of its Show Apps
-(`showAppsIconWrapper.realShowAppsIcon`) releases the button and looks for the
+the top bar with the buttons still in it; so the `destroy` of its Show Apps
+(`showAppsIconWrapper.realShowAppsIcon`) releases the buttons and looks for the
 new panel on the next idle. `panels-created` and `extension-state-changed`
 re-run `_attach`, but `_reattach` acts only when `panels[0]` changed or the
-button lost its parent. If Dash to Panel renames or
-reshapes what the table above lists, the button falls back to the dash, or is
-missing with a warning in the log; turning the setting off puts it back in the
+buttons lost their parent. If Dash to Panel renames or
+reshapes what the table above lists, the buttons fall back to the dash, or are
+missing with a warning in the log; turning the setting off puts them back in the
 dash.
 
 ## The overview's app-grid slot (mediaMenu.js)

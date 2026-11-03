@@ -33,17 +33,20 @@ Design reasoning that the code keeps to one line or none.
 - `anim.js` `flyClone` flies by translation and scale rather than width and
   height: a clone already paints its source scaled into its box, so the frames
   look the same and nothing is re-allocated for 260 ms.
-- The section tabs take the shape of the shell's screenshot/screencast switch
+- The season tabs take the shape of the shell's screenshot/screencast switch
   (`.screenshot-ui-shot-cast-container`), and the primary action is the theme's
   `button.default`, so hover, focus and pressed states are the theme's.
 
-## The button
+## The buttons
 
-- The button's icon is the theme's `video-display-symbolic`, the TV Shows section's
-  too, so it follows the icon theme and St recolours it. It is a plain screen in
-  Adwaita and Papirus alike, where `tv-symbolic` is a screen with a play triangle in
-  Papirus. The glyph fills the dash's icon size, as the app icons beside it do: inset
-  to the size of Show Apps' dots, it read small next to them.
+- A button per section rather than tabs over the grid: the tab bar took 76 logical px
+  of the slot, which the grid's height-limited covers now have, and a section is one
+  press from the dash instead of two.
+- Each button wears its section's icon from the theme (`video-display-symbolic`, a
+  plain screen in Adwaita and Papirus alike, where `tv-symbolic` has a play triangle in
+  Papirus; `video-x-generic-symbolic`; `applications-games-symbolic`), so it follows
+  the icon theme and St recolours it. The glyph fills the dash's icon size, as the app
+  icons beside it do: inset to the size of Show Apps' dots, it read small next to them.
 
 ## Scanner
 

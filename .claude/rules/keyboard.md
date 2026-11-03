@@ -21,15 +21,8 @@ paths:
   opens, Escape backs out a level. A focused row destroyed under the pop-up drops key
   focus to the stage, so `detailDialog.js` watches `notify::key-focus` and takes it
   back while it is open.
-- The tabs and the grid are two groups, and the step between them is ours: an arrow
-  up from the grid's top row (`atTopRow`) focuses the lit tab and an arrow down from
-  the tabs the shown page's first tile (`libraryView.js`). A tab chooses itself on
-  `key-focus-in` (`widgets.js`), so a remote with only arrows can switch sections, and
-  this is why the step is not left to St: the overview's own group (`ControlsManager`)
-  walks across both by position, so Up from a tile would choose whichever tab is above
-  it. The view takes the step with a `Clutter.KeyController` in the capture phase,
-  ahead of the groups' own, on an actor made reactive for it: Clutter hands a key
-  event only to reactive actors.
+- Sections are switched from their buttons beside Show Apps, which the keyboard reaches
+  as the dash's own items; nothing in the menu switches them.
 - The pop-up holds the keyboard as it opens and an arrow finds nothing to move to, so
   its first navigation key lands where Tab would (`detailDialog.js` `_onKeyPress`).
 
@@ -56,7 +49,7 @@ paths:
 
 `library-shortcut` (`as`, empty by default) is grabbed with `Main.wm.addKeybinding`,
 so mutter follows the setting at once; it is not listed in GNOME Settings. A press is
-the button's press, in `NORMAL` and `OVERVIEW` modes, so it does nothing while the
+the last-shown section's button pressed, in `NORMAL` and `OVERVIEW` modes, so it does nothing while the
 pop-up holds its grab. The preferences capture
 it as GNOME Settings does (`prefs.js` `_captureShortcut`): system shortcuts are
 inhibited while listening (the shell asks once whether the Extensions app may), and a
