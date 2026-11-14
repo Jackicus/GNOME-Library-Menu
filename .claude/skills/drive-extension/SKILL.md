@@ -1,6 +1,6 @@
 ---
 name: drive-extension
-description: Where Library is on the nested shell's screen and how to drive it - coordinates of the section buttons, grid and the pop-up pane, its remote keys and virtual pad, the stand-in library the README's screenshots are taken of, and what must never be pressed. Use with gnome-ext:nested-shell whenever a Library change must be seen (layout, the section buttons, a pick's pop-up, the preferences).
+description: Where Library is on the nested shell's screen and how to drive it - coordinates of the section buttons, grid and the pop-up pane, the player bar over a VLC it launched, its remote keys and virtual pad, the stand-in library the README's screenshots are taken of, and what must never be pressed. Use with gnome-ext:nested-shell whenever a Library change must be seen (layout, the section buttons, a pick's pop-up, the preferences).
 ---
 
 # Driving Library in a nested shell
@@ -37,6 +37,22 @@ CLAUDE.md's list, and why, unless the task asks for exactly that:
 - **`overview on` sets `OverviewActive` only if it is not already set**, so
   `do "overview on" "shot $S/x.png"` photographs an overview the extension opened (the
   button pressed from the desktop).
+- **`player [--plain] [--qt] [--windowed] [FILE] [-- VLC ARGS]`**: VLC in the nested
+  session, full screen (cvlc; `--qt` the Qt interface), launched as a library pick
+  launches it, so the player bar goes over it; `--plain` launches it as anything else
+  would, with VLC's own controller and no bar. No FILE plays `dist/test-video.mkv`,
+  made once with ffmpeg: ten minutes of bars with the running time burned in, audio
+  Japanese/English, subtitles English "Second N"/Spanish "Segundo N", a chapter every
+  two minutes. It keeps VLC's `--vout=xcb_x11 --avcodec-hw=none`: with a GL output it
+  plays with no window in the headless shell. Its vlcrc and data are the nested
+  session's own; a fresh one shows VLC's privacy dialog first (Continue ≈ (486, 447)).
+- **`mpris`**: the first player's status, position, volume, rate and title; `mpris get
+  PROP`, `set PROP '<VALUE>'`, `PlayPause`, `Quit`. Quit players this way.
+- **The library's own launch path**, end to end, is a stand-in film pointed at the
+  clip: set the first film's `main_path` and `files[].path` in the stand-in cache's
+  `library.json` to `dist/test-video.mkv`, set `films-open-command` in the nested
+  settings to `cvlc --fullscreen --play-and-exit --no-audio --vout=xcb_x11
+  --avcodec-hw=none`, and press its Play.
 - **Remote keys**: `key XF86OK`, `XF86Back`, `XF86HomePage`, `XF86ChannelUp` and the
   rest a remote sends work as `key` steps, against the `keys-*` defaults.
 - **A game controller is `scripts/vpad.py`**, a virtual Xbox 360 pad on uinput driven
@@ -44,7 +60,8 @@ CLAUDE.md's list, and why, unless the task asks for exactly that:
   for the whole machine while it runs: `quit` it when done. Start it by its full path
   (`"$PWD/scripts/vpad.py" FIFO &` from the repository): that is the name
   `nested.sh stop` sweeps it by (`NESTED_STRAYS` in `./scripts/ext.conf`). Controller input is acted
-  on only while a library is up and no window has the focus, so close the prefs first.
+  on only while a library is up and no window has the focus, so close the prefs first,
+  or, for the player bar, while its player is full screen and focused.
 - **The "Allow inhibiting shortcuts" prompt** (capturing `library-shortcut` in the
   prefs): if a test answers it, delete the entry
   afterwards (`PermissionStore.DeletePermission gnome shortcuts-inhibitor
@@ -73,6 +90,18 @@ Games ≈ (220, 875). With the shortcut and a pad's Home they are the only ways 
   `--stand-in` start has it off): three buttons centred on the wallpaper, TV Shows
   ≈ (584, 466), Films ≈ (800, 466), Games ≈ (1016, 466). A click opens the overview
   onto that section: `overview on` before the `shot`, or the shot dismisses it.
+
+- **The player bar** (1600×900, default `bar-scale`): two `move`s over the player
+  bring it up (only motion reveals it); panel `320,764` to `1280,870`, crop shots to
+  `300 740 1000 160`. Seek slider on y ≈ 789 from x ≈ 410 to 1190; transport on
+  y ≈ 834: previous 700, skip back 745, **play 799**, skip forward 854, next 898;
+  **tracks 995** (once VLC's socket answered, ~3 s after `player`), mute 1040, volume
+  1065–1150, rate 1187, **close 1238** (quits the player). The pop-out stands above
+  the tracks button; picks keep it open, one Escape closes it, the next reaches VLC
+  (which leaves fullscreen, and the bar correctly goes). `key Super+c` (or the pad's
+  START) opens the bar holding the keyboard with play focused.
+- **VLC's own controller** (`--plain --qt`) shows during a burst of `move`s with no
+  `wait` between, so shoot inside the burst.
 
 ## Its own traps
 
