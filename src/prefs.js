@@ -8,6 +8,7 @@ import Pango from 'gi://Pango';
 
 import {SECTIONS as LIBRARY_SECTIONS, openCommandKey, readSections} from './lib/library.js';
 import {ACTIONS, NATIVE_KEYS, padLabel} from './lib/actions.js';
+import {ACTIONS as PLAYER_ACTIONS, BAR_BUTTONS, BUTTONS} from './lib/playerActions.js';
 import {ARROWS_SHARE, DOTS_HEIGHT, GRID_KEYS, gridFor, placeGrid, readGridStyle} from './lib/gridMath.js';
 
 // A credential's `fields` are tab-joined in one slot of the `credentials` setting;
@@ -89,7 +90,18 @@ const PAGES = {
 
 const SECTIONS = LIBRARY_SECTIONS.map(section => ({...section, ...PAGES[section.key]}));
 
-const SHORTCUT_KEY = 'library-shortcut';
+const SHORTCUTS = {
+    'library-shortcut': {
+        title: 'Open the library',
+        subtitle: 'From anywhere; the same shortcut again closes it. None is set to begin with.',
+        heading: 'Open the Library',
+    },
+    'toggle-bar': {
+        title: 'Show the bar',
+        subtitle: 'Holding the keyboard: the arrow keys move, Enter presses, Escape or the shortcut again closes',
+        heading: 'Show the Bar',
+    },
+};
 
 const TRACKING = {
     source: 'Every mark is kept on this computer, and each library folder also gets a copy of its own marks, so another computer using the same folder picks them up.',
@@ -245,6 +257,7 @@ export default class LibraryPreferences extends ExtensionPreferences {
         window.add(this._generalPage(state));
         window.add(this._layoutPage(state));
         window.add(this._controlsPage(state));
+        window.add(this._playerPage(state));
         for (const section of SECTIONS)
             window.add(this._sectionPage(state, section));
 
@@ -320,7 +333,9 @@ export default class LibraryPreferences extends ExtensionPreferences {
         settings.bind('dash-to-panel', dashToPanel, 'active', Gio.SettingsBindFlags.DEFAULT);
         view.add(dashToPanel);
 
-        page.add(this._shortcutGroup(state));
+        const shortcuts = new Adw.PreferencesGroup({title: 'Keyboard Shortcut'});
+        shortcuts.add(this._shortcutRow(state, 'library-shortcut'));
+        page.add(shortcuts);
 
         const appearance = new Adw.PreferencesGroup({
             title: 'Appearance',
@@ -434,38 +449,34 @@ export default class LibraryPreferences extends ExtensionPreferences {
         return group;
     }
 
-    _shortcutGroup(state) {
+    _shortcutRow(state, key) {
         const {settings} = state;
-        const group = new Adw.PreferencesGroup({title: 'Keyboard Shortcut'});
         const label = new Adw.ShortcutLabel({disabled_text: 'Disabled', valign: Gtk.Align.CENTER});
         const clear = iconButton('edit-clear-symbolic', 'Remove this shortcut');
-        clear.connect('clicked', () => settings.set_strv(SHORTCUT_KEY, []));
-        const shortcut = row('Open the library',
-            'From anywhere; the same shortcut again closes it. None is set to begin with.',
-            label, clear);
+        clear.connect('clicked', () => settings.set_strv(key, []));
+        const shortcut = row(SHORTCUTS[key].title, SHORTCUTS[key].subtitle, label, clear);
         shortcut.activatable = true;
-        shortcut.connect('activated', () => this._captureShortcut(state));
+        shortcut.connect('activated', () => this._captureShortcut(state, key));
         const sync = () => {
-            label.accelerator = settings.get_strv(SHORTCUT_KEY)[0] ?? '';
+            label.accelerator = settings.get_strv(key)[0] ?? '';
             clear.visible = label.accelerator !== '';
         };
-        settings.connect(`changed::${SHORTCUT_KEY}`, sync);
+        settings.connect(`changed::${key}`, sync);
         sync();
-        group.add(shortcut);
-        return group;
+        return shortcut;
     }
 
     // GNOME Settings' rules, from cc-keyboard-shortcut-editor.c.
-    _captureShortcut(state) {
+    _captureShortcut(state, key) {
         const {settings} = state;
         this._keyDialog(state, {
-            title: 'Open the Library',
+            title: SHORTCUTS[key].heading,
             description: 'Press the new shortcut. Esc cancels, Backspace removes it.',
             onKey: (keyval, mods) => {
                 if (!mods && keyval === Gdk.KEY_Escape)
                     return true;
                 if (!mods && keyval === Gdk.KEY_BackSpace) {
-                    settings.set_strv(SHORTCUT_KEY, []);
+                    settings.set_strv(key, []);
                     return true;
                 }
                 const shown = keyLabel(keyval, mods);
@@ -475,10 +486,10 @@ export default class LibraryPreferences extends ExtensionPreferences {
                 if (bare)
                     return `${shown} on its own would be taken from every window. Add Ctrl, Alt or Super to it, or use a function or media key.`;
                 const accel = Gtk.accelerator_name(keyval, mods);
-                const clash = shortcutClash(settings, accel, SHORTCUT_KEY);
+                const clash = shortcutClash(settings, accel, key);
                 if (clash)
                     return `${shown} is already taken — ${clash}. Try another, or Esc to cancel.`;
-                settings.set_strv(SHORTCUT_KEY, [accel]);
+                settings.set_strv(key, [accel]);
                 return true;
             },
         });
@@ -567,6 +578,117 @@ export default class LibraryPreferences extends ExtensionPreferences {
             pads.add(padRow);
         }
         this._watchPads(state, connected);
+        return page;
+    }
+
+    _playerPage(state) {
+        const {settings} = state;
+        const page = new Adw.PreferencesPage({title: 'Player', icon_name: 'multimedia-player-symbolic'});
+
+        const use = new Adw.PreferencesGroup({
+            description: 'A file played from the library in VLC or mpv opens with the player\'s own ' +
+                'fullscreen controls off, and this bar over it instead, with the audio and subtitle ' +
+                'tracks, subtitle timing and chapters. A player opened any other way keeps its own controls.',
+        });
+        page.add(use);
+        const on = new Adw.SwitchRow({title: 'Library\'s controls over the player'});
+        settings.bind('player-controls', on, 'active', Gio.SettingsBindFlags.DEFAULT);
+        use.add(on);
+
+        const showing = new Adw.PreferencesGroup({title: 'Showing the Bar'});
+        showing.add(row('Show it when the pointer moves', 'Anywhere over the player, or only near the edge the bar is on',
+            toggles(settings, 'pointer-reveal', [['anywhere', 'Anywhere'], ['edge', 'Near the bar'], ['never', 'Never']])));
+        showing.add(row('Hide it after', 'Without movement', slider(settings, 'hide-delay', 1, 15, ' s')));
+        const paused = new Adw.SwitchRow({
+            title: 'Keep it up while paused',
+            subtitle: 'A pause from a remote or a controller then shows where you are',
+        });
+        settings.bind('stay-while-paused', paused, 'active', Gio.SettingsBindFlags.DEFAULT);
+        showing.add(paused);
+        showing.add(this._shortcutRow(state, 'toggle-bar'));
+
+        const look = new Adw.PreferencesGroup({title: 'On the Bar'});
+        look.add(row('Position', 'At the top, it stays clear of subtitles',
+            toggles(settings, 'bar-position', [['bottom', 'Bottom'], ['top', 'Top']])));
+        look.add(row('Size', 'Larger for a screen seen from across the room', slider(settings, 'bar-scale', 75, 200, '%')));
+        const buttons = new Adw.ExpanderRow({title: 'Buttons', subtitle: 'Leave off the ones you never use'});
+        buttons.add_row(row('Previous and next', 'With a playlist, they move between its files',
+            toggles(settings, 'previous-next', [['always', 'Always'], ['playlist', 'Playlist'], ['never', 'Never']])));
+        for (const button of BAR_BUTTONS) {
+            const toggle = new Adw.SwitchRow({title: button.title});
+            const sync = () => {
+                toggle.active = !settings.get_strv('hidden-buttons').includes(button.id);
+            };
+            sync();
+            settings.connect('changed::hidden-buttons', sync);
+            toggle.connect('notify::active', () => {
+                const hidden = settings.get_strv('hidden-buttons');
+                if (toggle.active === hidden.includes(button.id))
+                    settings.set_strv('hidden-buttons', toggle.active ? hidden.filter(id => id !== button.id) : [...hidden, button.id]);
+            });
+            buttons.add_row(toggle);
+        }
+        look.add(buttons);
+        const clock = new Adw.SwitchRow({
+            title: 'Show the time and when it ends',
+            subtitle: 'A line under the title: the time now, and when the video will finish',
+        });
+        settings.bind('show-clock', clock, 'active', Gio.SettingsBindFlags.DEFAULT);
+        look.add(clock);
+        const sleep = new Adw.ExpanderRow({
+            title: 'Sleep timer',
+            subtitle: 'A button that pauses the player after a while',
+            show_enable_switch: true,
+        });
+        settings.bind('sleep-timer', sleep, 'enable-expansion', Gio.SettingsBindFlags.DEFAULT);
+        sleep.add_row(row('Pause after', '15 minutes to 2 hours, or 1 to 5 episodes',
+            toggles(settings, 'sleep-timer-mode', [['minutes', 'Minutes'], ['episodes', 'Episodes']])));
+        look.add(sleep);
+
+        const steps = new Adw.PreferencesGroup({title: 'Steps'});
+        const seek = Adw.SpinRow.new_with_range(1, 300, 1);
+        seek.set({title: 'Skip back and forward by', subtitle: 'Seconds'});
+        settings.bind('seek-step', seek, 'value', Gio.SettingsBindFlags.DEFAULT);
+        steps.add(seek);
+        steps.add(row('Change the volume by', null, slider(settings, 'volume-step', 1, 25, '%')));
+
+        const pads = new Adw.PreferencesGroup({
+            title: 'Game Controller',
+            description: 'Buttons named by where they sit, read only while the bar\'s player is full ' +
+                'screen and focused. After "Move around the bar", the d-pad moves the highlight, the ' +
+                'bottom button presses and the right one goes back. Use game controllers is on the Controls page.',
+        });
+        const reset = new Gtk.Button({label: 'Reset', valign: Gtk.Align.CENTER, css_classes: ['flat']});
+        reset.connect('clicked', () => settings.reset('gamepad-buttons'));
+        pads.set_header_suffix(reset);
+        settings.bind('gamepad-enabled', pads, 'sensitive', Gio.SettingsBindFlags.GET);
+        const titles = Gtk.StringList.new(PLAYER_ACTIONS.map(a => a.title));
+        const map = () => settings.get_value('gamepad-buttons').deep_unpack();
+        for (const button of BUTTONS) {
+            const combo = new Adw.ComboRow({title: button.title, subtitle: button.hint ?? '', model: titles});
+            const sync = () => {
+                combo.selected = Math.max(0, PLAYER_ACTIONS.findIndex(a => a.id === (map()[button.id] ?? 'none')));
+            };
+            sync();
+            settings.connect('changed::gamepad-buttons', sync);
+            combo.connect('notify::selected', () => {
+                const action = PLAYER_ACTIONS[combo.selected]?.id ?? 'none';
+                const current = map();
+                if ((current[button.id] ?? 'none') === action)
+                    return;
+                if (action === 'none')
+                    delete current[button.id];
+                else
+                    current[button.id] = action;
+                settings.set_value('gamepad-buttons', new GLib.Variant('a{ss}', current));
+            });
+            pads.add(combo);
+        }
+
+        for (const group of [showing, look, steps, pads]) {
+            settings.bind('player-controls', group, 'visible', Gio.SettingsBindFlags.GET);
+            page.add(group);
+        }
         return page;
     }
 
@@ -1129,8 +1251,10 @@ function shortcutClash(settings, accel, ownKey) {
     const wanted = normal(accel);
     const source = Gio.SettingsSchemaSource.get_default();
 
-    if (SHORTCUT_KEY !== ownKey && settings.get_strv(SHORTCUT_KEY).some(a => normal(a) === wanted))
-        return 'Open the library';
+    for (const [key, {title}] of Object.entries(SHORTCUTS)) {
+        if (key !== ownKey && settings.get_strv(key).some(a => normal(a) === wanted))
+            return title;
+    }
     // A shortcut is grabbed everywhere, so it would swallow a remote's key.
     for (const action of ACTIONS) {
         const pairs = settings.get_value(`keys-${action.key}`).deep_unpack();

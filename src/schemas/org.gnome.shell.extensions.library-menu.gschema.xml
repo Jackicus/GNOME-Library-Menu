@@ -211,7 +211,7 @@
         <key name="gamepad-enabled" type="b">
             <default>true</default>
             <summary>Read game controllers</summary>
-            <description>Navigate a library with a game controller, through libmanette. Only acted on while a library is on screen, except Home, which opens it when no window has the keyboard.</description>
+            <description>Navigate a library with a game controller, through libmanette. Only acted on while a library is on screen, except Home, which opens it when no window has the keyboard, and the player-controls bar's buttons (gamepad-buttons) while a player the library opened is full screen.</description>
         </key>
 
         <!-- Appearance -->
@@ -331,6 +331,107 @@
             <default>20</default>
             <summary>Rewind on resume</summary>
             <description>How many seconds before where it stopped playback picks up again, so the moment it was left at is seen again.</description>
+        </key>
+
+        <!-- The bar over what the library plays: lib/playerControls.js. -->
+        <key name="player-controls" type="b">
+            <default>true</default>
+            <summary>Library's controls over the player</summary>
+            <description>When on, a file played from the library in VLC or mpv opens with the player's own fullscreen controls off, and the library draws its control bar over it instead: seek, pause, skip, volume, speed, audio and subtitle tracks, subtitle timing and chapters. A player opened any other way keeps its own controls.</description>
+        </key>
+        <key name="pointer-reveal" type="s">
+            <choices>
+                <choice value="anywhere"/>
+                <choice value="edge"/>
+                <choice value="never"/>
+            </choices>
+            <default>"anywhere"</default>
+            <summary>When moving the pointer shows the bar</summary>
+            <description>"anywhere": any movement over the fullscreen player, as VLC's own controller does. "edge": only near the edge of its monitor the bar is on (bar-position). "never": only the keyboard shortcut, a controller or the player pausing shows it.</description>
+        </key>
+        <key name="bar-position" type="s">
+            <choices>
+                <choice value="bottom"/>
+                <choice value="top"/>
+            </choices>
+            <default>"bottom"</default>
+            <summary>Which edge of the screen the bar is on</summary>
+            <description>"bottom", where the shell's own pop-ups sit, or "top", which keeps it clear of subtitles along the foot of the picture.</description>
+        </key>
+        <key name="hide-delay" type="i">
+            <range min="1" max="15"/>
+            <default>3</default>
+            <summary>Seconds before the bar hides again</summary>
+            <description>Counted from the last pointer movement or action. The bar stays while the pointer is on it or it holds the keyboard.</description>
+        </key>
+        <key name="stay-while-paused" type="b">
+            <default>true</default>
+            <summary>Keep the bar up while paused</summary>
+        </key>
+        <key name="seek-step" type="i">
+            <range min="1" max="300"/>
+            <default>10</default>
+            <summary>Seconds skipped by Skip back and Skip forward</summary>
+        </key>
+        <key name="volume-step" type="i">
+            <range min="1" max="25"/>
+            <default>5</default>
+            <summary>Percent of volume per Volume up or Volume down</summary>
+        </key>
+        <key name="bar-scale" type="i">
+            <range min="75" max="200"/>
+            <default>100</default>
+            <summary>Size of the bar, in percent</summary>
+            <description>Scales the whole bar and its pop-out together, for a screen seen from across a room.</description>
+        </key>
+        <key name="previous-next" type="s">
+            <choices>
+                <choice value="always"/>
+                <choice value="playlist"/>
+                <choice value="never"/>
+            </choices>
+            <default>"always"</default>
+            <summary>When the Previous and Next buttons are on the bar</summary>
+            <description>"always" (greyed out when there is nothing to go to), "playlist": only while the player has more than one file open, counted from its MPRIS track list where it keeps one and otherwise taken from whether it says it can go back or on, or "never".</description>
+        </key>
+        <key name="hidden-buttons" type="as">
+            <default>[]</default>
+            <summary>Buttons left off the bar</summary>
+            <description>Any of "skip" (Skip back and forward), "volume" (mute and the volume slider), "rate" (the speed) and "close". What they do is still there for the keyboard and the controllers.</description>
+        </key>
+        <key name="show-length" type="b">
+            <default>false</default>
+            <summary>Show the length instead of the time left</summary>
+            <description>At the end of the seek slider. Clicking the time there switches between the two.</description>
+        </key>
+        <key name="show-clock" type="b">
+            <default>false</default>
+            <summary>Show the time, and when the video ends</summary>
+            <description>A line under the title: the time now, and the time the video will end at the current speed.</description>
+        </key>
+        <key name="sleep-timer" type="b">
+            <default>false</default>
+            <summary>Show a sleep timer on the bar</summary>
+            <description>A button that pauses the player after a while (sleep-timer-mode); each press moves to the next step, and one more turns it off.</description>
+        </key>
+        <key name="sleep-timer-mode" type="s">
+            <choices>
+                <choice value="minutes"/>
+                <choice value="episodes"/>
+            </choices>
+            <default>"minutes"</default>
+            <summary>What the sleep timer counts</summary>
+            <description>"minutes": 15, 30, 45, 60, 90 or 120 of them, then the end of the file. "episodes": 1 to 5 files, pausing at the end of the last; each file played to its end is one, and one skipped is not.</description>
+        </key>
+        <key name="toggle-bar" type="as">
+            <default><![CDATA[['<Super>c']]]></default>
+            <summary>Show the bar with the keyboard</summary>
+            <description>Opens the bar holding the keyboard: the arrow keys move between its buttons, Enter presses one, Escape or the shortcut again puts it away.</description>
+        </key>
+        <key name="gamepad-buttons" type="a{ss}">
+            <default>{'south': 'play-pause', 'east': 'hide-bar', 'west': 'mute', 'north': 'tracks', 'dpad-left': 'seek-back', 'dpad-right': 'seek-forward', 'dpad-up': 'volume-up', 'dpad-down': 'volume-down', 'left-shoulder': 'previous', 'right-shoulder': 'next', 'left-trigger': 'slower', 'right-trigger': 'faster', 'start': 'navigate'}</default>
+            <summary>What each controller button does over the player</summary>
+            <description>Button ids and action ids from lib/playerActions.js. A button missing from the map does nothing. While the bar holds the focus (after "navigate"), the d-pad and the bottom and right buttons move around it instead.</description>
         </key>
 
     </schema>

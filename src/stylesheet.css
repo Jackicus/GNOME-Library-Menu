@@ -340,3 +340,173 @@
     text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.7);
     margin-bottom: 12px;
 }
+
+/* The bar over a player the library launched (lib/controlBar.js). Paint only;
+ * sizes in em, so Large Text and bar-scale follow, icons sized in JS. The panel
+ * and its buttons wear the screenshot panel's classes, so their colours are the
+ * theme's; this sets size and shape, the focus ring, the sliders and the text. */
+
+.ml-player-bar {
+    border-radius: 1.909em;
+    padding: 0.518em 1.227em 0.682em;
+    margin-bottom: 2em;
+    spacing: 0.273em;
+    /* Caps the width on a large monitor, so the slider stays in reach. */
+    max-width: 65.455em;
+}
+
+/* bar-position top: the same distance from the other edge. */
+.ml-player-bar.ml-player-top {
+    margin-bottom: 0;
+    margin-top: 2em;
+}
+
+.ml-player-seek-row {
+    spacing: 0.818em;
+    padding: 0 0.409em;
+}
+
+.ml-player-time {
+    font-size: 0.818em;
+    font-weight: bold;
+    font-feature-settings: "tnum";
+    color: rgba(255, 255, 255, 0.8);
+    min-width: 4.4em;
+}
+
+.ml-player-elapsed {
+    text-align: right;
+}
+
+.ml-player-remaining {
+    text-align: left;
+}
+
+.ml-player-time-button {
+    padding: 0.6em 0;
+}
+
+.ml-player-time-button:hover .ml-player-remaining {
+    color: #ffffff;
+}
+
+.ml-player-bar .slider {
+    color: #ffffff;
+    -barlevel-height: 0.273em;
+    -barlevel-background-color: rgba(255, 255, 255, 0.15);
+    /* The plain accent is under 3:1 on the panel for purple (docs/notes.md). */
+    -barlevel-active-background-color: st-mix(-st-accent-color, #ffffff, 80%);
+}
+
+.ml-player-bar .slider:insensitive {
+    color: rgba(255, 255, 255, 0.4);
+    -barlevel-active-background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* The slider's handle carries the focus: a ring would be lost on a thin bar. */
+.ml-player-bar .slider:focus {
+    color: st-lighten(-st-accent-color, 25%);
+    -barlevel-background-color: rgba(255, 255, 255, 0.28);
+}
+
+/* 2.2em is 24 px at the smallest bar-scale, the least a touch target should be. */
+.ml-player-seek {
+    height: 2.2em;
+}
+
+.ml-player-volume {
+    height: 2.2em;
+    width: 6em;
+    margin: 0 0.409em 0 0;
+}
+
+.ml-player-control-row {
+    padding: 0 0.136em;
+    spacing: 0.818em;
+}
+
+.ml-player-transport,
+.ml-player-extras {
+    spacing: 0.273em;
+}
+
+/* The shell's screenshot buttons size in px. */
+.ml-player-bar .ml-player-button {
+    border-radius: 999px;
+    padding: 0.818em;
+    min-height: 1.091em;
+    min-width: 0;
+}
+
+/* The theme's focus ring is !important, so ours has to be too. Its colour is the theme's own. */
+.ml-player-bar .ml-player-button:focus {
+    background-color: st-transparentize(-st-accent-color, 0.7);
+    box-shadow: inset 0 0 0 2px st-mix(-st-accent-color, #ffffff, 60%) !important;
+}
+
+.ml-player-bar .ml-player-play {
+    padding: 0.95em;
+    margin: 0 0.409em;
+}
+
+/* The accent fill hides the usual focus tint, so the ring is white here. */
+.ml-player-bar .ml-player-play:focus {
+    background-color: st-lighten(-st-accent-color, 6%);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+.ml-player-bar .ml-player-rate {
+    font-size: 0.818em;
+    font-weight: bold;
+    font-feature-settings: "tnum";
+    padding: 0.75em 0.9em;
+    min-width: 2.6em;
+}
+
+.ml-player-bar .ml-player-sleep {
+    padding: 0.818em;
+}
+
+.ml-player-sleep-box {
+    spacing: 0.409em;
+}
+
+.ml-player-sleep-label {
+    font-size: 0.818em;
+    font-weight: bold;
+    font-feature-settings: "tnum";
+}
+
+.ml-player-info {
+    spacing: 0.068em;
+    padding-left: 0.409em;
+}
+
+.ml-player-title {
+    font-weight: bold;
+}
+
+.ml-player-subtitle {
+    font-size: 0.818em;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ml-player-clock {
+    font-feature-settings: "tnum";
+}
+
+/* The shell's own popup menu; only the button rows inside it are ours. */
+
+.ml-player-menu-row {
+    spacing: 0.409em;
+}
+
+.ml-player-menu-button {
+    padding: 0.545em;
+}
+
+.ml-player-menu-value {
+    font-feature-settings: "tnum";
+    min-width: 3.6em;
+    text-align: center;
+}

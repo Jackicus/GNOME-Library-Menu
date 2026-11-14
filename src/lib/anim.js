@@ -16,6 +16,9 @@ export const Ease = {
     IN: Clutter.AnimationMode.EASE_IN_QUAD,
 };
 
+// Logical px the player's bar rises as it fades in.
+export const RISE = 8;
+
 // For an effect's properties, which actor.ease() cannot reach. Returns the
 // timeline, to stop if the object goes first.
 export function easeProps(object, targets, {duration = Duration.NORMAL, mode = Ease.OUT, onComplete} = {}) {

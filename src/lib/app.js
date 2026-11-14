@@ -20,11 +20,13 @@ import {DesktopDash} from './desktopDash.js';
 import {Tracker} from './tracking.js';
 import {PlaybackWatcher} from './playback.js';
 import {Controls} from './controls.js';
+import {PlayerControls, controlledArgv} from './playerControls.js';
 import {note} from './log.js';
 
 // With the section's command, or the default app when its program is not installed.
-// An array is a game's own command line, run as it is.
-function openPath(path, command = '', beforeLaunch = null) {
+// An array is a game's own command line, run as it is. `controlled` puts a player
+// it knows under the library's bar.
+function openPath(path, command = '', beforeLaunch = null, controlled = false) {
     if (!path)
         return;
     if (Array.isArray(path)) {
@@ -56,7 +58,7 @@ function openPath(path, command = '', beforeLaunch = null) {
                     return;
                 }
                 if (GLib.find_program_in_path(argv[0])) {
-                    Util.spawn([...argv, path]);
+                    Util.spawn([...(controlled && controlledArgv(argv)) || argv, path]);
                     return;
                 }
             }
@@ -98,6 +100,7 @@ export class LibraryApp {
             settings: this._settings,
             onActivate: key => this._browser?.toggle(key),
         });
+        this._player = null;
         this._tracker = new Tracker(this._settings);
         this._playback = new PlaybackWatcher(this._settings, this._tracker);
         this._controls = new Controls(this._settings, {
@@ -122,6 +125,8 @@ export class LibraryApp {
         this._controls.enable();
         this._tracker.enable();
         this._playback.enable();
+        this._settings.connectObject('changed::player-controls', () => this._syncPlayer(), this);
+        this._syncPlayer();
         this._sections = loadLibrary();
         this._build();
 
@@ -168,6 +173,19 @@ export class LibraryApp {
         this._playback.disable();
         this._tracker.disable();
         this._controls.disable();
+        this._player?.disable();
+        this._player = null;
+    }
+
+    _syncPlayer() {
+        const want = this._settings.get_boolean('player-controls');
+        if (want && !this._player) {
+            this._player = new PlayerControls(this._settings);
+            this._player.enable();
+        } else if (!want && this._player) {
+            this._player.disable();
+            this._player = null;
+        }
     }
 
     _teardown() {
@@ -279,7 +297,7 @@ export class LibraryApp {
                 Main.overview.hide();
             }
             this._toPlayingWorkspace();
-        });
+        }, this._settings.get_boolean('player-controls'));
     }
 
     // A new window opens on the active workspace, so the player's lands on this one.
