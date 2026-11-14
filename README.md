@@ -22,6 +22,11 @@ watched; a game starts through Steam or PCSX2.
   with the same paging, swiping and keyboard.
 - **Remote or controller.** Map a TV remote's keys or a game controller's buttons, and
   browse from the sofa.
+- **Its own controls over the player.** A show or film played in VLC or mpv opens with
+  the player's fullscreen controls off and the library's bar over it instead: seek,
+  pause, volume, speed, audio and subtitle tracks, subtitle timing and chapters, from
+  the mouse, the keyboard (Super+C) or a controller. VLC or mpv opened any other way
+  keeps its own controls.
 
 ## Games
 
@@ -71,7 +76,8 @@ they cover the wallpaper.
 - A video player. The default command is VLC's; any other command works, and left
   empty a file opens in your default video app. Watched marks and Continue need a
   player that shows up in GNOME's media controls (MPRIS): VLC, Showtime, Celluloid, or
-  mpv with mpv-mpris.
+  mpv with mpv-mpris. The library's own controls over the player need VLC, or mpv
+  with mpv-mpris.
 - For games, Steam or PCSX2 (either is enough, neither is needed for TV shows and
   films).
 - For game controllers, libmanette, which most desktops already have with WebKitGTK.
@@ -224,7 +230,11 @@ follows both.
   (mpv needs mpv-mpris), and the file has to be in one of the library's folders.
 - **A controller does nothing.** libmanette is not installed, or the library is not on
   screen: controllers are read only while it is and no window has the keyboard, except
-  Home, which opens it.
+  Home, which opens it, and the player bar's buttons over a player the library opened.
+- **No bar over the player.** Only VLC and mpv opened from the library get it, full
+  screen and focused, with Library's controls over the player on (the Player page). A
+  player that was already running takes the file into its old window, which is not
+  the library's.
 - **The preferences take seconds to open.** A library folder is on a network share that
   is offline or has to wake up.
 

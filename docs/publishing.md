@@ -104,7 +104,11 @@ Checked against both pages as read on 2026-10-02, before the 1.0 release, again 
   `<prefix>-open-command` (`vlc --fullscreen --play-and-exit --qt-continue=0`
   by default), parsed with `GLib.shell_parse_argv` and run through
   `Util.spawn` only when `GLib.find_program_in_path` finds it, else
-  `Gio.AppInfo.launch_default_for_uri_async`. The description says so; name it
+  `Gio.AppInfo.launch_default_for_uri_async`. With `player-controls` on, a VLC
+  or mpv command is run as `env LIBRARY_MENU_PLAYER=1 <command> <flags>`
+  (`playerControls.js` `controlledArgv`): the flags turn the player's own
+  fullscreen controls off and open a control socket in `$XDG_RUNTIME_DIR`, and
+  nothing of the player's settings is written. The description says so; name it
   in the upload notes too.
 - **No telemetry, clipboard or privileged subprocess.**
 - **Functional out of the box**: neither section has a default folder, so an

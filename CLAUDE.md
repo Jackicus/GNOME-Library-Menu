@@ -84,6 +84,14 @@ lists the two artwork folders once per load rather than stat a poster each.
    PCSX2 with the disc), closing what was up first; the watcher follows any MPRIS player with a file from a watched folder
    open, marks it past `watched-threshold`, keeps where it stopped, and the detail
    pane's Continue button resumes there. `.claude/rules/tracking.md`.
+5. **The player bar** (`lib/playerControls.js`, `controlBar.js`, `tracksMenu.js`,
+   `mpris.js`, the `*Remote.js` sockets, `playerPads.js`, `playerActions.js`), on
+   with `player-controls`: a pick played in VLC or mpv is launched with that
+   player's own fullscreen controls off and a control socket open
+   (`controlledArgv()`), marked with `LIBRARY_MENU_PLAYER=1` in its environment,
+   and the bar goes over a fullscreen window of a marked process alone. A player
+   opened any other way keeps its own controls. `.claude/rules/player.md`, with
+   `player-bar.md`, `player-mpris.md` and `player-remotes.md`.
 
 ## Where it opens
 

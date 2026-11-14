@@ -43,7 +43,9 @@ paths:
 - Controllers are read with libmanette, loaded on demand (it runs without it), and
   acted on only while the menu or the pop-up is up (`app.js` `isActive`), except
   Home, which opens the library when no window has the focus and nothing is modal
-  (`_controlsOpen()`).
+  (`_controlsOpen()`). The player bar reads pads of its own under the same
+  `gamepad-enabled`, only while its player is fullscreen and focused
+  (`.claude/rules/player.md`).
 
 ## The shortcut
 
