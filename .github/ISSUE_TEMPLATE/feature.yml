@@ -1,5 +1,3 @@
-# Copied from gnome-ai-kit (template/.github/ISSUE_TEMPLATE/feature.yml) by its
-# scripts/sync.sh: change it there.
 name: Feature request
 description: Suggest an idea or an improvement.
 labels: [enhancement]

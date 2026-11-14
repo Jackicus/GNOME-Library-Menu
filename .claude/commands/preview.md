@@ -4,7 +4,7 @@ argument-hint: "[optional: what to click through first, e.g. 'open a show' or 't
 allowed-tools: Bash(./scripts/nested.sh:*), Bash(make nested:*), Read
 ---
 
-Show what Library currently looks like, following the `gnome-ext:nested-shell`
+Show what Library currently looks like, following the `nested-shell`
 skill and this repository's `drive-extension` skill (where things are, and what is
 never pressed). The user is watching the mirror window, so `say` before each step.
 

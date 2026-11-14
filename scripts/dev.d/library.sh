@@ -1,4 +1,4 @@
-# Library Menu's own dev.sh commands, sourced by the kit's scripts/dev.sh.
+# Library Menu's own dev.sh commands, sourced by scripts/dev.sh.
 #
 #   ./scripts/dev.sh scan [ARGS]
 #                               scan every enabled section into the real cache, with

@@ -30,8 +30,7 @@
 #                                     of its session, remove what it made, and say if
 #                                     anything survived
 #
-# Copied from gnome-ai-kit (template/scripts/nested.sh) by its
-# scripts/sync.sh: change it there. What is particular to this extension is in
+# What is particular to this extension is in
 # scripts/ext.conf, and its own commands and hooks are in scripts/nested.d/*.sh.
 #
 # The nested shell is a second GNOME Shell with its own session bus and Wayland
@@ -67,7 +66,6 @@
 # Every name this script uses is this extension's own (run directory, Wayland
 # display, settings), so the nested shells of several extensions can run at
 # once without touching each other.
-#
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -79,7 +77,7 @@ ok()   { printf '\033[1;32m✓\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31m✗\033[0m %s\n' "$*" >&2; exit 1; }
 
-[[ -f "$REPO_DIR/scripts/ext.conf" ]] || die "scripts/ext.conf is missing: it names this extension for the kit's scripts."
+[[ -f "$REPO_DIR/scripts/ext.conf" ]] || die "scripts/ext.conf is missing: it names this extension for these scripts."
 EXT_STAND_IN_BINS=()
 EXT_STAND_IN_UNSET=()
 NESTED_STRAYS=()

@@ -1,11 +1,11 @@
 ---
 name: drive-extension
-description: Where Library is on the nested shell's screen and how to drive it - coordinates of the section buttons, grid and the pop-up pane, the player bar over a VLC it launched, its remote keys and virtual pad, the stand-in library the README's screenshots are taken of, and what must never be pressed. Use with gnome-ext:nested-shell whenever a Library change must be seen (layout, the section buttons, a pick's pop-up, the preferences).
+description: Where Library is on the nested shell's screen and how to drive it - coordinates of the section buttons, grid and the pop-up pane, the player bar over a VLC it launched, its remote keys and virtual pad, the stand-in library the README's screenshots are taken of, and what must never be pressed. Use with nested-shell whenever a Library change must be seen (layout, the section buttons, a pick's pop-up, the preferences).
 ---
 
 # Driving Library in a nested shell
 
-Read the kit's `gnome-ext:nested-shell` skill first: the loop, `do` and its steps,
+Read the `nested-shell` skill first: the loop, `do` and its steps,
 its own settings, `--clean`, `--stand-in`, the logs and stopping are all there. This
 page adds only what is Library's.
 
@@ -121,7 +121,7 @@ Games ≈ (220, 875). With the shortcut and a pad's Home they are the only ways 
 
 ## Screenshots for the README
 
-The `gnome-ext:screenshots` skill, plus: full-screen shots lose the top 32 px, the top
+The `screenshots` skill, plus: full-screen shots lose the top 32 px, the top
 bar with the screencast indicator and the clock: `jpegtran -crop 1600x868+0+32 -copy
 none -perfect` on the JPEG, lossless because 32 is a whole number of JPEG blocks. They
 are 1600×868.

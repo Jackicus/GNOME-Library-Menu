@@ -1,6 +1,6 @@
-# The kit's targets (scripts/kit.mk: link, install, reload, logs, pack, check,
+# The common targets (scripts/common.mk: link, install, reload, logs, pack, check,
 # the nested shell, ...), then Library's own. 'make' alone prints help.
-include scripts/kit.mk
+include scripts/common.mk
 
 .PHONY: scan prune stalls
 

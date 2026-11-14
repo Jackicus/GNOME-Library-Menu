@@ -2,8 +2,7 @@
 // src/extension.js, which imports lib/ once as an install should. Nothing here
 // ships.
 //
-// Copied from gnome-ai-kit (template/scripts/dev-extension.js) by
-// its scripts/sync.sh: change it there. What it builds is named in
+// What it builds is named in
 // dev-extension.json, which `./scripts/dev.sh link` writes beside it from
 // scripts/ext.conf.
 //
@@ -68,7 +67,7 @@ export default class DevelopmentExtension extends Extension {
         }
     }
 
-    // dev-extension.json; without it (a link made before the kit wrote one), the
+    // dev-extension.json; without it (a link made before it was written), the
     // class lib/app.js exports whose name ends in App, and the extension's name.
     _config() {
         const config = {appClass: null, logPrefix: `[${this.metadata.name}]`};

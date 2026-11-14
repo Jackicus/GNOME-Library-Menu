@@ -23,17 +23,15 @@
 #                               'make check' runs after 'make lint', and what CI runs;
 #                               ends with 'size'
 #   ./scripts/dev.sh size       lines of JavaScript under src/, the share that is
-#                               comments and the try count (.claude/rules/simplicity.md
-#                               in the kit); warns when comments reach 10%, never fails
+#                               comments and the try count (.claude/rules/simplicity.md);
+#                               warns when comments reach 10%, never fails
 #   ./scripts/dev.sh status     what is installed, and its state in the running shell
 #   ./scripts/dev.sh uninstall  remove the extension
 #   ./scripts/dev.sh clean      remove dist/, and the compiled schema unless a link
 #                               install reads it
 #
-# Copied from gnome-ai-kit (template/scripts/dev.sh) by its
-# scripts/sync.sh: change it there. What is particular to this extension is in
+# What is particular to this extension is in
 # scripts/ext.conf, and its own commands are in scripts/dev.d/*.sh.
-#
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -46,7 +44,7 @@ ok()    { printf '\033[1;32m✓\033[0m %s\n' "$*"; }
 warn()  { printf '\033[1;33m!\033[0m %s\n' "$*"; }
 die()   { printf '\033[1;31m✗\033[0m %s\n' "$*" >&2; exit 1; }
 
-[[ -f "$REPO_DIR/scripts/ext.conf" ]] || die "scripts/ext.conf is missing: it names this extension for the kit's scripts."
+[[ -f "$REPO_DIR/scripts/ext.conf" ]] || die "scripts/ext.conf is missing: it names this extension for these scripts."
 EXT_SHIP=("lib:*.js")
 EXT_CHECKS=()
 # shellcheck source=/dev/null
@@ -117,7 +115,7 @@ PY
 )
     local share=$(( lines ? 100 * comments / lines : 0 ))
     ok "src/ JavaScript: $lines lines, $share% comment lines, $tries try blocks."
-    (( share < 10 )) || warn "Comment lines are $share% of src/: the kit's simplicity rule keeps them well under 10%."
+    (( share < 10 )) || warn "Comment lines are $share% of src/: the simplicity rule keeps them well under 10%."
 }
 
 # What dev-extension.js builds, and the prefix it logs with.
