@@ -1,6 +1,6 @@
 # Library Menu
 
-Shared rules for every extension come from gnome-ai-kit: `../CLAUDE.md` and `../.claude/rules/` (loaded with this file), and the `gnome-ext:*` skills. `.claude/kit.sh` pulls the kit at session start, or, with no kit beside this repository, fetches it and prints its rules into the session.
+What holds for any extension worked on this way is in `.claude/rules/` (`workflow.md`, `live-session.md`, `simplicity.md`, `gjs-st.md`), loaded with this file, and the skills are in `.claude/skills/`.
 
 Library Menu, a GNOME Shell extension (UUID `library-menu@jackicus`), that shows a library of TV shows,
 films and games in the overview, opened from a button per section beside Show Apps or,
@@ -27,10 +27,10 @@ GObject class names and `ml-` style classes.
   `compatibility.md` (what was checked where), `publishing.md` (the
   extensions.gnome.org zip and the review guidelines), `notes.md` (design reasoning
   the code keeps to a line), `screenshots/` (the README's).
-- `scripts/`: the kit's `dev.sh`, `nested.sh`, `nested_driver.py`, `kit.mk` and
-  `dev-extension.js` (the entry point `make link` installs, staging `lib/` under
-  `$XDG_RUNTIME_DIR/library-menu/shell-<pid>/lib-<checksum>`), changed only in the
-  kit; this extension's own `ext.conf`, `dev.d/library.sh` (`scan`, `prune`,
+- `scripts/`: the development scripts `dev.sh`, `nested.sh`, `nested_driver.py`,
+  `common.mk` and `dev-extension.js` (the entry point `make link` installs, staging
+  `lib/` under `$XDG_RUNTIME_DIR/library-menu/shell-<pid>/lib-<checksum>`); this
+  extension's own `ext.conf`, `dev.d/library.sh` (`scan`, `prune`,
   `stalls`, the `scanner` check, the cache and library `status` lines) and
   `nested.d/library.sh` (the made-up library under `start --stand-in`);
   `demo_library.py` (that library); `stallwatch.py` (`make stalls`, logging to
@@ -159,7 +159,7 @@ controllers are the keyboard too: `.claude/rules/keyboard.md`.
   stale `~/.local/share/recently-used.xbel` entry on an offline share stalls every
   Recent listing (`gvfsd-recent` stats each).
 - **`backend/scanLibrary.js` takes its folder from `import.meta.url`**, the one
-  exception to the kit's rule: it is never staged, running straight from the
+  exception to `gjs-st.md`'s rule: it is never staged, running straight from the
   extension directory in a process of its own.
 - **Private shell API** is listed in `docs/private-api.md`, with what breaks when each
   piece moves (a symptom after an upgrade is looked up in its table); a new reach goes
@@ -176,7 +176,7 @@ scanner's imports (`gjs -m src/backend/scanLibrary.js --help`, in a scratch home
 a byte-compile of `scripts/*.py`. The scanner needs Soup 3, which `.github/ci-packages`
 adds to CI. It ends with `size`.
 
-Seeing a change is the nested shell: the `gnome-ext:nested-shell` skill, then this
+Seeing a change is the nested shell: the `nested-shell` skill, then this
 repository's `drive-extension` skill (where things are, the `--stand-in` library the
 screenshots are taken of). The nested shell's settings are always its own, but a start
 without `--stand-in` reads the user's real cache and watched marks. Unless the task

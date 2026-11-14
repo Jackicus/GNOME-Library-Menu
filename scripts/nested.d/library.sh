@@ -1,4 +1,4 @@
-# Library's own nested.sh hooks, sourced by the kit's scripts/nested.sh.
+# Library's own nested.sh hooks, sourced by scripts/nested.sh.
 #
 #   ./scripts/nested.sh player [--plain] [--qt] [--windowed] [FILE] [-- VLC ARGS...]
 #                                     VLC in the nested shell, full screen, on FILE

@@ -21,7 +21,7 @@ an `if`, and then the only sign is the symptom, with nothing logged.
 | `global.dashToPanel.panels[0]`, `panels-created`, `.showAppsIconWrapper.realShowAppsIcon`, `.panel`, `._updateGroupedElements` (wrapped), `.geom`, `.updateElementPositions` | libraryButton.js | The buttons go in the dash instead; `updateElementPositions` gone: no buttons, a warning | Yes, each checked first or inside `_attach()`'s try/catch; read only with `dash-to-panel` on |
 | `panel._elementGroups`, a group's `.elements` and `.expandableIndex`, an element's `.actor` and `.position` | libraryButton.js | `_elementGroups` gone: the buttons are in the panel with no place in its layout. Another shape: the wrap throws inside `_attach()`'s try/catch, so no buttons and a warning | Partly |
 | `Main.overview._overview.controls`, `.appDisplay`, `._box` | mediaMenu.js; `_overview.controls` also detailDialog.js | No library; one warning, if a section is enabled | Yes |
-| `Main.overview.dash.showAppsButton` (`.checked`) | mediaMenu.js | The menu can no longer tell the app grid is up (the kit's "Is the app grid up?" rule) | No |
+| `Main.overview.dash.showAppsButton` (`.checked`) | mediaMenu.js | The menu can no longer tell the app grid is up (`gjs-st.md`'s "Is the app grid up?" rule) | No |
 | `controls._searchController.searchActive` | mediaMenu.js | Workspaces do not come back for a search while the view is up | Yes, `?.` |
 | `controls._stateAdjustment` | mediaMenu.js | The workspace row is not folded in step with the overview | Yes, `?.` |
 | `controls._workspacesDisplay` (`.opacity`, `.reactive`, `setPrimaryWorkspaceVisible`) | mediaMenu.js | The row is never faded, so it stays over the posters and takes their clicks. `setPrimaryWorkspaceVisible` gone: folding the row throws | `_workspacesDisplay` `?.`; its method no |
@@ -143,7 +143,7 @@ show it, which is accepted: the dash is not cloned into them.
 
 Dash to Panel's `_updateGroupedElements` (`libraryButton.js` `_attachToPanel`)
 and the shell's `_getAppDisplayBoxForState` (`mediaMenu.js` `_foldWorkspaces`)
-are wrapped as the kit's monkey-patch rule has it, since another extension may
+are wrapped as `gjs-st.md`'s monkey-patch rule has it, since another extension may
 wrap either (Dash to Dock patches the latter on the prototype). Each wrap here
 closes over what the property held, always calls through, does nothing once it
 is no longer current (`inert`, or `_foldedBox` no longer itself), and on
