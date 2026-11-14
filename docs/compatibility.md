@@ -118,6 +118,48 @@ gjs.guide's list (`St.ReducedMotion`, `NoGrabPopup`, `SearchEntry`,
 `pointerWatcher`, `Shell.GLSLEffect`, `Gio.DBus.makeProxyWrapper()`) is
 not used.
 
+## The player bar on 51
+
+Read at gnome-shell and mutter 50.5 against 51.1 on 2026-10-28, while the bar
+was an extension of its own: every shell import, every shell, St, Clutter and
+Meta call of the `player*`, `controlBar.js`, `tracksMenu.js`, `mpris.js` and
+`*Remote.js` modules and the selectors it borrows (`screenshot-ui-panel`,
+`screenshot-ui-type-button`, `icon-button`, `slider`). What 51 changed for it:
+
+- **`ui/pointerWatcher.js` is gone** (gnome-shell ad7cdec43). Its import
+  failed, so the extension did not load at all. `playerControls.js` watches
+  `Meta.CursorTracker`'s `position-invalidated` (as the magnifier now does)
+  and reads `global.get_pointer()` at most every `POINTER_INTERVAL`.
+- **`Clutter.get_default_backend()` is gone** (mutter f7c4a8e7c): the pad's
+  virtual keyboard takes its seat from `global.stage.context.get_backend()`.
+- **`St.FocusManager.navigate_from_event()` is gone** (gnome-shell 5ca6fb233):
+  `add_group()` now gives the group a `Clutter.KeyController` that moves the
+  focus, under a grab too.
+- **Actions see an event before the actor's own signal**, and the shell's
+  widgets moved to actions: the `Slider` takes Left/Right through a key
+  binding and scroll through `Clutter.ScrollController`s, and a `PopupMenu`
+  puts a key controller on its source actor (the bar's panel) that toggles it
+  on Return and Space and opens it on Up. The bar's `key-press-event` and
+  `scroll-event` handlers no longer came first, so they are controllers now:
+  the sliders' arrows and the seek slider's scroll in the capture phase, the
+  panel's keys after the focus group's controller and before the menu's
+  (`.claude/rules/player-bar.md`).
+- **An actor's event signals are deprecated** (`captured-event`, `event` and
+  the rest). The bar's three are Clutter gestures: the stage's touch watch, the
+  press outside the panel under its grab, and the catcher
+  (`.claude/rules/player-bar.md`). No other 51 or GJS 1.90 deprecation is in `src/`:
+  no `vertical`, `St.ButtonMask`, `makeProxyWrapper`, `Shell.GLSLEffect` or
+  async `disable()`.
+- **`PopupMenu.open()` takes a params object**, not a `PopupAnimation`.
+- **`BoxPointer` turns unredirection off while mapped** (it was while
+  visible); the bar's own `disable_unredirect` is unaffected.
+
+Seen in the nested shell (51.1, GTX 1080 desktop) on 2026-11-14, here: a film
+picked from the stand-in library launched VLC with the bar's flags and the bar
+over it, its tracks pop-out filled from the socket the flags opened, Super+C,
+the virtual pad's Start, d-pad and A, the Player page; the same VLC run plain
+showed its own controller and no bar; a reload and a fresh `stop` + `start`.
+
 ## Checklist for a new GNOME version
 
 1. Read gjs.guide's "Port Extensions to GNOME Shell N" for anything
@@ -135,6 +177,9 @@ not used.
    button with **Buttons on the desktop** on; a pick's pop-up, closed with
    Escape, a click away and by leaving the overview.
 6. Lock and unlock with the library open.
+   Then the player bar: `./scripts/nested.sh player --qt` (as the library
+   launches it) shows the bar on pointer motion and its tracks pop-out, and
+   `player --qt --plain` shows VLC's own controller and no bar.
 7. With Dash to Panel on and off, and **Work with Dash to Panel** on: the buttons
    beside Show Apps in both; with the setting off, Dash to Panel's panel as it
    is without Library Menu; with
